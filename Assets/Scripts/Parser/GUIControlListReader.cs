@@ -15,9 +15,9 @@ public class GUIControlListReader
         Value = 51
     };
 
-    public static List<GUIControl> InternalizeControls(BinaryReader2 reader)
+    public static List<GUIControlDescription> InternalizeControls(BinaryReader2 reader)
     {
-        List<GUIControl> controls = new List<GUIControl>();
+        List<GUIControlDescription> controls = new List<GUIControlDescription>();
 
         short length = reader.ReadInt16BE();
         for (short i = 0; i < length; i++)
@@ -26,35 +26,35 @@ public class GUIControlListReader
             switch (controlID)
             {
                 case GUIControlID.Condition:
-                    controls.Add(new GUIControlConditional(reader));
+                    controls.Add(new GUIControlConditionalDescription(reader));
                     break;
 
                 case GUIControlID.Value:
-                    controls.Add(new GUIControlValue(reader));
+                    controls.Add(new GUIControlValueDescription(reader));
                     break;
 
                 case GUIControlID.Menu:
-                    controls.Add(new GUIControlMenu(reader));
+                    controls.Add(new GUIControlMenuDescription(reader));
                     break;
 
                 case GUIControlID.MenuItem:
-                    controls.Add(new GUIControlMenuItem(reader));
+                    controls.Add(new GUIControlMenuItemDescription(reader));
                     break;
 
                 case GUIControlID.Picture:
-                    controls.Add(new GUIControlPicture(reader));
+                    controls.Add(new GUIControlPictureDescription(reader));
                     break;
 
                 case GUIControlID.Animation:
-                    controls.Add(new GUIControlAnimation(reader));
+                    controls.Add(new GUIControlAnimationDescription(reader));
                     break;
 
                 case GUIControlID.Label:
-                    controls.Add(new GUIControlLabel(reader));
+                    controls.Add(new GUIControlLabelDescription(reader));
                     break;
 
                 case GUIControlID.ScrollingPicture:
-                    controls.Add(new GUIControlScrollingPicture(reader));
+                    controls.Add(new GUIControlScrollingPictureDescription(reader));
                     break;
 
                 default:

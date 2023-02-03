@@ -1,24 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-public class GUIControlFile
+public class GUIControlDescriptionFile
 {
-    private List<GUIControl> controls = new List<GUIControl>();
+    private List<GUIControlDescription> controls = new List<GUIControlDescription>();
     private bool unk0;
     private bool unk1;
     private bool unk2;
 
-    public List<GUIControl> Controls => controls;
+    public List<GUIControlDescription> Controls => controls;
+    public string Filename { get; set; }
 
-    public GUIControlFile(string filename)
+    public GUIControlDescriptionFile(string filename)
     {
+        Filename = filename;
+
         using (FileStream fileStream = File.OpenRead(filename))
         {
             Internalize(fileStream);
         }
     }
 
-    public GUIControlFile(Stream baseStream)
+    public GUIControlDescriptionFile(Stream baseStream)
     {
         Internalize(baseStream);
     }
