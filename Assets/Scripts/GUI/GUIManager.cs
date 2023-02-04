@@ -13,6 +13,7 @@ public class GUIManager : MonoBehaviour
     public GameObject guiPicturePrefabObject;
     public GameObject guiMenuOptionPrefabObject;
     public GameObject guiAnimationPrefabObject;
+    public GameObject guiMenuPrefabObject;
     public GameObject container;
 
     private void Start()
@@ -38,7 +39,7 @@ public class GUIManager : MonoBehaviour
 
             if (relativeToBottomLeft)
             {
-                anotherInstance.transform.position = GameUtils.ToUnityCoordinates(new Vector2(0.0f, Constants.CanvasY - renderer.sprite.rect.size.y));
+                anotherInstance.transform.localPosition = GameUtils.ToUnityCoordinates(new Vector2(0.0f, Constants.CanvasY - renderer.sprite.rect.size.y) - description.TopPosition);
             }
         }
     }
@@ -58,32 +59,43 @@ public class GUIManager : MonoBehaviour
 
     private void LoadGuiMenu(GUIControlSet ownSet, GameObject parent, GUIControlMenuDescription description)
     {
-        GameObject gameObject = new GameObject("Menu");
-        gameObject.transform.parent = parent.transform;
+        GameObject gameObject = Instantiate(guiMenuPrefabObject, parent.transform, false);
+        gameObject.transform.localPosition = GameUtils.ToUnityCoordinates(description.TopPosition);
 
         // Assign the side-picture on the left side
         LoadGuiPicture(gameObject, new GUIControlPictureDescription()
         {
             ImagePath = description.SideImagePath,
-            TopPosition = new Vector2(0.0f, description.TopPosition.y),
+            TopPosition = description.TopPosition,
             Id = "MenuSideImage",
             SortingPosition = description.SortingPosition
         }, true);
 
-        GameObject gameObjectOptions = new GameObject("MenuOptions");
-        gameObjectOptions.transform.parent = gameObject.transform;
-        gameObjectOptions.transform.position = GameUtils.ToUnityCoordinates(description.TopPosition);
+        GUIMenuController controller = gameObject.GetComponent<GUIMenuController>();
+        controller.LoadActionScript(description.ActionHandlerFilePath);
 
+        GameObject gameObjectOptions = gameObject.transform.Find("MenuOptions")?.gameObject;
         Vector2 currentPosition = new Vector2(0.0f, 0.0f);
 
-        foreach (GUIControlDescription optionDesc in description.MenuItemControls)
-        {   
-            if (optionDesc is GUIControlMenuItemDescription)
+        LoadGuiAnimation(gameObject, new GUIControlAnimationDescription()
+        {
+            SortingPosition = description.SortingPosition,
+            TopPosition = currentPosition,
+            AnimationPath = FilePaths.MenuLensFlareAnimaionFilename
+        });
+
+        if (gameObjectOptions != null)
+        {
+            foreach (GUIControlDescription optionDesc in description.MenuItemControls)
             {
-                LoadGuiMenuItem(ownSet, gameObjectOptions, optionDesc as GUIControlMenuItemDescription, ref currentPosition);
-            } else
-            {
-                Debug.LogError("Control type " + description.GetType() + " is not supported in menu option control list!");
+                if (optionDesc is GUIControlMenuItemDescription)
+                {
+                    LoadGuiMenuItem(ownSet, gameObjectOptions, optionDesc as GUIControlMenuItemDescription, ref currentPosition);
+                }
+                else
+                {
+                    Debug.LogError("Control type " + description.GetType() + " is not supported in menu option control list!");
+                }
             }
         }
     }
@@ -116,6 +128,7 @@ public class GUIManager : MonoBehaviour
             var text = anotherInstance.GetComponentInChildren<TMPro.TMP_Text>();
             text.rectTransform.sizeDelta = sizeReal;
             text.text = ownSet.GetLanguageString(description.TextName);
+            text.font = ResourceManager.Instance.GetFontAssetForLocalization();
 
             var meshRenderer = anotherInstance.GetComponentInChildren<MeshRenderer>();
             meshRenderer.sortingOrder = description.SortingPosition;
@@ -124,7 +137,7 @@ public class GUIManager : MonoBehaviour
 
     private void LoadGuiAnimation(GameObject parent, GUIControlAnimationDescription description)
     {
-        GameObject anotherInstance = Instantiate(guiAnimationPrefabObject, parent.transform);
+        GameObject anotherInstance = Instantiate(guiAnimationPrefabObject, parent.transform, false);
         anotherInstance.transform.localPosition = GameUtils.ToUnityCoordinates(description.TopPosition);
 
         SpriteRenderer renderer = anotherInstance.GetComponent<SpriteRenderer>();

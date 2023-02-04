@@ -6,6 +6,11 @@ public class GUIControlAnimationDescription : GUIControlDescription
     public Vector2 TopPosition { get; set; }
     public int SortingPosition { get; set; }
 
+    public GUIControlAnimationDescription()
+    {
+
+    }
+
     public GUIControlAnimationDescription(BinaryReader2 reader)
     {
         Internalize(reader);

@@ -279,10 +279,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1793308110}
-  - {fileID: 758268091}
   - {fileID: 1883098881}
+  - {fileID: 758268091}
   - {fileID: 1191797624}
+  - {fileID: 1793308110}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -318,6 +318,7 @@ MonoBehaviour:
   guiPicturePrefabObject: {fileID: 987941436643803451, guid: 142205e66f20c424bab9ac01dc757ea9, type: 3}
   guiMenuOptionPrefabObject: {fileID: 2991068980618184153, guid: 6e7fd4c02a018a849b145d2025daa095, type: 3}
   guiAnimationPrefabObject: {fileID: 4706014351936562840, guid: 3b31eca6b6d54cc43a81d48f312a838a, type: 3}
+  guiMenuPrefabObject: {fileID: 2363225673649648605, guid: ea7791bd8bc20a04884f849646bbbf81, type: 3}
   container: {fileID: 1861322847}
 --- !u!4 &1191797624
 Transform:
@@ -332,7 +333,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 788449546}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1793308108
 GameObject:
@@ -363,6 +364,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9f64558aa0dda14d938a86a910a414e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameAnimationPrefabObject: {fileID: 4706014351936562840, guid: 1cfbeb2219f710d4998bb6100a6763ae, type: 3}
+  gameImagePrefabObject: {fileID: 987941436643803451, guid: c32f74e3354ae7b45b40d2091f9e4b7e, type: 3}
+  gameLayerPrefabObject: {fileID: 2242316321685104994, guid: 6feab6d0ff3de5a4fbe00445e5008fae, type: 3}
+  dialogueContainer: {fileID: 2104935184}
 --- !u!4 &1793308110
 Transform:
   m_ObjectHideFlags: 0
@@ -376,7 +381,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 788449546}
-  m_RootOrder: 0
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1829532307
 GameObject:
@@ -523,7 +528,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 788449546}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1883098882
 MonoBehaviour:
@@ -538,3 +543,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameDataPath: E:\Game\DD_RV_opes
+  EnglishFontAsset: {fileID: 11400000, guid: bde68bbb4549b484197703a36709abf8, type: 2}
+  SimplifiedChineseFontAsset: {fileID: 11400000, guid: 862006d1828a53a4ca8c61764b89c78b, type: 2}
+--- !u!1 &2104935184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2104935185}
+  m_Layer: 0
+  m_Name: Dialogues
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2104935185
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2104935184}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

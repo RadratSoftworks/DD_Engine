@@ -28,6 +28,7 @@ public class GUIControlSet
 
         gameObject = new GameObject(Path.ChangeExtension(description.Filename, null));
         gameObject.transform.parent = parentContainer.transform;
+        gameObject.transform.localScale = Vector3.one;
 
         GUIManager.Instance.InstantiateControls(this, gameObject, description.Controls);
     }

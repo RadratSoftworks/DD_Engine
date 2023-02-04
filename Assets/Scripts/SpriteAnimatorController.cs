@@ -22,12 +22,12 @@ public class SpriteAnimatorController : MonoBehaviour
 
     private void LoadAnimation()
     {
-        var generalResources = ResourceManager.Instance.GeneralResources;
-        if (!generalResources.Exists(AnimationFilename))
+        var resourcePack = ResourceManager.Instance.PickBestResourcePackForFile(AnimationFilename);
+        if (!resourcePack.Exists(AnimationFilename))
         {
             throw new FileNotFoundException("Unable to find animation file: " + AnimationFilename);
         }
-        byte[] animationFileData = generalResources.ReadResourceData(generalResources.Resources[AnimationFilename]);
+        byte[] animationFileData = resourcePack.ReadResourceData(resourcePack.Resources[AnimationFilename]);
         using (StreamReader reader = new StreamReader(new MemoryStream(animationFileData)))
         {
             Dictionary<string, int> spriteFileLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -59,7 +59,8 @@ public class SpriteAnimatorController : MonoBehaviour
                     frame.SpriteIndex = spriteFileLookup[comps[0]];
                 } else
                 {
-                    Sprite resultLoad = SpriteManager.Instance.Load(generalResources, comps[0]);
+                    ResourceFile resourcesToChoose = ResourceManager.Instance.PickBestResourcePackForFile(comps[0]);
+                    Sprite resultLoad = SpriteManager.Instance.Load(resourcesToChoose, comps[0]);
                     if (resultLoad == null)
                     {
                         Debug.LogError("Can't find frame image path: " + comps[0]);
@@ -84,6 +85,8 @@ public class SpriteAnimatorController : MonoBehaviour
         int previousSpriteIndex = -1;
         int currentFrame = 0;
 
+        Vector2 basePosition = transform.localPosition;
+
         while (true)
         {
             if (currentFrame == frameInfos.Count)
@@ -98,7 +101,7 @@ public class SpriteAnimatorController : MonoBehaviour
                 previousSpriteIndex = frame.SpriteIndex;
             }
 
-            transform.localPosition = GameUtils.ToUnityCoordinates(frame.Position);
+            transform.localPosition = basePosition + GameUtils.ToUnityCoordinates(frame.Position);
             currentFrame++;
 
             if (frame.Duration <= 0)
@@ -124,6 +127,14 @@ public class SpriteAnimatorController : MonoBehaviour
         }
 
         yield break;
+    }
+
+    public void Restart(Vector2 basePosition)
+    {
+        StopAllCoroutines();
+        transform.localPosition = basePosition;
+
+        StartCoroutine(AnimateCoroutine());
     }
 
     private void Start()
