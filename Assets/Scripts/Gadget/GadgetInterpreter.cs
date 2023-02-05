@@ -11,6 +11,8 @@ public class GadgetInterpreter
     private Dictionary<char, GameObject> layerGameObject;
     private ScriptBlock<GadgetOpcode> scriptBlock;
 
+    private GameSceneAudioController audioController;
+
     public GadgetInterpreter(GameObject parent, ScriptBlock<GadgetOpcode> scriptBlock, Dialogue dialogue = null)
     {
         this.parent = parent;
@@ -115,6 +117,27 @@ public class GadgetInterpreter
             spriteRenderer.sortingOrder = GetSortingOrderForNewbie(layer);
             spriteRenderer.sortingLayerName = GetSortingLayer(layer);
         }
+    }
+
+    private void HandlePlay(ScriptCommand<GadgetOpcode> command)
+    {
+        if (command.Arguments.Count < 2)
+        {
+            Debug.LogError("Not enough argument for sound play request!");
+            return;
+        }
+
+        if (audioController == null)
+        {
+            audioController = parent.GetComponent<GameSceneAudioController>();
+        }
+
+        if (audioController == null)
+        {
+            return;
+        }
+
+        audioController.Play(command.Arguments[1] as string, command.Arguments[0] as string);
     }
 
     private void HandleClear(ScriptCommand<GadgetOpcode> command)
@@ -262,8 +285,12 @@ public class GadgetInterpreter
                     break;
 
                 case GadgetOpcode.Continue:
-                    yield return new WaitForSeconds(2);
+                    yield return new WaitForSeconds(5);
                     HandleContinue(command);
+                    break;
+
+                case GadgetOpcode.Play:
+                    HandlePlay(command);
                     break;
 
                 default:

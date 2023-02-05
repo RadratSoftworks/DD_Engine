@@ -13,4 +13,7 @@ class FilePaths
 
     // GUI
     public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
+
+    // Sound
+    public static readonly string MenuOptionSwitchSFXFileName = "sound/menu_click_bullet";
 }

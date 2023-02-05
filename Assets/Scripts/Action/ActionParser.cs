@@ -15,7 +15,8 @@ public class ActionParser
         { "clearglobals", ActionOpcode.ClearGlobals },
         { "setglobal", ActionOpcode.SetGlobal },
         { "loaddialogue", ActionOpcode.LoadDialogue },
-        { "loadgadget", ActionOpcode.LoadGadget }
+        { "loadgadget", ActionOpcode.LoadGadget },
+        { "play", ActionOpcode.Play }
     };
 
     public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)

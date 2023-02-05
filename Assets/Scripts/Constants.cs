@@ -11,6 +11,8 @@ public class Constants
     public static readonly Vector2 CanvasSize = new Vector2(CanvasX, CanvasY);
 
     public static readonly string OnClickScriptEventName = "onClick";
+    public static readonly int SoundFrequency = 11025;
+    public static readonly int SoundChannelCount = 1;
 
     public static readonly Dictionary<GameLanguage, string> GameLanguageToResourceLanguageCodeDict =
         new Dictionary<GameLanguage, string>()

@@ -9,10 +9,15 @@ public class GUIMenuOptionController : MonoBehaviour
     public float sinkDuration = 0.6f;
 
     private Vector2 originalPosition;
+    private AudioSource selectedAudio;
+    private Sequence selectedSequence;
 
     // Start is called before the first frame update
     void Start()
     {
+        selectedAudio = GetComponent<AudioSource>();
+        selectedAudio.clip = SoundManager.Instance.GetAudioClip(FilePaths.MenuOptionSwitchSFXFileName);
+
         DOTween.Init();
     }
 
@@ -28,11 +33,18 @@ public class GUIMenuOptionController : MonoBehaviour
             originalPosition = transform.position;
         }
 
-        transform.DOLocalMoveX(originalPosition.x - distanceXSinkBack, sinkDuration);
+        selectedAudio.Play();
+
+        selectedSequence = DOTween.Sequence();
+        selectedSequence.AppendInterval(selectedAudio.clip.length)
+            .Append(transform.DOLocalMoveX(originalPosition.x - distanceXSinkBack, sinkDuration));
     }
 
     public void OnOptionDeselected()
     {
+        selectedAudio.Stop();
+        selectedSequence.Kill();
+
         transform.DOLocalMoveX(originalPosition.x, sinkDuration);
     }
 }

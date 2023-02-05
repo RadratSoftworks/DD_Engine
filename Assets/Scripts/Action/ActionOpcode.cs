@@ -7,5 +7,6 @@ public enum ActionOpcode
     ClearGlobals,
     SetGlobal,
     LoadDialogue,
-    LoadGadget
+    LoadGadget,
+    Play
 };

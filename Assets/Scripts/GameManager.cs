@@ -11,11 +11,15 @@ public class GameManager : MonoBehaviour
     public GameObject gameAnimationPrefabObject;
     public GameObject gameImagePrefabObject;
     public GameObject gameLayerPrefabObject;
+    public GameObject gameScenePrefabObject;
     public GameObject dialogueContainer;
 
     private GameObject activeScene;
     private Dictionary<string, Dialogue> dialogueCache;
     private Dictionary<string, ScriptBlock<GadgetOpcode>> gadgetCache;
+    private GameSceneAudioController persistentAudioController;
+
+    private bool endSceneCurrently = false;
 
     // Start is called before the first frame update
     void Start()
@@ -46,6 +50,12 @@ public class GameManager : MonoBehaviour
             GameObject.Destroy(activeScene);
             activeScene = null;
         }
+
+        if (endSceneCurrently)
+        {
+            endSceneCurrently = false;
+            persistentAudioController.StopAll();
+        }
     }
 
     public void SetCurrent(GameObject newScene)
@@ -70,8 +80,10 @@ public class GameManager : MonoBehaviour
 
     public void LoadDialogueSlide(Dialogue parent, DialogueSlide slide)
     {
-        GameObject containerObject = new GameObject(string.Format("Slide_{0}_{1}", slide.Id, parent.FileName));
-        containerObject.transform.SetParent(dialogueContainer.transform, true);
+        endSceneCurrently = slide.Type.Equals("end", StringComparison.OrdinalIgnoreCase);
+
+        GameObject containerObject = Instantiate(gameScenePrefabObject, dialogueContainer.transform, false);
+        containerObject.name = string.Format("Slide_{0}_{1}", slide.Id, parent.FileName);
         containerObject.transform.localPosition = Vector3.zero;
         containerObject.transform.localScale = Vector3.one;
 
@@ -139,6 +151,20 @@ public class GameManager : MonoBehaviour
             GadgetInterpreter interpreter = new GadgetInterpreter(null, block);
             StartCoroutine(interpreter.Execute());
         }
+    }
 
+    public void PlayAudioPersistent(string filename, string type)
+    {
+        if (persistentAudioController == null)
+        {
+            persistentAudioController = dialogueContainer.GetComponent<GameSceneAudioController>();
+        }
+
+        if (persistentAudioController == null)
+        {
+            return;
+        }
+
+        persistentAudioController.Play(filename, type);
     }
 }

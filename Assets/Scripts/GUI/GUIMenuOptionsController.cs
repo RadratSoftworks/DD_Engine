@@ -6,6 +6,7 @@ public class GUIMenuOptionsController : MonoBehaviour
 {
     public float scrollDuration = 0.5f;
     private int currentChildIndex = 0;
+    private bool initializedCurrent = false;
 
     public delegate void ButtonClicked(string id);
     public event ButtonClicked OnButtonClicked;
@@ -13,7 +14,15 @@ public class GUIMenuOptionsController : MonoBehaviour
     private void Start()
     {
         DOTween.Init();
-        SelectOption(currentChildIndex);
+    }
+
+    private void Update()
+    {
+        if (!initializedCurrent)
+        {
+            SelectOption(currentChildIndex);
+            initializedCurrent = true;
+        }
     }
 
     private void DeselectCurrentOption()

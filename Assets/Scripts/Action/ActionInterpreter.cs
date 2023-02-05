@@ -43,6 +43,10 @@ public class ActionInterpreter
                     LoadGadget(command);
                     break;
 
+                case ActionOpcode.Play:
+                    Play(command);
+                    break;
+
                 default:
                     Debug.LogWarning("Unhandled gadget opcode: " + command.Opcode);
                     break;
@@ -117,5 +121,16 @@ public class ActionInterpreter
 
         string filename = command.Arguments[0] as string;
         GameManager.Instance.LoadGadget(filename);
+    }
+
+    private void Play(ScriptCommand<ActionOpcode> command)
+    {
+        if (command.Arguments.Count < 2)
+        {
+            Debug.LogError("Not enough argument for play audio!");
+            return;
+        }
+
+        GameManager.Instance.PlayAudioPersistent(command.Arguments[1] as string, command.Arguments[0] as string);
     }
 }
