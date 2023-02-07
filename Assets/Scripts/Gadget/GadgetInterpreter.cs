@@ -11,22 +11,23 @@ public class GadgetInterpreter
     private Dictionary<char, GameObject> layerGameObject;
     private ScriptBlock<GadgetOpcode> scriptBlock;
 
-    private GameSceneAudioController audioController;
+    private ActionInterpreter actionInterpreter;
 
-    public GadgetInterpreter(GameObject parent, ScriptBlock<GadgetOpcode> scriptBlock, Dialogue dialogue = null)
+    public GadgetInterpreter(ActionInterpreter guiActionInterpreter, GameObject parent, ScriptBlock<GadgetOpcode> scriptBlock, Dialogue dialogue = null)
     {
         this.parent = parent;
         this.scriptBlock = scriptBlock;
         this.dialogue = dialogue;
 
         layerGameObject = new Dictionary<char, GameObject>();
+        actionInterpreter = guiActionInterpreter;
     }
 
     private GameObject ParentByLayer(char layer)
     {
         if (!layerGameObject.ContainsKey(layer))
         {
-            GameObject emptyLayerObject = GameObject.Instantiate(GameManager.Instance.gameLayerPrefabObject, parent.transform, false); ;
+            GameObject emptyLayerObject = GameObject.Instantiate(GameManager.Instance.gameLayerPrefabObject, parent.transform, false);
             emptyLayerObject.name = string.Format("Group {0}", layer.ToString());
 
             layerGameObject.Add(layer, emptyLayerObject);
@@ -63,7 +64,7 @@ public class GadgetInterpreter
 
         GameObject layerObject = ParentByLayer(layer);
         GameObject existingAnim = layerObject.transform.Find(animFileName)?.gameObject;
-        Vector2 position = GameUtils.ToUnityCoordinates(new Vector2(int.Parse(command.Arguments[2] as string), int.Parse(command.Arguments[3] as string)));
+        Vector2 position = new Vector2(int.Parse(command.Arguments[2] as string), int.Parse(command.Arguments[3] as string));
 
         if (existingAnim != null)
         {
@@ -77,21 +78,12 @@ public class GadgetInterpreter
         }
 
         GameObject animObject = GameObject.Instantiate(GameManager.Instance.gameAnimationPrefabObject, layerObject.transform, false);
-        animObject.transform.localPosition = position;
         animObject.name = animFileName;
 
         SpriteAnimatorController controller = animObject.GetComponent<SpriteAnimatorController>();
         if (controller != null)
         {
-            controller.AnimationFilename = animFileName;
-        }
-
-        SpriteRenderer renderer = animObject.GetComponent<SpriteRenderer>();
-
-        if (renderer != null)
-        {
-            renderer.sortingOrder = GetSortingOrderForNewbie(layer);
-            renderer.sortingLayerName = GetSortingLayer(layer);
+            controller.Setup(position, GetSortingOrderForNewbie(layer), animFileName, GetSortingLayer(layer));
         }
     }
 
@@ -127,17 +119,45 @@ public class GadgetInterpreter
             return;
         }
 
-        if (audioController == null)
-        {
-            audioController = parent.GetComponent<GameSceneAudioController>();
+        GameManager.Instance.PlayAudioInDialogue(command.Arguments[1] as string, command.Arguments[0] as string);
+    }
+
+    private void HandleText(ScriptCommand<GadgetOpcode> command)
+    {
+        string textId = command.Arguments[0] as string;
+
+        if (!dialogue.Strings.TryGetValue(textId, out string text)) {
+            text = textId;
         }
 
-        if (audioController == null)
-        {
-            return;
-        }
+        GameManager.Instance.ShowText(text, command.Arguments[1] as string);
+    }
 
-        audioController.Play(command.Arguments[1] as string, command.Arguments[0] as string);
+    private void HandleHideText(ScriptCommand<GadgetOpcode> command)
+    {
+        GameManager.Instance.HideText(command.Arguments[0] as string);
+    }
+
+    private void HandleBalloon(ScriptCommand<GadgetOpcode> command)
+    {
+        GameManager.Instance.SetBalloon(command.Arguments[0] as string, command.Arguments[1] as string);
+    }
+
+    private void HandleStinger(ScriptCommand<GadgetOpcode> command)
+    {
+        Vector2 position = new Vector2(int.Parse(command.Arguments[0] as string), int.Parse(command.Arguments[1] as string));
+        string filename = command.Arguments[2] as string;
+        string where = command.Arguments[3] as string;
+
+        GameManager.Instance.SetStinger(position, filename, where);
+    }
+
+    private void HandleIcon(ScriptCommand<GadgetOpcode> command)
+    {
+        Vector2 position = new Vector2(int.Parse(command.Arguments[1] as string), int.Parse(command.Arguments[2] as string));
+        string iconName = command.Arguments[0] as string;
+
+        GameManager.Instance.DisplayIcon(iconName, position);
     }
 
     private void HandleClear(ScriptCommand<GadgetOpcode> command)
@@ -157,19 +177,18 @@ public class GadgetInterpreter
         }
     }
 
-    private void StartAction(ScriptCommand<GadgetOpcode> command)
+    private IEnumerator StartAction(ScriptCommand<GadgetOpcode> command)
     {
         if (command.Arguments.Count == 0)
         {
             Debug.LogWarning("Empty action to execute!");
-            return;
+            yield break;
         }
 
-        ActionInterpreter interpreter = new ActionInterpreter(command.Arguments[0] as ScriptBlock<ActionOpcode>);
-        interpreter.Execute();
+        yield return actionInterpreter.Execute(command.Arguments[0] as ScriptBlock<ActionOpcode>);
     }
 
-    public void HandlePan(ScriptCommand<GadgetOpcode> command)
+    private void HandlePan(ScriptCommand<GadgetOpcode> command)
     {
         if (command.Arguments.Count < 4)
         {
@@ -194,7 +213,7 @@ public class GadgetInterpreter
         }
     }
 
-    public void HandleFade(ScriptCommand<GadgetOpcode> command, bool isFadeIn)
+    private void HandleFade(ScriptCommand<GadgetOpcode> command, bool isFadeIn)
     {
         if (command.Arguments.Count < 2)
         {
@@ -222,7 +241,38 @@ public class GadgetInterpreter
         }
     }
 
-    public void HandleContinue(ScriptCommand<GadgetOpcode> command)
+    private void HandleChoice(ScriptCommand<GadgetOpcode> command)
+    {
+        if (command.Arguments.Count == 0)
+        {
+            Debug.LogError("Invalid number of argument for choices!");
+        }
+
+        List<GadgetChoiceInfo> choices = command.Arguments[0] as List<GadgetChoiceInfo>;
+        List<Tuple<string, int>> finalDisplayChoices = new List<Tuple<string, int>>();
+    
+        foreach (var choice in choices)
+        {
+            if (choice.ConditionalVariable != null)
+            {
+                if (actionInterpreter.GetValue(choice.ConditionalVariable, out _) != choice.ConditionalVariableValue)
+                {
+                    continue;
+                }
+            }
+
+            if (!dialogue.Strings.TryGetValue(choice.TextId, out string text))
+            {
+                text = choice.TextId;
+            }
+
+            finalDisplayChoices.Add(new Tuple<string, int>(text, choice.DialogueId));
+        }
+
+        GameManager.Instance.AddChoices(dialogue, finalDisplayChoices);
+    }
+
+    private void HandleContinue(ScriptCommand<GadgetOpcode> command)
     {
         if (command.Arguments.Count == 0)
         {
@@ -238,12 +288,16 @@ public class GadgetInterpreter
             Debug.LogError("Invalid dialogue slide id " + id + " in file: " + dialogue.FileName);
         }
 
-        GameManager.Instance.ReturnCurrent();
         GameManager.Instance.LoadDialogueSlide(dialogue, slide);
     }
 
     public IEnumerator Execute()
     {
+        if (GameManager.Instance.GUIBusy)
+        {
+            yield return new WaitUntil(() => !GameManager.Instance.GUIBusy);
+        }
+
         foreach (var command in scriptBlock.Commands)
         {
             switch (command.Opcode)
@@ -281,16 +335,50 @@ public class GadgetInterpreter
                     break;
 
                 case GadgetOpcode.StartAction:
-                    StartAction(command);
+                    yield return StartAction(command);
                     break;
 
                 case GadgetOpcode.Continue:
-                    yield return new WaitForSeconds(5);
+                    yield return new WaitUntil(() => GameManager.Instance.LastTextFinished);
+                    GameManager.Instance.StartHearingConfirmation();
+                    yield return new WaitUntil(() => GameManager.Instance.ContinueConfirmed);
+
                     HandleContinue(command);
                     break;
 
                 case GadgetOpcode.Play:
                     HandlePlay(command);
+                    break;
+
+                case GadgetOpcode.Text:
+                    HandleText(command);
+                    break;
+
+                case GadgetOpcode.HideText:
+                    HandleHideText(command);
+                    break;
+
+                case GadgetOpcode.Balloon:
+                    HandleBalloon(command);
+                    break;
+
+                case GadgetOpcode.Stinger:
+                    HandleStinger(command);
+                    break;
+
+                case GadgetOpcode.Icon:
+                    HandleIcon(command);
+                    break;
+
+                case GadgetOpcode.Choice:
+                    if (!GameManager.Instance.LastTextFinished)
+                    {
+                        yield return new WaitUntil(() => GameManager.Instance.LastTextFinished);
+                        GameManager.Instance.StartHearingConfirmation();
+                        yield return new WaitUntil(() => GameManager.Instance.ContinueConfirmed);
+                    }
+
+                    HandleChoice(command);
                     break;
 
                 default:

@@ -8,5 +8,6 @@ public enum ActionOpcode
     SetGlobal,
     LoadDialogue,
     LoadGadget,
-    Play
+    Play,
+    SetLocationOffset
 };

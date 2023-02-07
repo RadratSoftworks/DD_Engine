@@ -7,6 +7,7 @@ using System.Text;
 public class GUIMenuController : MonoBehaviour
 {
     private ActionLibrary actionLibrary;
+    private GUIControlSet controlSet;
 
     // Start is called before the first frame update
     void Start()
@@ -22,27 +23,17 @@ public class GUIMenuController : MonoBehaviour
     {
     }
 
-    // Literally just assume it as gadget for ease of mind
-    public void LoadActionScript(string filename)
+    public void Setup(GUIControlSet set, string filename)
     {
-        ResourceFile generalResources = ResourceManager.Instance.GeneralResources;
-        if (!generalResources.Exists(filename))
-        {
-            throw new FileNotFoundException("Can't find action script file " + filename);
-        }
-        byte []data = generalResources.ReadResourceData(generalResources.Resources[filename]);
-
-        using (MemoryStream stream = new MemoryStream(data))
-        {
-            actionLibrary = ActionParser.Parse(stream);
-        }
+        controlSet = set;
+        actionLibrary = ActionLibraryLoader.Load(filename);
     }
 
     public void OnButtonClicked(string name)
     {
         if (actionLibrary != null)
         {
-            actionLibrary.HandleAction(name, Constants.OnClickScriptEventName);
+            StartCoroutine(actionLibrary.HandleAction(controlSet.ActionInterpreter, name, Constants.OnClickScriptEventName));
         }
     }
 }

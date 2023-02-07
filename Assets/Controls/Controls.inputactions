@@ -68,6 +68,206 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "GUILocation",
+            "id": "08896353-098d-494c-bf76-17648b7e99f7",
+            "actions": [
+                {
+                    "name": "Move Left",
+                    "type": "Value",
+                    "id": "1d37f71b-4de8-4e1f-93e4-5dad626737d7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Move Right",
+                    "type": "Value",
+                    "id": "49d463a1-b890-4bed-b3d9-cf22e8b610cf",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "32fc5ec8-5ae0-4a7c-b570-5f029936a7c2",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Desktop Scheme",
+                    "action": "Move Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "39a5474c-c191-4375-80e1-bf1dde060ef5",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Desktop Scheme",
+                    "action": "Move Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "GUIAction",
+            "id": "ecda4bb5-2c32-4e64-b8fd-06d0e9117c52",
+            "actions": [
+                {
+                    "name": "Select",
+                    "type": "Button",
+                    "id": "ab26dead-d260-4909-9923-26b4abec90bf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b7a25331-8b7b-4e28-b811-acf29471b527",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "GameChoices",
+            "id": "1e9aae1f-ed4e-4ac7-9e82-f4d4f893bfe3",
+            "actions": [
+                {
+                    "name": "Choice Up",
+                    "type": "Button",
+                    "id": "df119f45-e40f-42d2-897f-9863c4942086",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Choice Down",
+                    "type": "Button",
+                    "id": "c353dbe9-9863-4cc2-953d-078481ce7029",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Choice Confirm",
+                    "type": "Button",
+                    "id": "29e25a90-cfd1-4c09-94e4-78db0321baa7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4c22f7fb-7aba-4290-bfef-5e6ee00deac1",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Choice Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a5ef098d-dd6a-4457-b0db-72a4f5b204db",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Choice Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b9981cf5-0bee-48ca-a5f1-b4bbe8568f8a",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Choice Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "DialogueBalloon",
+            "id": "928092f7-d96e-4c4b-adf3-39ca6a835598",
+            "actions": [
+                {
+                    "name": "Skip",
+                    "type": "Button",
+                    "id": "f2f1daa2-732f-458b-9dc2-ae3e8c50703a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ad538050-15ed-4efa-8190-86da2b11c5d2",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skip",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "GameContinue",
+            "id": "052a2584-7e25-4566-b270-baeee7c78b0c",
+            "actions": [
+                {
+                    "name": "Continue Confirmed",
+                    "type": "Button",
+                    "id": "004409ab-e5ce-4673-88b6-dd8ddac20d08",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "97b53e2a-6ecc-43d2-9d73-13ca55aca072",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Continue Confirmed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

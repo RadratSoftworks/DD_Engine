@@ -8,10 +8,10 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - ActivePointers
   - Water
   - UI
-  - 
+  - ActiveCollider
   - 
   - 
   - 
@@ -40,6 +40,12 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 3854908425
+    locked: 0
+  - name: UIActivePointer
+    uniqueID: 1128467361
     locked: 0
   - name: GameLayerQ
     uniqueID: 1908523575
@@ -92,6 +98,9 @@ TagManager:
   - name: GameLayerA
     uniqueID: 3670238845
     locked: 0
-  - name: UI
-    uniqueID: 3854908425
+  - name: GameTextBubble
+    uniqueID: 2029122689
+    locked: 0
+  - name: Icon
+    uniqueID: 3942443885
     locked: 0

@@ -52,6 +52,7 @@ public class DialogueParser
             return null;
         }
 
+        // Load language file!
         return new Dialogue(slides, startId);
     }
 }

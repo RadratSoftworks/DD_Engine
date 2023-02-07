@@ -16,7 +16,8 @@ public class ActionParser
         { "setglobal", ActionOpcode.SetGlobal },
         { "loaddialogue", ActionOpcode.LoadDialogue },
         { "loadgadget", ActionOpcode.LoadGadget },
-        { "play", ActionOpcode.Play }
+        { "play", ActionOpcode.Play },
+        { "locationoffset", ActionOpcode.SetLocationOffset }
     };
 
     public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)
@@ -71,17 +72,12 @@ public class ActionParser
             string handlerSpecs = null;
             string actionScriptCurrent = null;
 
-            while (!reader.EndOfStream)
+            while (true)
             {
                 string line = reader.ReadLine();
                 bool isHandlerLine = false;
 
-                if (line == null)
-                {
-                    break;
-                }
-                else
-                {
+                if (line != null) {
                     line = line.Trim();
                     if ((line.StartsWith('#')) || (line == ""))
                     {
@@ -124,6 +120,7 @@ public class ActionParser
                     }
 
                     handlerSpecs = line;
+                    actionScriptCurrent = null;
                 }
                 else
                 {

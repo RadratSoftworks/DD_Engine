@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using Unity.VisualScripting;
 
 public class SpriteAnimatorController : MonoBehaviour
 {
@@ -18,16 +19,39 @@ public class SpriteAnimatorController : MonoBehaviour
     private List<Sprite> spriteToUse = new List<Sprite>();
     private List<FrameInfo> frameInfos = new List<FrameInfo>();
 
-    public string AnimationFilename { get; set; }
+    private Vector2? animationImageOrigin;
+    private Vector2 originalPosition;
+    private bool allowLoop = true;
+    private bool disableOnDone = true;
 
-    private void LoadAnimation()
+    public void Setup(Vector2 position, float sortOrder, string animationFilename, string layerName = null, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false)
     {
-        var resourcePack = ResourceManager.Instance.PickBestResourcePackForFile(AnimationFilename);
-        if (!resourcePack.Exists(AnimationFilename))
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(sortOrder);
+
+        animationImageOrigin = origin;
+        this.allowLoop = allowLoop;
+        this.disableOnDone = disableOnDone;
+
+        if (layerName != null)
         {
-            throw new FileNotFoundException("Unable to find animation file: " + AnimationFilename);
+            spriteRenderer.sortingLayerName = layerName;
         }
-        byte[] animationFileData = resourcePack.ReadResourceData(resourcePack.Resources[AnimationFilename]);
+
+        originalPosition = GameUtils.ToUnityCoordinates(position);
+        LoadAnimation(animationFilename);
+
+        transform.localPosition = originalPosition;
+    }
+
+    private void LoadAnimation(string filename)
+    {
+        var resourcePack = ResourceManager.Instance.PickBestResourcePackForFile(filename);
+        if (!resourcePack.Exists(filename))
+        {
+            throw new FileNotFoundException("Unable to find animation file: " + filename);
+        }
+        byte[] animationFileData = resourcePack.ReadResourceData(resourcePack.Resources[filename]);
         using (StreamReader reader = new StreamReader(new MemoryStream(animationFileData)))
         {
             Dictionary<string, int> spriteFileLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -46,6 +70,9 @@ public class SpriteAnimatorController : MonoBehaviour
                 var comps = lineDesc.Split(' ');
                 if (comps.Length != 4)
                 {
+                    if ((comps.Length >= 1) && comps[0].StartsWith("name", StringComparison.OrdinalIgnoreCase)) {
+                        continue;
+                    }
                     Debug.Log("Invalid animation instruction: " + lineDesc);
                     continue;
                 }
@@ -60,7 +87,7 @@ public class SpriteAnimatorController : MonoBehaviour
                 } else
                 {
                     ResourceFile resourcesToChoose = ResourceManager.Instance.PickBestResourcePackForFile(comps[0]);
-                    Sprite resultLoad = SpriteManager.Instance.Load(resourcesToChoose, comps[0]);
+                    Sprite resultLoad = SpriteManager.Instance.Load(resourcesToChoose, comps[0], animationImageOrigin);
                     if (resultLoad == null)
                     {
                         Debug.LogError("Can't find frame image path: " + comps[0]);
@@ -91,6 +118,11 @@ public class SpriteAnimatorController : MonoBehaviour
         {
             if (currentFrame == frameInfos.Count)
             {
+                if (!allowLoop)
+                {
+                    break;
+                }
+
                 currentFrame = 0;
             }
 
@@ -126,10 +158,15 @@ public class SpriteAnimatorController : MonoBehaviour
             }
         }
 
+        if (this.disableOnDone)
+        {
+            gameObject.SetActive(false);
+        }
+
         yield break;
     }
 
-    public void Restart(Vector2 basePosition)
+    private void RestartUnityCoords(Vector2 basePosition)
     {
         StopAllCoroutines();
         transform.localPosition = basePosition;
@@ -137,11 +174,19 @@ public class SpriteAnimatorController : MonoBehaviour
         StartCoroutine(AnimateCoroutine());
     }
 
+    public void Restart(Vector2 basePosition)
+    {
+        RestartUnityCoords(GameUtils.ToUnityCoordinates(basePosition));
+    }
+
     private void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        LoadAnimation();
+        transform.localPosition = originalPosition;
         StartCoroutine(AnimateCoroutine());
+    }
+
+    private void OnEnable()
+    {
+        RestartUnityCoords(originalPosition);
     }
 }

@@ -14,6 +14,9 @@ public class Constants
     public static readonly int SoundFrequency = 11025;
     public static readonly int SoundChannelCount = 1;
 
+    public static readonly string TextBalloonObjectName = "TextBalloon";
+    public static readonly string IconLayer = "Icon";
+
     public static readonly Dictionary<GameLanguage, string> GameLanguageToResourceLanguageCodeDict =
         new Dictionary<GameLanguage, string>()
         {

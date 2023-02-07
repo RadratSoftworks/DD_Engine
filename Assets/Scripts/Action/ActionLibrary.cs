@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using UnityEngine;
 
 public class ActionLibrary
 {
@@ -13,7 +13,7 @@ public class ActionLibrary
         this.actionHandlers = actionHandlers;
     }
 
-    public bool HandleAction(string id, string action)
+    public IEnumerator HandleAction(ActionInterpreter interpreter, string id, string action)
     {
         // Find script to execute
         if (actionHandlers.ContainsKey(id))
@@ -21,17 +21,16 @@ public class ActionLibrary
             var dict2 = actionHandlers[id];
             if (dict2.ContainsKey(action))
             {
-                ActionInterpreter interpreter = new ActionInterpreter(dict2[action]);
-                interpreter.Execute();
-
-                return true;
+                yield return interpreter.Execute(dict2[action]);
             } else
             {
-                return false;
+                Debug.LogWarning("Action \"" + action + "\" not found for id=" + id);
+                yield break;
             }
         } else
         {
-            return false;
+            Debug.LogError("No action found for id=" + id);
+            yield break;
         }
     }
 }

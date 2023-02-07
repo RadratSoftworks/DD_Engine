@@ -142,7 +142,7 @@ public class SpriteManager: MonoBehaviour
         return dataBuffer;
     }
 
-    public Sprite Load(ResourceFile resources, string path)
+    public Sprite Load(ResourceFile resources, string path, Vector2? origin = null)
     {
         string pathRaw = Path.ChangeExtension(path, null);
 
@@ -168,7 +168,7 @@ public class SpriteManager: MonoBehaviour
         tex.Apply();
 
         // Game follows screen coordinates system. So we should put top-left as the origin!
-        Sprite sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.0f, 1.0f));
+        Sprite sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), origin ?? Vector2.up);
         sprite.name = pathRaw;
         spriteCache.Add(pathRaw, sprite);
 

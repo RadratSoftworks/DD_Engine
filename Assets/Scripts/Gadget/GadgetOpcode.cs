@@ -8,6 +8,7 @@ public enum GadgetOpcode
     Balloon,
     Stinger,
     Text,
+    HideText,
     Play,
     Pause,
     Clear,
@@ -15,5 +16,8 @@ public enum GadgetOpcode
     Animation,
     StartAction,
     FadeIn,
-    FadeOut
+    FadeOut,
+    Icon,
+    Choice,
+    ChoiceConditional
 }

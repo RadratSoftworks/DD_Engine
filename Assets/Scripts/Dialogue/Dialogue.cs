@@ -8,8 +8,10 @@ public class Dialogue
     private int startDialogSlideId;
 
     public string FileName { get; set; }
+    public Dictionary<string, string> Strings { get; set; }
 
-    public Dialogue(Dictionary<int, DialogueSlide> slides, int startDialogSlideId)
+
+    public Dialogue(Dictionary<int, DialogueSlide> slides,  int startDialogSlideId)
     {
         FileName = "";
 

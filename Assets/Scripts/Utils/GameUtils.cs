@@ -4,15 +4,19 @@ using UnityEngine;
 public class GameUtils
 {
     private static Vector2 NegateYVector = new Vector2(1.0f, -1.0f);
-    private static int MaxSortingObjects = 128;
 
     public static Vector2 ToUnityCoordinates(Vector2 position)
     {
         return (position / 100.0f) * NegateYVector;
     }
-    
-    public static int ToUnitySortingPosition(int gameSortingPostion)
+
+    public static Vector2 ToUnitySize(Vector2 size)
     {
-        return MaxSortingObjects - gameSortingPostion;
+        return (size / 100.0f);
+    }
+    
+    public static int ToUnitySortingPosition(float gameSortingPostion)
+    {
+        return (int)(-gameSortingPostion);
     }
 }

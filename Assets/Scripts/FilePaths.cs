@@ -10,10 +10,18 @@ class FilePaths
 
     // Animations
     public static readonly string MenuLensFlareAnimaionFilename = "animations/Menu_lensflare.anim";
+    public static readonly string[] ArrowAnimationsPath =
+    {
+        "animations/arrow0.anim",
+        "animations/arrow1.anim",
+        "animations/arrow2.anim",
+        "animations/arrow3.anim"
+    };
 
     // GUI
+    //public static readonly string MainChapterGUIControlFileName = "ch1/locations/map.fwd";
     public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
-
+    
     // Sound
     public static readonly string MenuOptionSwitchSFXFileName = "sound/menu_click_bullet";
 }

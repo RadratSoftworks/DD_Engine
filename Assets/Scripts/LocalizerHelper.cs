@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using UnityEngine.TextCore;
 using UnityEngine;
 
@@ -36,7 +37,15 @@ public static class LocalizerHelper
                     Debug.Log("Invalid localization line: " + lineDesc);
                     continue;
                 }
-                dict.Add(comps[0], comps[1]);
+
+                string decoded = WebUtility.HtmlDecode(comps[1])
+                    .Replace("{BR}", "<br>", StringComparison.OrdinalIgnoreCase)
+                    .Replace("{B}", "<b>", StringComparison.OrdinalIgnoreCase)
+                    .Replace("{/B}", "</b>", StringComparison.OrdinalIgnoreCase)
+                    .Replace("{I}", "<i>", StringComparison.OrdinalIgnoreCase)
+                    .Replace("{/I}", "</i>", StringComparison.OrdinalIgnoreCase);
+
+                dict.Add(comps[0], decoded);
             } while (true);
 
             return dict;

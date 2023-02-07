@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,13 +9,17 @@ public class ActionInterpreter
     private static Dictionary<string, string> globalScriptValues = new Dictionary<string, string>();
     private ScriptBlock<ActionOpcode> block;
 
-    public ActionInterpreter(ScriptBlock<ActionOpcode> block)
+    public delegate void OnVariableChanged(string varName, string value, bool isGlobalVariable);
+    public event OnVariableChanged VariableChanged;
+
+    public ActionInterpreter()
     {
-        this.block = block;
     }
 
-    public void Execute()
+    public IEnumerator Execute(ScriptBlock<ActionOpcode> block)
     {
+        this.block = block;
+
         foreach (var command in block.Commands)
         {
             switch (command.Opcode)
@@ -24,7 +29,17 @@ public class ActionInterpreter
                     break;
 
                 case ActionOpcode.LoadLocation:
+                    // Wait for the current GUI to done any of the stuffs it wants to do
+                    if (GameManager.Instance.GUIBusy)
+                    {
+                        yield return new WaitUntil(() => !GameManager.Instance.GUIBusy);
+                    }
+
                     RunLoadLocation(command);
+                    break;
+
+                case ActionOpcode.SetLocationOffset:
+                    RunSetLocationOffset(command);
                     break;
 
                 case ActionOpcode.ClearGlobals:
@@ -52,11 +67,13 @@ public class ActionInterpreter
                     break;
             }
         }
+
+        yield break;
     }
 
     private void RunReturn(ScriptCommand<ActionOpcode> command)
     {
-        GameManager.Instance.ReturnCurrent();
+        GameManager.Instance.ExitDialogueOrLocation();
     }
 
     private void RunLoadLocation(ScriptCommand<ActionOpcode> command)
@@ -67,11 +84,21 @@ public class ActionInterpreter
             return;
         }
 
-        GUIControlSet set = GUIManager.Instance.LoadControlSet((string)command.Arguments[0]);
-        if (set != null)
+        GameManager.Instance.LoadControlSet(command.Arguments[0] as string);
+    }
+
+    private void RunSetLocationOffset(ScriptCommand<ActionOpcode> command)
+    {
+        if (command.Arguments.Count < 2)
         {
-            GameManager.Instance.SetCurrent(set.GameObject);
+            Debug.LogError("Not enough argument for set location offset!");
+            return;
         }
+
+        Vector2 offset = new Vector2(int.Parse(command.Arguments[0] as string),
+            int.Parse(command.Arguments[1] as string));
+
+        GameManager.Instance.SetControlSetOffset(offset);
     }
 
     private void ClearGlobals(ScriptCommand<ActionOpcode> command)
@@ -97,6 +124,10 @@ public class ActionInterpreter
         {
             globalScriptValues[varName] = value;
         }
+
+        Debug.Log(varName + " " + value);
+
+        VariableChanged?.Invoke(varName, value, true);
     }
 
     private void LoadDialogue(ScriptCommand<ActionOpcode> command)
@@ -132,5 +163,18 @@ public class ActionInterpreter
         }
 
         GameManager.Instance.PlayAudioPersistent(command.Arguments[1] as string, command.Arguments[0] as string);
+    }
+
+    public string GetValue(string variableName, out bool isGlobal)
+    {
+        isGlobal = false;
+
+        if (globalScriptValues.TryGetValue(variableName, out string val))
+        {
+            isGlobal = true;
+            return val;
+        }
+
+        return "null";
     }
 }
