@@ -74,4 +74,14 @@ public class GUILayerController : MonoBehaviour
     {
         transform.localPosition += Vector3.left * (scroll.x / layerScrollFactor) * moveAmount * value.Get<float>();
     }
+
+    public void OnMoveUp(InputValue value)
+    {
+        transform.localPosition += Vector3.down * (scroll.y / layerScrollFactor) * moveAmount * value.Get<float>();
+    }
+
+    public void OnMoveDown(InputValue value)
+    {
+        transform.localPosition += Vector3.up * (scroll.y / layerScrollFactor) * moveAmount * value.Get<float>();
+    }
 }

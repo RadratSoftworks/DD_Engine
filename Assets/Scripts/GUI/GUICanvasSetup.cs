@@ -16,7 +16,7 @@ public class GUICanvasSetup : MonoBehaviour
 
     public void SetCanvasSize(int width, int height)
     {
-        activeCollider.size = GameUtils.ToUnitySize(new Vector2(2, height));
+        activeCollider.size = GameUtils.ToUnitySize(new Vector2(2, 2));
         activeCollider.transform.localPosition = GameUtils.ToUnityCoordinates(new Vector2(width / 2, height / 2));
         activeCollider.enabled = true;
     }
