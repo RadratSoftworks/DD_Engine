@@ -3,33 +3,63 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor.U2D.Path.GUIFramework;
+
+using GUIControlDescriptionDepthSortInfo = System.Tuple<GUIControlDescription, bool>;
 
 public static class GUIDescriptionDepthNormalizer
 {
+    private static void UnpackControlsFromConditionals(List<GUIControlDescription> controls, List<GUIControlDescriptionDepthSortInfo> infos, bool inCond)
+    {
+        foreach (GUIControlDescription description in controls)
+        {
+            if (description is GUIControlConditionalDescription)
+            {
+                GUIControlConditionalDescription descriptionCond = description as GUIControlConditionalDescription;
+
+                foreach (var condBlock in descriptionCond.ControlShowOnCases)
+                {
+                    UnpackControlsFromConditionals(condBlock.Value, infos, true);
+                }
+            } else
+            {
+                infos.Add(new GUIControlDescriptionDepthSortInfo(description, inCond));
+            }
+        }
+    }
+
     private static void NormalizeImpl(List<GUIControlDescription> controls, ref int depth)
     {
-        foreach (GUIControlDescription control in controls)
+        List<GUIControlDescriptionDepthSortInfo> sortControls = new List<GUIControlDescriptionDepthSortInfo>();
+        UnpackControlsFromConditionals(controls, sortControls, false);
+
+        sortControls.Sort((lhs, rhs) => lhs.Item1.Depth.CompareTo(rhs.Item1.Depth));
+
+        int previousDepth = -1;
+
+        foreach (GUIControlDescriptionDepthSortInfo controlAndInCondInfo in sortControls)
         {
+            GUIControlDescription control = controlAndInCondInfo.Item1;
+            bool inConditionSoShouldKeepNextDepth = controlAndInCondInfo.Item2;
+
             if (control.Depth != int.MinValue)
             {
-                control.AbsoluteDepth = depth++;
-            }
-
-            if (control is GUIControlConditionalDescription)
-            {
-                int depthToPick = depth;
-
-                foreach (var controlList in (control as GUIControlConditionalDescription).ControlShowOnCases)
+                if (inConditionSoShouldKeepNextDepth)
                 {
-                    int branchedDepth = depth;
-                    NormalizeImpl(controlList.Value, ref branchedDepth);
-
-                    depthToPick = Math.Max(branchedDepth, depthToPick);
+                    if ((previousDepth != -1) && (previousDepth < control.Depth))
+                    {
+                        depth++;
+                    }
+                } else
+                {
+                    previousDepth = -1;
                 }
 
-                depth = depthToPick;
+                control.AbsoluteDepth = inConditionSoShouldKeepNextDepth ? depth : depth++;
+                previousDepth = control.Depth;
             }
-            else if (control is GUIControlLayerDescription)
+
+            if (control is GUIControlLayerDescription)
             {
                 NormalizeImpl((control as GUIControlLayerDescription).Controls, ref depth);
             }

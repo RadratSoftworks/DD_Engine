@@ -288,6 +288,22 @@ public class GadgetInterpreter
         GameManager.Instance.LoadDialogueSlide(dialogue, slide);
     }
 
+    private void HandleBackground(ScriptCommand<GadgetOpcode> command)
+    {
+        if (command.Arguments.Count < 4)
+        {
+            Debug.LogError("Not enough arguments for background command!");
+            return;
+        }
+
+        float r = int.Parse(command.Arguments[0] as string) / 255.0f;
+        float g = int.Parse(command.Arguments[1] as string) / 255.0f;
+        float b = int.Parse(command.Arguments[2] as string) / 255.0f;
+        float a = int.Parse(command.Arguments[3] as string) / 255.0f;
+
+        GameManager.Instance.SetBackgroundColor(new Color(r, g, b, a));
+    }
+
     public IEnumerator Execute()
     {
         if (GameManager.Instance.GUIBusy)
@@ -378,6 +394,10 @@ public class GadgetInterpreter
 
                 case GadgetOpcode.Choice:
                     HandleChoice(command);
+                    break;
+
+                case GadgetOpcode.Background:
+                    HandleBackground(command);
                     break;
 
                 default:

@@ -5,12 +5,12 @@ using UnityEngine;
 public class GUICanvasSetup : MonoBehaviour
 {
     public GameObject activeCollideGameObject;
-    public GameObject panLimitUpCollision;
-    public GameObject panLimitDownCollision;
-    public GameObject panLimitLeftCollision;
-    public GameObject panLimitRightCollision;
-
     private BoxCollider2D activeCollider;
+
+    public static Vector2 ActivePositionToViewCenterPoint(Vector2 position)
+    {
+        return position + new Vector2(1, 0) / Constants.PixelsPerUnit;
+    }
 
     void Awake()
     {
@@ -20,8 +20,8 @@ public class GUICanvasSetup : MonoBehaviour
 
     public void SetCanvasSize(int width, int height)
     {
-        activeCollider.size = GameUtils.ToUnitySize(new Vector2(2, 2));
-        activeCollider.transform.localPosition = GameUtils.ToUnityCoordinates(new Vector2(width / 2, height / 2));
+        activeCollider.size = GameUtils.ToUnitySize(new Vector2(1, 1));
+        activeCollider.transform.localPosition = GameUtils.ToUnityCoordinates(new Vector2((width / 2) - 1, height / 2));
         activeCollider.enabled = true;
     }
 }

@@ -4,7 +4,6 @@ using DG.Tweening;
 
 public class GUILayerController : MonoBehaviour
 {
-    public float moveAmount = 0.01f;
     public GameObject boundsObject;
 
     [Tooltip("Number divided with the scroll amount to get the amount of movement to scroll the layer")]
@@ -16,7 +15,7 @@ public class GUILayerController : MonoBehaviour
     private bool definePan;
 
     private GUILocationController locationController;
-    private BoxCollider2D boundsTrigger;
+    private GUIControlSet controlSet;
 
 
     private void Start()
@@ -29,25 +28,15 @@ public class GUILayerController : MonoBehaviour
         locationController = transform.parent.gameObject.GetComponent<GUILocationController>();
     }
 
-    public void SetProperties(Vector2 position, Vector2 initialScroll, Vector2 size, bool definePan)
+    public void SetProperties(GUIControlSet controlSet, Vector2 position, Vector2 scroll, Vector2 size)
     {
         originalPosition = GameUtils.ToUnityCoordinates(position);
-        scroll = initialScroll;
 
+        this.scroll = scroll;
         this.size = GameUtils.ToUnitySize(size);
-        this.definePan = definePan;
+        this.controlSet = controlSet;
 
         transform.localPosition = originalPosition;
-        boundsTrigger = boundsObject.GetComponent<BoxCollider2D>();
-
-        if (definePan)
-        {
-            boundsObject.transform.localPosition = GameUtils.ToUnityCoordinates(size / 2);
-            boundsTrigger.size = this.size;
-        } else
-        {
-            boundsObject.SetActive(false);
-        }
     }
 
     private Vector3 CalculateDestinationScroll(Vector3 basePoint, Vector2 scrollAmount)
@@ -80,56 +69,41 @@ public class GUILayerController : MonoBehaviour
             amountRaw.y /= scroll.y / layerScrollFactor;
         }
 
-        locationController.RequestScroll(amountRaw);
+        locationController.Scroll(amountRaw, true);
     }
 
     public void ForceScroll(Vector2 scrollAmount, float duration)
     {
-        transform.DOLocalMove(CalculateDestinationScroll(transform.localPosition, scrollAmount), duration);
-    }
-
-    private bool PanningDisabled()
-    {
-        return !definePan && locationController.PanLocked;
-    }
-
-    public void OnMoveLeft(InputValue value)
-    {
-        if (PanningDisabled())
+        Vector3 dest = CalculateDestinationScroll(transform.localPosition, scrollAmount);
+        if (duration == 0.0f)
         {
+            transform.localPosition = dest;
             return;
         }
 
-        transform.localPosition += Vector3.right * (scroll.x / layerScrollFactor) * moveAmount * value.Get<float>();
+        transform.DOLocalMove(dest, duration);
     }
 
-    public void OnMoveRight(InputValue value)
+    public Vector3 CalculateScrollAmountForLimitedPanFromPos(Vector3 basePoint, Vector2 scrollAmount)
     {
-        if (PanningDisabled())
-        {
-            return;
-        }
+        Vector3 destPoint = CalculateDestinationScroll(basePoint, scrollAmount);
+        destPoint.x = Mathf.Clamp(destPoint.x, controlSet.ViewSize.x - size.x, 0.0f);
+        destPoint.y = Mathf.Clamp(destPoint.y, 0.0f, size.y - controlSet.ViewSize.y);
 
-        transform.localPosition += Vector3.left * (scroll.x / layerScrollFactor) * moveAmount * value.Get<float>();
+        Vector3 actualMoveAmount = destPoint - basePoint;
+        actualMoveAmount.x /= ((scroll.x == 0) ? 1 : scroll.x / layerScrollFactor);
+        actualMoveAmount.y /= ((scroll.y == 0) ? 1 : scroll.y / layerScrollFactor);
+
+        return actualMoveAmount;
     }
 
-    public void OnMoveUp(InputValue value)
+    public Vector3 CalculateScrollAmountForLimitedPan(Vector2 scrollAmount)
     {
-        if (PanningDisabled())
-        {
-            return;
-        }
-
-        transform.localPosition += Vector3.down * (scroll.y / layerScrollFactor) * moveAmount * value.Get<float>();
+        return CalculateScrollAmountForLimitedPanFromPos(transform.localPosition, scrollAmount);
     }
 
-    public void OnMoveDown(InputValue value)
+    public Vector3 CalculateScrollAmountForLimitedPanFromOrigin(Vector2 scrollAmount)
     {
-        if (PanningDisabled())
-        {
-            return;
-        }
-
-        transform.localPosition += Vector3.up * (scroll.y / layerScrollFactor) * moveAmount * value.Get<float>();
+        return CalculateScrollAmountForLimitedPanFromPos(originalPosition, scrollAmount);
     }
 }

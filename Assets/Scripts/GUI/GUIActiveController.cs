@@ -72,7 +72,9 @@ public class GUIActiveController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        actionCenterViewPoint = collision.transform.position;
+        // TODO: Maybe can just use GUIControlSet.Size and get the middle point instead?
+        // I like to stay independent of it as much as I can though!
+        actionCenterViewPoint = GUICanvasSetup.ActivePositionToViewCenterPoint(collision.transform.position);
 
         arrows.SetActive(true);
         isHovered = true;

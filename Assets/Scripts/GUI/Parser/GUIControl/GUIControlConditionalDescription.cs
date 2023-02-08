@@ -19,7 +19,10 @@ public class GUIControlConditionalDescription : GUIControlDescription
     private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
     {
         conditionValueVariable = reader.ReadWordLengthString();
+        Depth = int.MaxValue;
+
         unk0 = (reader.ReadByte() != 0);
+        
         List<GUIControlDescription> condValuesWithCases = GUIControlListReader.InternalizeControls(parent, reader);
 
         foreach (GUIControlDescription control in condValuesWithCases)

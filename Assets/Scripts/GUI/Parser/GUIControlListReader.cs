@@ -87,11 +87,6 @@ public class GUIControlListReader
             }
         }
 
-        controls.Sort((GUIControlDescription lhs, GUIControlDescription rhs) =>
-        {
-            return lhs.Depth.CompareTo(rhs.Depth);
-        });
-
         return controls;
     }
 }

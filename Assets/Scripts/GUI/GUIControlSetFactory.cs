@@ -159,7 +159,7 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
-    private void LoadGuiLayer(GUIControlSet ownSet, GameObject parent, GUIControlLayerDescription description)
+    private GameObject LoadGuiLayer(GUIControlSet ownSet, GameObject parent, GUIControlLayerDescription description)
     {
         GameObject anotherInstance = Instantiate(guiLayerPrefabObject, parent.transform, false);
         anotherInstance.transform.localPosition = GameUtils.ToUnityCoordinates(description.TopPosition);
@@ -167,10 +167,11 @@ public class GUIControlSetFactory : MonoBehaviour
         GUILayerController controller = anotherInstance.GetComponent<GUILayerController>();
         if (controller != null)
         {
-            controller.SetProperties(description.TopPosition, description.Scroll, description.Size, description.DefinesPan);
+            controller.SetProperties(ownSet, description.TopPosition, description.Scroll, description.Size);
         }
 
         InstantiateControls(ownSet, anotherInstance, description.Controls);
+        return anotherInstance;
     }
 
     private void LoadGuiLocation(GUIControlSet ownSet, GameObject parent, GUIControlLocationDescription description)
@@ -179,13 +180,7 @@ public class GUIControlSetFactory : MonoBehaviour
         anotherInstance.transform.localPosition = GameUtils.ToUnityCoordinates(description.TopPosition);
         anotherInstance.name = description.Name;
 
-        Debug.Log(anotherInstance.transform.localPosition);
-
-        GUILocationController controller = anotherInstance.GetComponent<GUILocationController>();
-        if (controller != null)
-        {
-            controller.Setup(ownSet);
-        }
+        GameObject panLayer = null;
 
         foreach (GUIControlDescription layerUncasted in description.Layers)
         {
@@ -194,8 +189,20 @@ public class GUIControlSetFactory : MonoBehaviour
                 Debug.LogError("Expected layer description in location description, got type: " + layerUncasted.GetType());
             } else
             {
-                LoadGuiLayer(ownSet, anotherInstance, layerUncasted as GUIControlLayerDescription);
+                GUIControlLayerDescription layerDesc = layerUncasted as GUIControlLayerDescription;
+
+                GameObject result = LoadGuiLayer(ownSet, anotherInstance, layerDesc);
+                if ((panLayer == null) || (layerDesc.DefinesPan))
+                {
+                    panLayer = result;
+                }
             }
+        }
+
+        GUILocationController controller = anotherInstance.GetComponent<GUILocationController>();
+        if (controller != null)
+        {
+            controller.Setup(ownSet, panLayer);
         }
     }
 
@@ -264,7 +271,7 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
-    public GUIControlSet LoadControlSet(string path)
+    public GUIControlSet LoadControlSet(string path, Vector2 viewResolution)
     {
         if (controlSets.ContainsKey(path))
         {
@@ -283,7 +290,7 @@ public class GUIControlSetFactory : MonoBehaviour
                 var controlDesc = new GUIControlDescriptionFile(memStream);
                 controlDesc.Filename = path;
 
-                var controlSet = new GUIControlSet(container, controlDesc);
+                var controlSet = new GUIControlSet(container, controlDesc, viewResolution);
 
                 controlSets.Add(path, controlSet);
                 return controlSet;

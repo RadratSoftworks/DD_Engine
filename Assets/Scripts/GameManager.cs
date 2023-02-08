@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public GameObject textBalloonBottom;
     public GameObject continueConfirmator;
     public GameObject dialogueChoices;
+    public GameObject backgroundObject;
 
     private GameObject activeDialogueSlide;
     private GUIControlSet activeGUI;
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
     private ActionInterpreter defaultActionInterpreter;
     private GameContinueConfirmatorController confirmedController;
     private GameChoicesController dialogueChoicesController;
+    private SpriteRenderer backgroundRenderer;
 
     public GameObject CurrentactiveDialogueSlide => activeDialogueSlide;
 
@@ -57,12 +59,13 @@ public class GameManager : MonoBehaviour
         textBalloonBottomController = textBalloonBottom.GetComponent<GameTextBalloonController>();
         confirmedController = continueConfirmator.GetComponent<GameContinueConfirmatorController>();
         dialogueChoicesController = dialogueChoices.GetComponent<GameChoicesController>();
+        backgroundRenderer = backgroundObject.GetComponent<SpriteRenderer>();
 
-        Vector2 canvas = new Vector2(Constants.CanvasX, Constants.CanvasY);
-        textBalloonTopController.Setup(canvas, false);
-        textBalloonBottomController.Setup(canvas, true);
-        dialogueChoicesController.Setup(canvas);
+        textBalloonTopController.Setup(Constants.CanvasSize, false);
+        textBalloonBottomController.Setup(Constants.CanvasSize, true);
+        dialogueChoicesController.Setup(Constants.CanvasSize);
 
+        backgroundRenderer.size = GameUtils.ToUnitySize(Constants.CanvasSize);
         dialogueChoicesController.ChoiceConfirmed += OnChoiceConfirmed;
 
         defaultActionInterpreter = new ActionInterpreter();
@@ -87,6 +90,8 @@ public class GameManager : MonoBehaviour
             dialogueChoicesController.Close();
 
             activeDialogueSlide = null;
+            backgroundRenderer.color = Color.clear;
+
             DialogueStateChanged?.Invoke(false);
 
             return;
@@ -101,7 +106,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SetactiveDialogueSlideSlide(GameObject newActive)
+    public void SetActiveDialogueSlideSlide(GameObject newActive)
     {
         if (activeDialogueSlide != null)
         {
@@ -113,6 +118,7 @@ public class GameManager : MonoBehaviour
             dialogueChoicesController.Close();
 
             dialogueAudioController.StopAll();
+            backgroundRenderer.color = Color.clear;
         }
 
         activeDialogueSlide = newActive;
@@ -140,17 +146,22 @@ public class GameManager : MonoBehaviour
         LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
-    public void LoadDialogueSlide(Dialogue parent, DialogueSlide slide)
+    private void LoadGadgetScriptBlock(Dialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock)
     {
         GameObject containerObject = Instantiate(gameScenePrefabObject, dialogueContainer.transform, false);
-        containerObject.name = string.Format("Slide_{0}_{1}", slide.Id, parent.FileName);
+        containerObject.name = name;
         containerObject.transform.localPosition = Vector3.zero;
         containerObject.transform.localScale = Vector3.one;
 
-        SetactiveDialogueSlideSlide(containerObject);
+        SetActiveDialogueSlideSlide(containerObject);
 
-        GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, slide.DialogScript, parent);
+        GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, scriptBlock, parent);
         StartCoroutine(interpreter.Execute());
+    }
+
+    public void LoadDialogueSlide(Dialogue parent, DialogueSlide slide)
+    {
+        LoadGadgetScriptBlock(parent, string.Format("Slide_{0}_{1}", slide.Id, parent.FileName), slide.DialogScript);
     }
 
     public void LoadDialogue(string filename)
@@ -209,14 +220,13 @@ public class GameManager : MonoBehaviour
 
         if (block != null)
         {
-            GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, null, block);
-            StartCoroutine(interpreter.Execute());
+            LoadGadgetScriptBlock(null, string.Format("standaloneGadget_{0}", filename), block);
         }
     }
 
     public void LoadControlSet(string filename)
     {
-        GUIControlSet set = GUIControlSetFactory.Instance.LoadControlSet(filename);
+        GUIControlSet set = GUIControlSetFactory.Instance.LoadControlSet(filename, Constants.CanvasSize);
         if (set != null)
         {
             SetCurrentGUI(set);
@@ -329,6 +339,11 @@ public class GameManager : MonoBehaviour
     private void OnChoiceConfirmed(Dialogue dialogue, DialogueSlide dialogueSlide)
     {
         LoadDialogueSlide(dialogue, dialogueSlide);
+    }
+
+    public void SetBackgroundColor(Color color)
+    {
+        backgroundRenderer.color = color;
     }
 
     public bool ContinueConfirmed => confirmedController.Confirmed;
