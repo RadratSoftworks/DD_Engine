@@ -167,7 +167,7 @@ public class GUIControlSetFactory : MonoBehaviour
         GUILayerController controller = anotherInstance.GetComponent<GUILayerController>();
         if (controller != null)
         {
-            controller.SetProperties(description.TopPosition, description.Scroll, description.Size);
+            controller.SetProperties(description.TopPosition, description.Scroll, description.Size, description.DefinesPan);
         }
 
         InstantiateControls(ownSet, anotherInstance, description.Controls);

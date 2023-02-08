@@ -9,7 +9,7 @@ public class ActionInterpreter
     private static Dictionary<string, string> globalScriptValues = new Dictionary<string, string>();
     private ScriptBlock<ActionOpcode> block;
 
-    public delegate void OnVariableChanged(string varName, string value, bool isGlobalVariable);
+    public delegate void OnVariableChanged(List<string> nameChanged);
     public event OnVariableChanged VariableChanged;
 
     private List<string> variableChangedReportList = new List<string>();
@@ -72,12 +72,7 @@ public class ActionInterpreter
 
         // Report variable changed event. If we prematurely report it in the group the execute action
         // coroutine may be canceled
-        foreach (var variableName in variableChangedReportList)
-        {
-            string value = GetValue(variableName, out bool isGlobal);
-            VariableChanged?.Invoke(variableName, value, isGlobal);
-        }
-
+        VariableChanged?.Invoke(variableChangedReportList);
         variableChangedReportList.Clear();
 
         yield break;
@@ -136,6 +131,8 @@ public class ActionInterpreter
         {
             globalScriptValues[varName] = value;
         }
+
+        Debug.Log(varName + " " + value);
 
         variableChangedReportList.Add(varName);
     }

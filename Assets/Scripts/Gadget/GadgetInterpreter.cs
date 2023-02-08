@@ -253,12 +253,9 @@ public class GadgetInterpreter
     
         foreach (var choice in choices)
         {
-            if (choice.ConditionalVariable != null)
+            if (!actionInterpreter.GUIConditionResult(choice.ConditionalVariables, choice.ConditionalVariableValues))
             {
-                if (actionInterpreter.GetValue(choice.ConditionalVariable, out _) != choice.ConditionalVariableValue)
-                {
-                    continue;
-                }
+                continue;
             }
 
             if (!dialogue.Strings.TryGetValue(choice.TextId, out string text))

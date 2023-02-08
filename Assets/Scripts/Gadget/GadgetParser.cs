@@ -127,8 +127,8 @@ public class GadgetParser
 
                             GadgetChoiceInfo info = new GadgetChoiceInfo()
                             {
-                                ConditionalVariable = commands[1],
-                                ConditionalVariableValue = commands[2],
+                                ConditionalVariables = GUIConditionHelper.GetParticipateVariablesInCondition(commands[1]),
+                                ConditionalVariableValues = GUIConditionHelper.GetRequiredValues(commands[2]),
                                 DialogueId = int.Parse(commands[3]),
                                 TextId = commands[4],
                                 ChoiceKind = commands[5]

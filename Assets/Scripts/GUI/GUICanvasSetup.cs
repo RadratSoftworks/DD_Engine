@@ -5,6 +5,10 @@ using UnityEngine;
 public class GUICanvasSetup : MonoBehaviour
 {
     public GameObject activeCollideGameObject;
+    public GameObject panLimitUpCollision;
+    public GameObject panLimitDownCollision;
+    public GameObject panLimitLeftCollision;
+    public GameObject panLimitRightCollision;
 
     private BoxCollider2D activeCollider;
 

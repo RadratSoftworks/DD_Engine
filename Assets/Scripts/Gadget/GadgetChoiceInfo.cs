@@ -9,7 +9,7 @@ public class GadgetChoiceInfo
 
     public string ChoiceKind { get; set; }
 
-    public string ConditionalVariable { get; set; }
+    public string[] ConditionalVariables { get; set; }
 
-    public string ConditionalVariableValue { get; set; }
+    public string[] ConditionalVariableValues { get; set; }
 }

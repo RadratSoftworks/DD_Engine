@@ -6,8 +6,11 @@ using UnityEngine.InputSystem;
 public class GUILocationController : MonoBehaviour
 {
     public float durationPerUnit = 1.0f;
+
     private GUIControlSet controlSet;
     private PlayerInput playerInput;
+
+    public bool PanLocked { get; set; } = false;
 
     private void Awake()
     {
@@ -18,6 +21,7 @@ public class GUILocationController : MonoBehaviour
     public void Setup(GUIControlSet controlSet)
     {
         this.controlSet = controlSet;
+
         controlSet.OffsetChanged += OnControlSetOffsetChanged;
     }
 

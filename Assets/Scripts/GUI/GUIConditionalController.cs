@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 using UnityEngine;
 
 public class GUIConditionalController : MonoBehaviour
 {
-    private string variableName;
-    private string activeValue;
+    private string[] variableNames;
+    private string[] activeValues;
 
     private ActionInterpreter actionInterpreter;
 
@@ -14,26 +16,30 @@ public class GUIConditionalController : MonoBehaviour
         actionInterpreter.VariableChanged -= OnVariableChanged;
     }
 
-    private void OnVariableChanged(string variableName, string value, bool isGlobal)
+    private void OnVariableChanged(List<string> variableChangeList)
     {
-        if (variableName == this.variableName)
-        {
-            gameObject.SetActive(value == activeValue);
+        if (variableChangeList.Any(changedVarName => variableNames.Any(varName => varName == changedVarName))) {
+            CheckAndChangeGameObjectStateIfPossible();
         }
+    }
+
+    private void CheckAndChangeGameObjectStateIfPossible()
+    {
+        gameObject.SetActive(actionInterpreter.GUIConditionResult(variableNames, activeValues));
     }
 
     private void OnControlSetStateChanged(bool enabled)
     {
         if (enabled)
         {
-            OnVariableChanged(variableName, actionInterpreter.GetValue(variableName, out bool isGlobal), isGlobal);
+            CheckAndChangeGameObjectStateIfPossible();
         }
     }
 
     public void Setup(GUIControlSet controlSet, string variable, string value)
     {
-        this.variableName = variable;
-        this.activeValue = value;
+        this.variableNames = GUIConditionHelper.GetParticipateVariablesInCondition(variable);
+        this.activeValues = GUIConditionHelper.GetRequiredValues(value);
 
         actionInterpreter = controlSet.ActionInterpreter;
         gameObject.SetActive(actionInterpreter.GetValue(variable, out _) == value);

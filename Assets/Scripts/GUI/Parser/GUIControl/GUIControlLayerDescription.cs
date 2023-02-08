@@ -9,7 +9,7 @@ public class GUIControlLayerDescription : GUIControlDescription
     public Vector2 TopPosition { get; set; }
     public Vector2 Scroll { get; set; }
     public Vector2 Size { get; set; }
-    public bool DefineSpan { get; set; }
+    public bool DefinesPan { get; set; }
 
     public List<GUIControlDescription> Controls => controls;
 
@@ -35,7 +35,7 @@ public class GUIControlLayerDescription : GUIControlDescription
         float scrollY = reader.ReadInt16BE();
 
         Scroll = new Vector2(scrollX, scrollY);
-        DefineSpan = (reader.ReadByte() == 1);
+        DefinesPan = (reader.ReadByte() == 1);
 
         controls = GUIControlListReader.InternalizeControls(this, reader);
     }
