@@ -23,6 +23,9 @@ public class GUIControlSet
     public delegate void OnStateChanged(bool enabled);
     public event OnStateChanged StateChanged;
 
+    public delegate void OnOffsetChanged(Vector2 newOffset);
+    public event OnOffsetChanged OffsetChanged;
+
     public int performingBusyAnimationCount = 0;
 
     public string GetLanguageString(string key)
@@ -86,6 +89,11 @@ public class GUIControlSet
     public void UnregisterPerformingBusyAnimation()
     {
         performingBusyAnimationCount--;
+    }
+
+    public void SetOffset(Vector2 offset)
+    {
+        OffsetChanged?.Invoke(offset);
     }
 
     public bool Busy => performingBusyAnimationCount != 0;

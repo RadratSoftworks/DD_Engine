@@ -25,8 +25,6 @@ public class GameManager : MonoBehaviour
     private Dictionary<string, GameObject> iconCache;
     private Dictionary<string, ScriptBlock<GadgetOpcode>> gadgetCache;
 
-    private Dictionary<string, string> iconToPathMap;
-
     private SceneAudioController persistentAudioController;
     private SceneAudioController dialogueAudioController;
     private GameTextBalloonController textBalloonTopController;
@@ -68,11 +66,6 @@ public class GameManager : MonoBehaviour
         dialogueChoicesController.ChoiceConfirmed += OnChoiceConfirmed;
 
         defaultActionInterpreter = new ActionInterpreter();
-        iconToPathMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        iconToPathMap.Add("plusinv", "animations/inv.anim");
-        iconToPathMap.Add("plusmap", "animations/Plus_map.anim");
-        iconToPathMap.Add("newtask", "animations/New_quest.anim");
 
         Application.targetFrameRate = 30;
         QualitySettings.vSyncCount = 1;
@@ -234,7 +227,7 @@ public class GameManager : MonoBehaviour
     {
         if (activeGUI != null)
         {
-            activeGUI.GameObject.transform.localPosition = GameUtils.ToUnityCoordinates(offset);
+            activeGUI.SetOffset(offset);
         }
     }
 
@@ -311,7 +304,7 @@ public class GameManager : MonoBehaviour
             }
         } else
         {
-            if (iconToPathMap.TryGetValue(iconName, out string pathValue))
+            if (Constants.IconNameToAnimationPath.TryGetValue(iconName, out string pathValue))
             {
                 LoadIconAnimationToCache(iconName, pathValue, position);
             }

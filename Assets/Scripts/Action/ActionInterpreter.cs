@@ -12,6 +12,8 @@ public class ActionInterpreter
     public delegate void OnVariableChanged(string varName, string value, bool isGlobalVariable);
     public event OnVariableChanged VariableChanged;
 
+    private List<string> variableChangedReportList = new List<string>();
+
     public ActionInterpreter()
     {
     }
@@ -67,6 +69,16 @@ public class ActionInterpreter
                     break;
             }
         }
+
+        // Report variable changed event. If we prematurely report it in the group the execute action
+        // coroutine may be canceled
+        foreach (var variableName in variableChangedReportList)
+        {
+            string value = GetValue(variableName, out bool isGlobal);
+            VariableChanged?.Invoke(variableName, value, isGlobal);
+        }
+
+        variableChangedReportList.Clear();
 
         yield break;
     }
@@ -125,9 +137,7 @@ public class ActionInterpreter
             globalScriptValues[varName] = value;
         }
 
-        Debug.Log(varName + " " + value);
-
-        VariableChanged?.Invoke(varName, value, true);
+        variableChangedReportList.Add(varName);
     }
 
     private void LoadDialogue(ScriptCommand<ActionOpcode> command)

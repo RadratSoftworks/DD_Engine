@@ -96,6 +96,7 @@ public class GameTextBalloonController : MonoBehaviour
 
         ballonText.maxVisibleCharacters = 0;
         ballonText.text = newText;
+        ballonText.font = ResourceManager.Instance.GetFontAssetForLocalization();
 
         stingerObject.SetActive(false);
 

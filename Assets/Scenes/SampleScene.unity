@@ -1102,7 +1102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d258102470bcef47abcd500ad0e9396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameDataPath: E:\Game\DD_RV_opes
+  GameDataPath: G:\bent\DD_RV\opes
   EnglishFontAsset: {fileID: 11400000, guid: bde68bbb4549b484197703a36709abf8, type: 2}
   SimplifiedChineseFontAsset: {fileID: 11400000, guid: 862006d1828a53a4ca8c61764b89c78b, type: 2}
 --- !u!1 &2104935184
@@ -1273,6 +1273,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7237565359478978772, guid: d43607f56304a094c87b344aef781593, type: 3}
       propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7237565360307079198, guid: d43607f56304a094c87b344aef781593, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7237565360307079198, guid: d43607f56304a094c87b344aef781593, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7237565360307079198, guid: d43607f56304a094c87b344aef781593, type: 3}
+      propertyPath: m_fontColor.r
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7237565360405950504, guid: d43607f56304a094c87b344aef781593, type: 3}

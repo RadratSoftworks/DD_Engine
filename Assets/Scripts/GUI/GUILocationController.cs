@@ -18,6 +18,7 @@ public class GUILocationController : MonoBehaviour
     public void Setup(GUIControlSet controlSet)
     {
         this.controlSet = controlSet;
+        controlSet.OffsetChanged += OnControlSetOffsetChanged;
     }
 
     private void OnDialogueStateChanged(bool enabled)
@@ -54,5 +55,24 @@ public class GUILocationController : MonoBehaviour
         }
 
         StartCoroutine(ScrollDoneCoroutine(duration));
+    }
+
+    private void ScrollFromOrigin(Vector2 offset)
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            GameObject child = transform.GetChild(i).gameObject;
+            GUILayerController controller = child.GetComponent<GUILayerController>();
+
+            if (controller != null)
+            {
+                controller.ScrollFromOrigin(offset);
+            }
+        }
+    }
+
+    private void OnControlSetOffsetChanged(Vector2 offset)
+    {
+        ScrollFromOrigin(GameUtils.ToUnityCoordinates(offset));
     }
 }

@@ -34,6 +34,16 @@ public class GUILayerController : MonoBehaviour
 
         transform.localPosition = originalPosition;
     }
+    private Vector3 CalculateDestinationScroll(Vector3 basePoint, Vector2 scrollAmount)
+    {
+        return basePoint + new Vector3((scroll.x / layerScrollFactor) * scrollAmount.x, (scroll.y / layerScrollFactor) * scrollAmount.y, 0.0f);
+    }
+
+    public void ScrollFromOrigin(Vector2 amount)
+    {
+        transform.localPosition = CalculateDestinationScroll(originalPosition, amount);
+    }
+
 
     // Return the amount of time until scrolling is done!
     public void ScrollLocation(Vector2 amountRaw)
@@ -59,10 +69,7 @@ public class GUILayerController : MonoBehaviour
 
     public void ForceScroll(Vector2 scrollAmount, float duration)
     {
-        Vector3 destMove = transform.localPosition + new Vector3((scroll.x / layerScrollFactor) * scrollAmount.x,
-            (scroll.y / layerScrollFactor) * scrollAmount.y, 0.0f);
-
-        transform.DOLocalMove(destMove, duration);
+        transform.DOLocalMove(CalculateDestinationScroll(transform.localPosition, scrollAmount), duration);
     }
 
     public void OnMoveLeft(InputValue value)

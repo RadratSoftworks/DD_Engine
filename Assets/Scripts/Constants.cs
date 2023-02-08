@@ -28,4 +28,12 @@ public class Constants
             { GameLanguage.SimplifiedChinese, "cn" },
             { GameLanguage.TraditionalChinese, "tw" }
         };
+
+    public static readonly Dictionary<string, string> IconNameToAnimationPath =
+        new Dictionary<string, string>()
+        {
+            { "plusinv", "animations/inv.anim" },
+            { "plusmap", "animations/Plus_map.anim" },
+            { "newtask", "animations/New_quest.anim" }
+        };
 };

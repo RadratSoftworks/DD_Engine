@@ -90,6 +90,24 @@
                     "processors": "",
                     "interactions": "CustomHolding(duration=0.1)",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Move Up",
+                    "type": "Button",
+                    "id": "295718e4-737a-4edc-8ad0-1e07bc216091",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Move Down",
+                    "type": "Button",
+                    "id": "bcaf88db-6de2-4e1a-b8f9-7285ea19caa5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -112,6 +130,28 @@
                     "processors": "",
                     "groups": "Desktop Scheme",
                     "action": "Move Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d46139d2-dccf-4ba1-ab4d-706bc15e2b19",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3813a197-ae0d-486a-b4f8-a10ad1d1e252",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -305,9 +305,18 @@ public class GadgetInterpreter
                 case GadgetOpcode.Pause:
                     {
                         int frameToPause = int.Parse(command.Arguments[0] as string);
-                        for (int i = 0; i < frameToPause; i++)
+                        if (frameToPause < 0)
                         {
-                            yield return null;
+                            // Wait for confirmation basically!
+                            yield return new WaitUntil(() => GameManager.Instance.LastTextFinished);
+                            GameManager.Instance.StartHearingConfirmation();
+                            yield return new WaitUntil(() => GameManager.Instance.ContinueConfirmed);
+                        } else
+                        {
+                            for (int i = 0; i < frameToPause; i++)
+                            {
+                                yield return null;
+                            }
                         }
 
                         break;
@@ -371,13 +380,6 @@ public class GadgetInterpreter
                     break;
 
                 case GadgetOpcode.Choice:
-                    if (!GameManager.Instance.LastTextFinished)
-                    {
-                        yield return new WaitUntil(() => GameManager.Instance.LastTextFinished);
-                        GameManager.Instance.StartHearingConfirmation();
-                        yield return new WaitUntil(() => GameManager.Instance.ContinueConfirmed);
-                    }
-
                     HandleChoice(command);
                     break;
 
