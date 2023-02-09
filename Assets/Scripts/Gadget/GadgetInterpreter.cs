@@ -8,7 +8,7 @@ public class GadgetInterpreter
     private GameObject parent;
     private Dialogue dialogue;
 
-    private Dictionary<char, GameObject> layerGameObject;
+    private Dictionary<char, GameObject> gameObjectByLayer;
     private ScriptBlock<GadgetOpcode> scriptBlock;
 
     private ActionInterpreter actionInterpreter;
@@ -19,36 +19,13 @@ public class GadgetInterpreter
         this.scriptBlock = scriptBlock;
         this.dialogue = dialogue;
 
-        layerGameObject = new Dictionary<char, GameObject>();
+        gameObjectByLayer = new Dictionary<char, GameObject>();
         actionInterpreter = guiActionInterpreter;
-    }
-
-    private GameObject ParentByLayer(char layer)
-    {
-        if (!layerGameObject.ContainsKey(layer))
-        {
-            GameObject emptyLayerObject = GameObject.Instantiate(GameManager.Instance.gameLayerPrefabObject, parent.transform, false);
-            emptyLayerObject.name = string.Format("Group {0}", layer.ToString());
-
-            layerGameObject.Add(layer, emptyLayerObject);
-            return emptyLayerObject;
-        }
-
-        return layerGameObject[layer];
     }
 
     private string GetSortingLayer(char layer)
     {
         return string.Format("GameLayer{0}", Char.ToUpper(layer));
-    }
-
-    private int GetSortingOrderForNewbie(char layer)
-    {
-        if (!layerGameObject.ContainsKey(layer))
-        {
-            return 0;
-        }
-        return layerGameObject[layer].transform.childCount;
     }
 
     private void HandleAnimation(ScriptCommand<GadgetOpcode> command)
@@ -61,29 +38,37 @@ public class GadgetInterpreter
 
         string animFileName = command.Arguments[1] as string;
         char layer = (command.Arguments[0] as string)[0];
-
-        GameObject layerObject = ParentByLayer(layer);
-        GameObject existingAnim = layerObject.transform.Find(animFileName)?.gameObject;
         Vector2 position = new Vector2(int.Parse(command.Arguments[2] as string), int.Parse(command.Arguments[3] as string));
 
-        if (existingAnim != null)
-        {
-            SpriteAnimatorController existingController = existingAnim.GetComponent<SpriteAnimatorController>();
-            if (existingController != null)
+        if (gameObjectByLayer.TryGetValue(layer, out GameObject existingObject)) {
+            if ((existingObject != null) && existingObject.name.Equals(animFileName, StringComparison.OrdinalIgnoreCase))
             {
-                existingController.Restart(position);
-            }
+                SpriteAnimatorController existingController = existingObject.GetComponent<SpriteAnimatorController>();
+                if (existingController != null)
+                {
+                    existingController.Restart(position);
+                }
 
-            return;
+                return;
+            }
         }
 
-        GameObject animObject = GameObject.Instantiate(GameManager.Instance.gameAnimationPrefabObject, layerObject.transform, false);
+        GameObject animObject = GameObject.Instantiate(GameManager.Instance.gameAnimationPrefabObject, parent.transform, false);
         animObject.name = animFileName;
 
         SpriteAnimatorController controller = animObject.GetComponent<SpriteAnimatorController>();
         if (controller != null)
         {
-            controller.Setup(position, GetSortingOrderForNewbie(layer), animFileName, GetSortingLayer(layer));
+            controller.Setup(position, 0, animFileName, GetSortingLayer(layer));
+        }
+
+        if (existingObject)
+        {
+            gameObjectByLayer[layer] = animObject;
+            GameObject.Destroy(existingObject);
+        } else
+        {
+            gameObjectByLayer.Add(layer, animObject);
         }
     }
 
@@ -96,18 +81,36 @@ public class GadgetInterpreter
         }
 
         char layer = (command.Arguments[0] as string)[0];
+        string path = command.Arguments[1] as string;
 
-        GameObject imageObject = GameObject.Instantiate(GameManager.Instance.gameImagePrefabObject, ParentByLayer(layer).transform, false);
+        if (gameObjectByLayer.TryGetValue(layer, out GameObject existingObject))
+        {
+            if ((existingObject != null) && existingObject.name.Equals(path, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+        }
+
+        GameObject imageObject = GameObject.Instantiate(GameManager.Instance.gameImagePrefabObject, parent.transform, false);
         imageObject.transform.localPosition = Vector3.zero;
+        imageObject.name = path;
         
         SpriteRenderer spriteRenderer = imageObject.GetComponent<SpriteRenderer>();
 
         if (spriteRenderer != null)
         {
-            string path = command.Arguments[1] as string;
             spriteRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.PickBestResourcePackForFile(path), path);
-            spriteRenderer.sortingOrder = GetSortingOrderForNewbie(layer);
+            spriteRenderer.sortingOrder = 0;
             spriteRenderer.sortingLayerName = GetSortingLayer(layer);
+        }
+
+        if (existingObject)
+        {
+            gameObjectByLayer[layer] = imageObject;
+            GameObject.Destroy(existingObject);
+        } else
+        {
+            gameObjectByLayer.Add(layer, imageObject);
         }
     }
 
@@ -163,17 +166,10 @@ public class GadgetInterpreter
     private void HandleClear(ScriptCommand<GadgetOpcode> command)
     {
         char layer = (command.Arguments[0] as string)[0];
-        if (layerGameObject.ContainsKey(layer))
+        if (gameObjectByLayer.TryGetValue(layer, out GameObject obj))
         {
-            GameObject layerObj = layerGameObject[layer];
-
-            // We are running in coroutine! So destroy like this is fine...
-            for (int i = 0; i < layerObj.transform.childCount; i++)
-            {
-                GameObject.Destroy(layerObj.transform.GetChild(i).gameObject);
-            }
-
-            layerObj.transform.localPosition = Vector3.zero;
+            gameObjectByLayer.Remove(layer);
+            GameObject.Destroy(obj);
         }
     }
 
@@ -197,15 +193,14 @@ public class GadgetInterpreter
         }
 
         char layer = (command.Arguments[0] as string)[0];
-        GameObject layerObj = ParentByLayer(layer);
 
-        if (layerObj != null) {
+        if (gameObjectByLayer.TryGetValue(layer, out GameObject gameObj)) {
             Vector2 target = new Vector2(int.Parse(command.Arguments[1] as string), int.Parse(command.Arguments[2] as string));
             target = GameUtils.ToUnityCoordinates(target);
 
             int duration = int.Parse(command.Arguments[3] as string);
 
-            GamePanController panController = layerObj.GetComponent<GamePanController>();
+            GamePanController panController = gameObj.GetComponent<GamePanController>();
             if (panController != null)
             {
                 panController.Pan(target, duration);
@@ -222,21 +217,15 @@ public class GadgetInterpreter
         }
 
         char layer = (command.Arguments[0] as string)[0];
-        GameObject layerObj = ParentByLayer(layer);
 
-        if (layerObj != null)
+        if (gameObjectByLayer.TryGetValue(layer, out GameObject gameObj))
         {
             int frames = int.Parse(command.Arguments[1] as string);
-
-            for (int i = 0; i < layerObj.transform.childCount; i++)
-            {
-                GameObject individualObj = layerObj.transform.GetChild(i).gameObject;
-                GameImageFadeController fadeController = individualObj.GetComponent<GameImageFadeController>();
+            GameImageFadeController fadeController = gameObj.GetComponent<GameImageFadeController>();
                 
-                if (fadeController != null)
-                {
-                    fadeController.Fade(isFadeIn, frames);
-                }
+            if (fadeController != null)
+            {
+                fadeController.Fade(isFadeIn, frames);
             }
         }
     }

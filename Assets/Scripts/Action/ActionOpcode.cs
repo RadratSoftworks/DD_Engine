@@ -10,5 +10,6 @@ public enum ActionOpcode
     LoadGadget,
     Play,
     SetLocationOffset,
-    PanLocation
+    PanLocation,
+    SetScrollSpeeds
 };

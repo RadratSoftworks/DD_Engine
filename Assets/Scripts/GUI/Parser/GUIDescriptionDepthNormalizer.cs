@@ -55,7 +55,7 @@ public static class GUIDescriptionDepthNormalizer
                     previousDepth = -1;
                 }
 
-                control.AbsoluteDepth = inConditionSoShouldKeepNextDepth ? depth : depth++;
+                control.AbsoluteDepth = inConditionSoShouldKeepNextDepth ? depth : ++depth;
                 previousDepth = control.Depth;
             }
 

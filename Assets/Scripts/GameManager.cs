@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
 
     public GameObject gameAnimationPrefabObject;
     public GameObject gameImagePrefabObject;
-    public GameObject gameLayerPrefabObject;
     public GameObject gameScenePrefabObject;
     public GameObject dialogueContainer;
     public GameObject textBalloonTop;

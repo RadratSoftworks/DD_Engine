@@ -44,6 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e417bb3c5d3bf014f9b8f42d365ae96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveAmount: 0.02
   boundsObject: {fileID: 0}
   layerScrollFactor: 100

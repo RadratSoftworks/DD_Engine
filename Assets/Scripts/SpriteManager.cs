@@ -162,6 +162,7 @@ public class SpriteManager: MonoBehaviour
         }
 
         Texture2D tex = new Texture2D((int)textureSize.x, (int)textureSize.y, TextureFormat.RGBA32, false);
+        tex.wrapMode = TextureWrapMode.Clamp;
         tex.name = pathRaw;
 
         tex.LoadRawTextureData(data);

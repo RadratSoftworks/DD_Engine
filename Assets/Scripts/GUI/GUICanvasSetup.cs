@@ -9,7 +9,7 @@ public class GUICanvasSetup : MonoBehaviour
 
     public static Vector2 ActivePositionToViewCenterPoint(Vector2 position)
     {
-        return position + new Vector2(1, 0) / Constants.PixelsPerUnit;
+        return position + new Vector2(1.0f, 0.0f) / Constants.PixelsPerUnit;
     }
 
     void Awake()
