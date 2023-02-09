@@ -64,6 +64,10 @@ public class ActionInterpreter
                     Play(command);
                     break;
 
+                case ActionOpcode.PanLocation:
+                    RunPanLocation(command);
+                    break;
+
                 default:
                     Debug.LogWarning("Unhandled gadget opcode: " + command.Opcode);
                     break;
@@ -80,7 +84,7 @@ public class ActionInterpreter
 
     private void RunReturn(ScriptCommand<ActionOpcode> command)
     {
-        GameManager.Instance.ExitDialogueOrLocation();
+        GameManager.Instance.ReturnGadget();
     }
 
     private void RunLoadLocation(ScriptCommand<ActionOpcode> command)
@@ -106,6 +110,20 @@ public class ActionInterpreter
             int.Parse(command.Arguments[1] as string));
 
         GameManager.Instance.SetControlSetOffset(offset);
+    }
+
+    private void RunPanLocation(ScriptCommand<ActionOpcode> command)
+    {
+        if (command.Arguments.Count < 2)
+        {
+            Debug.LogError("Not enough argument for set location offset!");
+            return;
+        }
+
+        Vector2 amount = new Vector2(int.Parse(command.Arguments[0] as string),
+            int.Parse(command.Arguments[1] as string));
+
+        GameManager.Instance.PanControlSet(amount);
     }
 
     private void ClearGlobals(ScriptCommand<ActionOpcode> command)

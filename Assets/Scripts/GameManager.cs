@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public GameObject dialogueChoices;
     public GameObject backgroundObject;
 
-    private GameObject activeDialogueSlide;
+    private GameObject activeGadget;
     private GUIControlSet activeGUI;
 
     private Dictionary<string, Dialogue> dialogueCache;
@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     private GameChoicesController dialogueChoicesController;
     private SpriteRenderer backgroundRenderer;
 
-    public GameObject CurrentactiveDialogueSlide => activeDialogueSlide;
+    private Stack<GameObject> gadgets;
 
     public ActionInterpreter CurrentActionInterpreter => activeGUI?.ActionInterpreter ?? defaultActionInterpreter;
 
@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
         dialogueCache = new Dictionary<string, Dialogue>(StringComparer.OrdinalIgnoreCase);
         gadgetCache = new Dictionary<string, ScriptBlock<GadgetOpcode>>(StringComparer.OrdinalIgnoreCase);
         iconCache = new Dictionary<string, GameObject>(StringComparer.OrdinalIgnoreCase);
+        gadgets = new Stack<GameObject>();
 
         persistentAudioController = GetComponent<SceneAudioController>();
         dialogueAudioController = dialogueContainer.GetComponent<SceneAudioController>();
@@ -76,59 +77,54 @@ public class GameManager : MonoBehaviour
         ResourceManager.Instance.OnResourcesReady += OnResourcesReady;
     }
 
-    public void ExitDialogueOrLocation()
+    public void ReturnGadget()
     {
-        // Return order: dialogue then location
-        if (activeDialogueSlide != null)
+        if (gadgets.Count == 0)
         {
-            GameObject.Destroy(activeDialogueSlide);
+            Debug.LogError("No active dialogues available! De-activating the GUI");
+
+            if (activeGUI != null)
+            {
+                activeGUI.Disable();
+            }
 
             dialogueAudioController.StopAll();
-
-            textBalloonBottomController.HideText();
-            textBalloonTopController.HideText();
-            dialogueChoicesController.Close();
-
-            activeDialogueSlide = null;
-            backgroundRenderer.color = Color.clear;
-
-            DialogueStateChanged?.Invoke(false);
-
             return;
         }
 
-        if (activeGUI != null)
-        {
-            activeGUI.Disable();
+        gadgets.Pop();
 
-            dialogueAudioController.StopAll();
-            activeGUI = null;
+        GameObject.Destroy(activeGadget);
+
+        textBalloonBottomController.HideText();
+        textBalloonTopController.HideText();
+        dialogueChoicesController.Close();
+
+        activeGadget = (gadgets.Count == 0) ? null : gadgets.Peek();
+        backgroundRenderer.color = Color.clear;
+
+        if (activeGadget == null)
+        {
+            DialogueStateChanged?.Invoke(false);
         }
     }
 
-    public void SetActiveDialogueSlideSlide(GameObject newActive)
+    public void PushGadget(GameObject newActive)
     {
-        if (activeDialogueSlide != null)
-        {
-            GameObject.Destroy(activeDialogueSlide);
-            activeDialogueSlide = null;
+        activeGadget = newActive;
+        activeGadget.SetActive(true);
 
-            textBalloonBottomController.HideText();
-            textBalloonTopController.HideText();
-            dialogueChoicesController.Close();
-
-            dialogueAudioController.StopAll();
-            backgroundRenderer.color = Color.clear;
-        }
-
-        activeDialogueSlide = newActive;
-        activeDialogueSlide.SetActive(true);
-
+        gadgets.Push(activeGadget);
         DialogueStateChanged?.Invoke(true);
     }
 
     public void SetCurrentGUI(GUIControlSet newGUI)
     {
+        if (activeGUI == newGUI)
+        {
+            return;
+        }
+
         // Deactive an activating GUI
         if (activeGUI != null)
         {
@@ -136,8 +132,11 @@ public class GameManager : MonoBehaviour
         }
 
         dialogueAudioController.StopAll();
+        gadgets.Clear();
 
         activeGUI = newGUI;
+        activeGadget = null;
+
         activeGUI.Enable();
     }
 
@@ -153,7 +152,7 @@ public class GameManager : MonoBehaviour
         containerObject.transform.localPosition = Vector3.zero;
         containerObject.transform.localScale = Vector3.one;
 
-        SetActiveDialogueSlideSlide(containerObject);
+        PushGadget(containerObject);
 
         GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, scriptBlock, parent);
         StartCoroutine(interpreter.Execute());
@@ -238,6 +237,14 @@ public class GameManager : MonoBehaviour
         if (activeGUI != null)
         {
             activeGUI.SetOffset(offset);
+        }
+    }
+
+    public void PanControlSet(Vector2 panVector)
+    {
+        if (activeGUI != null)
+        {
+            activeGUI.Pan(panVector);
         }
     }
 
@@ -338,6 +345,7 @@ public class GameManager : MonoBehaviour
 
     private void OnChoiceConfirmed(Dialogue dialogue, DialogueSlide dialogueSlide)
     {
+        ReturnGadget();
         LoadDialogueSlide(dialogue, dialogueSlide);
     }
 
@@ -348,7 +356,6 @@ public class GameManager : MonoBehaviour
 
     public bool ContinueConfirmed => confirmedController.Confirmed;
     public bool LastTextFinished => textBalloonTopController.LastTextFinished && textBalloonBottomController.LastTextFinished;
-    public bool DialogueSlideActivated => (activeDialogueSlide != null);
 
     public bool GUIBusy => (activeGUI != null) && (activeGUI.Busy);
 }

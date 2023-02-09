@@ -26,6 +26,7 @@ public class GUILocationController : MonoBehaviour
         this.panLayerController = panLayer.GetComponent<GUILayerController>();
 
         controlSet.OffsetChanged += OnControlSetOffsetChanged;
+        controlSet.PanRequested += OnPanRequested;
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -66,9 +67,9 @@ public class GUILocationController : MonoBehaviour
         }
     }
 
-    public void Scroll(Vector2 amount, bool hasDuration = false)
+    public void Scroll(Vector2 amount, bool hasDuration = false, bool notAccountingPanLayerScrollFactor = false)
     {
-        Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount);
+        Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, notAccountingPanLayerScrollFactor);
         if (targetPanAmount == Vector3.zero)
         {
             return;
@@ -115,5 +116,10 @@ public class GUILocationController : MonoBehaviour
     private void OnControlSetOffsetChanged(Vector2 offset)
     {
         ScrollFromOrigin(GameUtils.ToUnityCoordinates(offset));
+    }
+
+    private void OnPanRequested(Vector2 amount)
+    {
+        Scroll(GameUtils.ToUnityCoordinates(amount * new Vector2(-1, 1)), true, true);
     }
 }

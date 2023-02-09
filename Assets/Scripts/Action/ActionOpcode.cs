@@ -9,5 +9,6 @@ public enum ActionOpcode
     LoadDialogue,
     LoadGadget,
     Play,
-    SetLocationOffset
+    SetLocationOffset,
+    PanLocation
 };

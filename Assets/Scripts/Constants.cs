@@ -34,6 +34,7 @@ public class Constants
         {
             { "plusinv", "animations/inv.anim" },
             { "plusmap", "animations/Plus_map.anim" },
-            { "newtask", "animations/New_quest.anim" }
+            { "newtask", "animations/New_quest.anim" },
+            { "taskdone", "animations/Check.anim" }
         };
 };

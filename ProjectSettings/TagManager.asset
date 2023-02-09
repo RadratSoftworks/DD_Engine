@@ -48,6 +48,9 @@ TagManager:
   - name: UIActivePointer
     uniqueID: 1128467361
     locked: 0
+  - name: GameBackground
+    uniqueID: 210191615
+    locked: 0
   - name: GameLayerQ
     uniqueID: 1908523575
     locked: 0

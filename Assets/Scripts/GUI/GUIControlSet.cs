@@ -26,6 +26,9 @@ public class GUIControlSet
     public delegate void OnOffsetChanged(Vector2 newOffset);
     public event OnOffsetChanged OffsetChanged;
 
+    public delegate void OnPanRequested(Vector2 amount);
+    public event OnPanRequested PanRequested;
+
     public int performingBusyAnimationCount = 0;
 
     public Vector2 ViewSize => viewSize;
@@ -98,6 +101,11 @@ public class GUIControlSet
     public void SetOffset(Vector2 offset)
     {
         OffsetChanged?.Invoke(offset);
+    }
+
+    public void Pan(Vector2 amount)
+    {
+        PanRequested?.Invoke(amount);
     }
 
     public bool Busy => performingBusyAnimationCount != 0;

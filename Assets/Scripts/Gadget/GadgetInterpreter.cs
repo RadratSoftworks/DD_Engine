@@ -285,6 +285,7 @@ public class GadgetInterpreter
             Debug.LogError("Invalid dialogue slide id " + id + " in file: " + dialogue.FileName);
         }
 
+        GameManager.Instance.ReturnGadget();
         GameManager.Instance.LoadDialogueSlide(dialogue, slide);
     }
 

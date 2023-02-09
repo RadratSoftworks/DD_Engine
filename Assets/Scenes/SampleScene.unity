@@ -490,7 +490,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 579720883
+  m_SortingLayerID: 210191615
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 92bfc41318b39f34489fa606e67d85eb, type: 3}
@@ -1187,7 +1187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d258102470bcef47abcd500ad0e9396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameDataPath: E:\Game\DD_RV_opes
+  GameDataPath: G:\bent\DD_RV\opes
   EnglishFontAsset: {fileID: 11400000, guid: bde68bbb4549b484197703a36709abf8, type: 2}
   SimplifiedChineseFontAsset: {fileID: 11400000, guid: 862006d1828a53a4ca8c61764b89c78b, type: 2}
 --- !u!1 &2104935184

@@ -84,9 +84,9 @@ public class GUILayerController : MonoBehaviour
         transform.DOLocalMove(dest, duration);
     }
 
-    public Vector3 CalculateScrollAmountForLimitedPanFromPos(Vector3 basePoint, Vector2 scrollAmount)
+    public Vector3 CalculateScrollAmountForLimitedPanFromPos(Vector3 basePoint, Vector2 scrollAmount, bool notAccountingScrollFactor = false)
     {
-        Vector3 destPoint = CalculateDestinationScroll(basePoint, scrollAmount);
+        Vector3 destPoint = notAccountingScrollFactor ? (basePoint + new Vector3(scrollAmount.x, scrollAmount.y, 0.0f)) : CalculateDestinationScroll(basePoint, scrollAmount);
         destPoint.x = Mathf.Clamp(destPoint.x, controlSet.ViewSize.x - size.x, 0.0f);
         destPoint.y = Mathf.Clamp(destPoint.y, 0.0f, size.y - controlSet.ViewSize.y);
 
@@ -97,9 +97,9 @@ public class GUILayerController : MonoBehaviour
         return actualMoveAmount;
     }
 
-    public Vector3 CalculateScrollAmountForLimitedPan(Vector2 scrollAmount)
+    public Vector3 CalculateScrollAmountForLimitedPan(Vector2 scrollAmount, bool notAccountingScrollFactor = false)
     {
-        return CalculateScrollAmountForLimitedPanFromPos(transform.localPosition, scrollAmount);
+        return CalculateScrollAmountForLimitedPanFromPos(transform.localPosition, scrollAmount, notAccountingScrollFactor);
     }
 
     public Vector3 CalculateScrollAmountForLimitedPanFromOrigin(Vector2 scrollAmount)
