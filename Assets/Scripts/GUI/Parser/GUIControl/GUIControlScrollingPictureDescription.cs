@@ -5,6 +5,8 @@ public class GUIControlScrollingPictureDescription : GUIControlDescription
 {
     public string ImagePath { get; set; }
     public Vector2 TopPosition { get; set; }
+    public Vector2 Scroll { get; set; }
+    public Vector2 ScrollSize { get; set; }
 
     public GUIControlScrollingPictureDescription(GUIControlDescription parent, BinaryReader2 reader)
     {
@@ -19,10 +21,13 @@ public class GUIControlScrollingPictureDescription : GUIControlDescription
 
         TopPosition = new Vector2(x, y);
 
-        short c1 = reader.ReadInt16BE();
-        short c2 = reader.ReadInt16BE();
-        short c3 = reader.ReadInt16BE();
-        short c4 = reader.ReadInt16BE();
+        short scrollX = reader.ReadInt16BE();
+        short scrollY = reader.ReadInt16BE();
+        short scrollWidth = reader.ReadInt16BE();
+        short scrollHeight = reader.ReadInt16BE();
+
+        Scroll = new Vector2(scrollX, scrollY);
+        ScrollSize = new Vector2(scrollWidth, scrollHeight);
 
         ImagePath = reader.ReadWordLengthString();
     }

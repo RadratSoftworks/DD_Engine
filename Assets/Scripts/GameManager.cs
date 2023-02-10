@@ -76,6 +76,14 @@ public class GameManager : MonoBehaviour
         ResourceManager.Instance.OnResourcesReady += OnResourcesReady;
     }
 
+    private void HideGadgetRelatedObjects()
+    {
+        textBalloonBottomController.HideText();
+        textBalloonTopController.HideText();
+        dialogueChoicesController.Close();
+        backgroundRenderer.color = Color.clear;
+    }
+
     public void ReturnGadget()
     {
         if (gadgets.Count == 0)
@@ -95,12 +103,8 @@ public class GameManager : MonoBehaviour
 
         GameObject.Destroy(activeGadget);
 
-        textBalloonBottomController.HideText();
-        textBalloonTopController.HideText();
-        dialogueChoicesController.Close();
-
+        HideGadgetRelatedObjects();
         activeGadget = (gadgets.Count == 0) ? null : gadgets.Peek();
-        backgroundRenderer.color = Color.clear;
 
         if (activeGadget == null)
         {
@@ -117,6 +121,19 @@ public class GameManager : MonoBehaviour
         DialogueStateChanged?.Invoke(true);
     }
 
+    private void CleanAllPendingGadgets()
+    {
+        while (gadgets.Count != 0)
+        {
+            GameObject.Destroy(gadgets.Pop());
+        }
+
+        HideGadgetRelatedObjects();
+        activeGadget = null;
+
+        DialogueStateChanged?.Invoke(false);
+    }
+
     public void SetCurrentGUI(GUIControlSet newGUI)
     {
         if (activeGUI == newGUI)
@@ -131,11 +148,9 @@ public class GameManager : MonoBehaviour
         }
 
         dialogueAudioController.StopAll();
-        gadgets.Clear();
+        CleanAllPendingGadgets();
 
         activeGUI = newGUI;
-        activeGadget = null;
-
         activeGUI.Enable();
     }
 
@@ -351,6 +366,12 @@ public class GameManager : MonoBehaviour
     public void SetBackgroundColor(Color color)
     {
         backgroundRenderer.color = color;
+    }
+
+    // Which layer that has all zero scroll x and y will not be assigned
+    public void SetControlSetScrollSpeeds(Vector2[] speed)
+    {
+        activeGUI.SetLocationScrollSpeeds(speed);
     }
 
     public bool ContinueConfirmed => confirmedController.Confirmed;

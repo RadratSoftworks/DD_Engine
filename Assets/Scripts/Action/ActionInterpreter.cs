@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ActionInterpreter
@@ -66,6 +67,10 @@ public class ActionInterpreter
 
                 case ActionOpcode.PanLocation:
                     RunPanLocation(command);
+                    break;
+
+                case ActionOpcode.SetScrollSpeeds:
+                    RunSetScrollSpeeds(command);
                     break;
 
                 default:
@@ -188,6 +193,24 @@ public class ActionInterpreter
         }
 
         GameManager.Instance.PlayAudioPersistent(command.Arguments[1] as string, command.Arguments[0] as string);
+    }
+
+    private void RunSetScrollSpeeds(ScriptCommand<ActionOpcode> command)
+    {
+        if (command.Arguments.Count % 2 != 0)
+        {
+            Debug.LogError("Expected scroll speeds argument count to be even!");
+            return;
+        }
+
+        Vector2[] speeds = new Vector2[command.Arguments.Count / 2];
+
+        for (int i = 0; i < speeds.Length; i++)
+        {
+            speeds[i] = new Vector2(int.Parse(command.Arguments[i * 2] as string), int.Parse(command.Arguments[i * 2 + 1] as string));
+        }
+
+        GameManager.Instance.SetControlSetScrollSpeeds(speeds);
     }
 
     public string GetValue(string variableName, out bool isGlobal)

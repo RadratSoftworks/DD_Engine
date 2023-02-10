@@ -542,6 +542,8 @@ MonoBehaviour:
   guiActivePrefabObject: {fileID: 2615532167301670140, guid: f7256fbbb51e5d24886f451cb34b3db3, type: 3}
   guiSoundPrefabObject: {fileID: 6712332247417969447, guid: 38cbd8465508076498b6b4697402c055, type: 3}
   guiConditionalPrefabObject: {fileID: 6563853629906471734, guid: 6951509b66ee68a498f74a049162d9ff, type: 3}
+  guiScrollingPicturePrefabObject: {fileID: 7333423592277839260, guid: 4bfa905ec1e8af548b6d6596e50b61b5, type: 3}
+  guiLabelPrefabObject: {fileID: 7421573128737498477, guid: 7dc1814f69691e44b9dd8c6f055956f9, type: 3}
   container: {fileID: 1861322847}
 --- !u!4 &1191797624
 Transform:
@@ -835,7 +837,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameAnimationPrefabObject: {fileID: 4706014351936562840, guid: 1cfbeb2219f710d4998bb6100a6763ae, type: 3}
   gameImagePrefabObject: {fileID: 987941436643803451, guid: c32f74e3354ae7b45b40d2091f9e4b7e, type: 3}
-  gameLayerPrefabObject: {fileID: 2242316321685104994, guid: 6feab6d0ff3de5a4fbe00445e5008fae, type: 3}
   gameScenePrefabObject: {fileID: 3811118632280927081, guid: 00e5263e49edf89488ad3459b58d772d, type: 3}
   dialogueContainer: {fileID: 2104935184}
   textBalloonTop: {fileID: 1572906558}
@@ -1187,7 +1188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d258102470bcef47abcd500ad0e9396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameDataPath: G:\bent\DD_RV\opes
+  GameDataPath: E:\Game\DD_RV_opes
   EnglishFontAsset: {fileID: 11400000, guid: bde68bbb4549b484197703a36709abf8, type: 2}
   SimplifiedChineseFontAsset: {fileID: 11400000, guid: 862006d1828a53a4ca8c61764b89c78b, type: 2}
 --- !u!1 &2104935184

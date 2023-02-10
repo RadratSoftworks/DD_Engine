@@ -18,7 +18,8 @@ public class ActionParser
         { "loadgadget", ActionOpcode.LoadGadget },
         { "play", ActionOpcode.Play },
         { "locationoffset", ActionOpcode.SetLocationOffset },
-        { "panlocation", ActionOpcode.PanLocation }
+        { "panlocation", ActionOpcode.PanLocation },
+        { "scrollspeeds", ActionOpcode.SetScrollSpeeds }
     };
 
     public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)

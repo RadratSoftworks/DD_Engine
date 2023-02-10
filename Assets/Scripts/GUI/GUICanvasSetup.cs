@@ -7,9 +7,10 @@ public class GUICanvasSetup : MonoBehaviour
     public GameObject activeCollideGameObject;
     private BoxCollider2D activeCollider;
 
-    public static Vector2 ActivePositionToViewCenterPoint(Vector2 position)
+    // We adjusted the collider, now we must adjust the panning
+    public static Vector2 CorrectActiveColliderPanning(Vector2 position)
     {
-        return position + new Vector2(1.0f, 0.0f) / Constants.PixelsPerUnit;
+        return position + new Vector2(2.0f, 0.0f) / Constants.PixelsPerUnit;
     }
 
     void Awake()

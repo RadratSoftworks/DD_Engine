@@ -72,12 +72,12 @@ public class GUIActiveController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // TODO: Maybe can just use GUIControlSet.Size and get the middle point instead?
-        // I like to stay independent of it as much as I can though!
-        actionCenterViewPoint = GUICanvasSetup.ActivePositionToViewCenterPoint(collision.transform.position);
+        actionCenterViewPoint = collision.transform.position;
 
         arrows.SetActive(true);
         isHovered = true;
+
+        StartCoroutine(controlSet.HandleAction(name, Constants.OnFocusScriptEventName));
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -90,7 +90,7 @@ public class GUIActiveController : MonoBehaviour
     {
         if (isHovered)
         {
-            layerController.ScrollLocation(arrows.transform.InverseTransformPoint(actionCenterViewPoint));
+            layerController.ScrollLocation(GUICanvasSetup.CorrectActiveColliderPanning(arrows.transform.InverseTransformPoint(actionCenterViewPoint)));
             StartCoroutine(controlSet.HandleAction(name, Constants.OnClickScriptEventName));
         }
     }

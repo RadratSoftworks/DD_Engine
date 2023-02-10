@@ -8,15 +8,14 @@ public class GUILayerController : MonoBehaviour
 
     [Tooltip("Number divided with the scroll amount to get the amount of movement to scroll the layer")]
     public float layerScrollFactor = 100.0f;
+    public Vector2 scroll;
 
     private Vector2 originalPosition;
     private Vector2 size;
-    private Vector2 scroll;
     private bool definePan;
 
     private GUILocationController locationController;
     private GUIControlSet controlSet;
-
 
     private void Start()
     {

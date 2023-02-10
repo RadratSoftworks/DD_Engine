@@ -8,16 +8,41 @@ public class GUIControlSetFactory : MonoBehaviour
     public static GUIControlSetFactory Instance;
     private Dictionary<string, GUIControlSet> controlSets;
 
-    public GameObject guiPicturePrefabObject;
-    public GameObject guiMenuOptionPrefabObject;
-    public GameObject guiAnimationPrefabObject;
-    public GameObject guiMenuPrefabObject;
-    public GameObject guiLayerPrefabObject;
-    public GameObject guiLocationPrefabObject;
-    public GameObject guiActivePrefabObject;
-    public GameObject guiSoundPrefabObject;
-    public GameObject guiConditionalPrefabObject;
-    public GameObject container;
+    [SerializeField]
+    private GameObject guiPicturePrefabObject;
+
+    [SerializeField]
+    private GameObject guiMenuOptionPrefabObject;
+
+    [SerializeField]
+    private GameObject guiAnimationPrefabObject;
+
+    [SerializeField]
+    private GameObject guiMenuPrefabObject;
+
+    [SerializeField]
+    private GameObject guiLayerPrefabObject;
+
+    [SerializeField]
+    private GameObject guiLocationPrefabObject;
+
+    [SerializeField]
+    private GameObject guiActivePrefabObject;
+
+    [SerializeField]
+    private GameObject guiSoundPrefabObject;
+
+    [SerializeField]
+    private GameObject guiConditionalPrefabObject;
+
+    [SerializeField]
+    private GameObject guiScrollingPicturePrefabObject;
+
+    [SerializeField]
+    private GameObject guiLabelPrefabObject;
+
+    [SerializeField]
+    private GameObject container;
 
     private void Start()
     {
@@ -232,6 +257,38 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
+    private void LoadGuiScrollingPicture(GameObject parent, GUIControlScrollingPictureDescription description)
+    {
+        GameObject anotherInstance = Instantiate(guiScrollingPicturePrefabObject, parent.transform, false);
+        anotherInstance.name = description.ImagePath;
+        
+        GUIScrollingPictureController controller = anotherInstance.GetComponent<GUIScrollingPictureController>();
+
+        if (controller != null)
+        {
+            Sprite pictureSprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
+                description.ImagePath, forScrolling: true);
+
+            if (pictureSprite == null)
+            {
+                Debug.LogError("Unable to load picture for scrolling!");
+            }
+
+            controller.Setup(pictureSprite, description.TopPosition, description.Scroll, description.AbsoluteDepth);
+        }
+    }
+
+    private void LoadGuiLabel(GUIControlSet ownSet, GameObject parent, GUIControlLabelDescription description)
+    {
+        GameObject anotherInstance = Instantiate(guiLabelPrefabObject, parent.transform, false);
+        GUILabelController controller = anotherInstance.GetComponent<GUILabelController>();
+
+        if (controller != null)
+        {
+            controller.Setup(description.TopPosition, ownSet.GetLanguageString(description.TextName), description.AbsoluteDepth);
+        }
+    }
+
     public void InstantiateControls(GUIControlSet ownSet, GameObject parent, List<GUIControlDescription> descriptions)
     {
         foreach (GUIControlDescription description in descriptions)
@@ -263,6 +320,14 @@ public class GUIControlSetFactory : MonoBehaviour
             else if (description is GUIControlActiveDescription)
             {
                 LoadGuiActive(ownSet, parent, description as GUIControlActiveDescription);
+            }
+            else if (description is GUIControlScrollingPictureDescription)
+            {
+                LoadGuiScrollingPicture(parent, description as GUIControlScrollingPictureDescription);
+            }
+            else if (description is GUIControlLabelDescription)
+            {
+                LoadGuiLabel(ownSet, parent, description as GUIControlLabelDescription);
             }
             else
             {

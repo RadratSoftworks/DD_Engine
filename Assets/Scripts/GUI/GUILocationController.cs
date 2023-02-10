@@ -27,6 +27,7 @@ public class GUILocationController : MonoBehaviour
 
         controlSet.OffsetChanged += OnControlSetOffsetChanged;
         controlSet.PanRequested += OnPanRequested;
+        controlSet.LocationScrollSpeedSetRequested += OnScrollSpeedsSet;
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -121,5 +122,18 @@ public class GUILocationController : MonoBehaviour
     private void OnPanRequested(Vector2 amount)
     {
         Scroll(GameUtils.ToUnityCoordinates(amount * new Vector2(-1, 1)), true, true);
+    }
+
+    private void OnScrollSpeedsSet(Vector2[] speeds)
+    {
+        int index = 0;
+
+        foreach (var layerController in layerControllers)
+        {
+            if (layerController.scroll == Vector2.zero)
+            {
+                layerController.scroll = speeds[index++];
+            }
+        }
     }
 }

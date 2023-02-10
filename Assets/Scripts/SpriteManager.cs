@@ -142,7 +142,7 @@ public class SpriteManager: MonoBehaviour
         return dataBuffer;
     }
 
-    public Sprite Load(ResourceFile resources, string path, Vector2? origin = null)
+    public Sprite Load(ResourceFile resources, string path, Vector2? origin = null, bool forScrolling = false)
     {
         string pathRaw = Path.ChangeExtension(path, null);
 
@@ -162,7 +162,7 @@ public class SpriteManager: MonoBehaviour
         }
 
         Texture2D tex = new Texture2D((int)textureSize.x, (int)textureSize.y, TextureFormat.RGBA32, false);
-        tex.wrapMode = TextureWrapMode.Clamp;
+        tex.wrapMode = forScrolling ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
         tex.name = pathRaw;
 
         tex.LoadRawTextureData(data);

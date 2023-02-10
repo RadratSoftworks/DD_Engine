@@ -29,6 +29,9 @@ public class GUIControlSet
     public delegate void OnPanRequested(Vector2 amount);
     public event OnPanRequested PanRequested;
 
+    public delegate void OnLocationScrollSpeedSetRequested(Vector2[] speeds);
+    public event OnLocationScrollSpeedSetRequested LocationScrollSpeedSetRequested;
+
     public int performingBusyAnimationCount = 0;
 
     public Vector2 ViewSize => viewSize;
@@ -106,6 +109,11 @@ public class GUIControlSet
     public void Pan(Vector2 amount)
     {
         PanRequested?.Invoke(amount);
+    }
+
+    public void SetLocationScrollSpeeds(Vector2[] speeds)
+    {
+        LocationScrollSpeedSetRequested?.Invoke(speeds);
     }
 
     public bool Busy => performingBusyAnimationCount != 0;
