@@ -17,6 +17,7 @@ public class Constants
 
     public static readonly string TextBalloonObjectName = "TextBalloon";
     public static readonly string IconLayer = "Icon";
+    public static readonly string Anonymous = "Anonymous";
 
     public static readonly Dictionary<GameLanguage, string> GameLanguageToResourceLanguageCodeDict =
         new Dictionary<GameLanguage, string>()

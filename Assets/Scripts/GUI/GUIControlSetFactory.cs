@@ -336,6 +336,17 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
+    public GUIControlSet LoadControlSet(Stream stream, Vector2 viewResolution, string path = null)
+    {
+        var controlDesc = new GUIControlDescriptionFile(stream);
+        controlDesc.Filename = path;
+
+        var controlSet = new GUIControlSet(container, controlDesc, viewResolution);
+
+        controlSets.Add(path, controlSet);
+        return controlSet;
+    }
+
     public GUIControlSet LoadControlSet(string path, Vector2 viewResolution)
     {
         if (controlSets.ContainsKey(path))
@@ -352,13 +363,7 @@ public class GUIControlSetFactory : MonoBehaviour
 
             using (MemoryStream memStream = new MemoryStream(controlSetInfoData))
             {
-                var controlDesc = new GUIControlDescriptionFile(memStream);
-                controlDesc.Filename = path;
-
-                var controlSet = new GUIControlSet(container, controlDesc, viewResolution);
-
-                controlSets.Add(path, controlSet);
-                return controlSet;
+                return LoadControlSet(memStream, viewResolution, path);
             }
         }
 
