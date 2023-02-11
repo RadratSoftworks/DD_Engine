@@ -15,6 +15,7 @@ public class ResourceManager : MonoBehaviour
     private ResourceFile localizationResources;
     private ResourceFile introResources;
     private ResourceFile protectedGeneralResources;
+    private ResourceFile protectedLocalizationResources;
 
     private List<GameLanguage> supportedGameLanguages = new List<GameLanguage>();
 
@@ -25,7 +26,7 @@ public class ResourceManager : MonoBehaviour
     public ResourceFile LocalizationResources => localizationResources;
     public ResourceFile IntroResources => introResources;
     public ResourceFile ProtectedGeneralResources => protectedGeneralResources;
-
+    public ResourceFile ProtectedLocalizationResources => protectedLocalizationResources;
 
     public static ResourceManager Instance;
 
@@ -63,6 +64,22 @@ public class ResourceManager : MonoBehaviour
 
     public ResourceFile PickBestResourcePackForFile(string filepath)
     {
+        // DRM-protected, so in another file
+        if (filepath.StartsWith("chapters/chapter2"))
+        {
+            if (Path.GetExtension(filepath) == ".lang")
+            {
+                return protectedLocalizationResources;
+            }
+
+            return ProtectedGeneralResources;
+        }
+
+        if (Path.GetExtension(filepath) == ".lang")
+        {
+            return LocalizationResources;
+        }
+
         if (filepath.StartsWith("intro", StringComparison.OrdinalIgnoreCase) ||
             filepath.Contains("game_intro", StringComparison.OrdinalIgnoreCase))
         {
@@ -93,6 +110,8 @@ public class ResourceManager : MonoBehaviour
         introResources = new ResourceFile(Path.Join(GameDataPath, FilePaths.IntroResourceFileName));
         yield return null;
         protectedGeneralResources = new ResourceFile(Path.Join(GameDataPath, FilePaths.ProtectedGeneralResourceFileName));
+        yield return null;
+        protectedLocalizationResources = new ResourceFile(Path.Join(GameDataPath, string.Format(FilePaths.ProtectedLocalizationResourceFileName, GetLanguageCodeForLocalization())));
         yield return null;
         OnResourcesReady();
         yield break;

@@ -7,16 +7,23 @@ using UnityEngine;
 
 public static class LocalizerHelper
 {
-    public static Dictionary<string, string> GetStrings(ResourceFile resources, string filename)
+    public static Dictionary<string, string> GetStrings(string filename)
     {
         string langFilename = Path.ChangeExtension(filename, ".lang");
+        ResourceFile resources = ResourceManager.Instance.PickBestResourcePackForFile(langFilename);
+
         if (!resources.Exists(langFilename))
         {
-            return null;
+            resources = ResourceManager.Instance.ProtectedLocalizationResources;
+
+            if (!resources.Exists(langFilename))
+            {
+                return null;
+            }
         }
 
-        byte[] animationFileData = resources.ReadResourceData(resources.Resources[langFilename]);
-        using (StreamReader reader = new StreamReader(new MemoryStream(animationFileData)))
+        byte[] localizationFileData = resources.ReadResourceData(resources.Resources[langFilename]);
+        using (StreamReader reader = new StreamReader(new MemoryStream(localizationFileData)))
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
             do

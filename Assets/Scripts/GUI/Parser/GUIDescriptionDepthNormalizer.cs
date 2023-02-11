@@ -70,6 +70,9 @@ public static class GUIDescriptionDepthNormalizer
             else if (control is GUIControlMenuDescription)
             {
                 NormalizeImpl((control as GUIControlMenuDescription).MenuItemControls, ref depth);
+
+                // For side-menu image
+                control.AbsoluteDepth = ++depth;
             }
         }
     }

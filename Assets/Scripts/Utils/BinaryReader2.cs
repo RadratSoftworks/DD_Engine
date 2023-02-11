@@ -67,4 +67,9 @@ public class BinaryReader2 : BinaryReader
         Array.Reverse(data);
         return BitConverter.ToUInt16(data, 0);
     }
+
+    public void RewindByte()
+    {
+        BaseStream.Seek(-1, SeekOrigin.Current);
+    }
 }

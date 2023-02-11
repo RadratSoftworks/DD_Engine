@@ -32,6 +32,6 @@ public class GUIControlMenuDescription : GUIControlDescription
         SideImagePath = reader.ReadWordLengthString();
         ActionHandlerFilePath = reader.ReadWordLengthString();
 
-        menuItemControls = GUIControlListReader.InternalizeControls(this, reader);
+        menuItemControls = GUIControlListReader.InternalizeControls(this, reader, GUIControlID.MenuItem);
     }
 }

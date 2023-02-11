@@ -50,7 +50,7 @@ public class GUIControlSet
 
     public GUIControlSet(GameObject parentContainer, GUIControlDescriptionFile description, Vector2 viewSize, GUIControlSetInstantiateOptions options)
     {
-        langStrings = LocalizerHelper.GetStrings(ResourceManager.Instance.LocalizationResources, description.Filename);
+        langStrings = LocalizerHelper.GetStrings(description.Filename);
         standardActionLibrary = ActionLibraryLoader.Load(Path.ChangeExtension(description.Filename, ActionLibraryLoader.FileExtension));
 
         Name = GameUtils.ToUnityName(description.Filename);

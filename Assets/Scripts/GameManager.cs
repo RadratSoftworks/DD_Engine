@@ -196,7 +196,7 @@ public class GameManager : MonoBehaviour
 
             dialogue = DialogueParser.Parse(new MemoryStream(data));
             dialogue.FileName = filename;
-            dialogue.Strings = LocalizerHelper.GetStrings(ResourceManager.Instance.LocalizationResources, filename);
+            dialogue.Strings = LocalizerHelper.GetStrings(filename);
 
             if (dialogue != null)
             {

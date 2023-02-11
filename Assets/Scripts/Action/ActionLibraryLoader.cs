@@ -6,12 +6,16 @@ public static class ActionLibraryLoader
 
     public static ActionLibrary Load(string filename)
     {
-        ResourceFile generalResources = ResourceManager.Instance.GeneralResources;
-        if (!generalResources.Exists(filename))
+        ResourceFile resourcePack = ResourceManager.Instance.PickBestResourcePackForFile(filename);
+        if (!resourcePack.Exists(filename))
         {
-            throw new FileNotFoundException("Can't find action script file " + filename);
+            resourcePack = ResourceManager.Instance.ProtectedGeneralResources;
+            if (!resourcePack.Exists(filename))
+            {
+                throw new FileNotFoundException("Can't find action script file " + filename);
+            }
         }
-        byte[] data = generalResources.ReadResourceData(generalResources.Resources[filename]);
+        byte[] data = resourcePack.ReadResourceData(resourcePack.Resources[filename]);
 
         using (MemoryStream stream = new MemoryStream(data))
         {

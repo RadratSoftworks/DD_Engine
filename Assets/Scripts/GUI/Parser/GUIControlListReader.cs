@@ -1,33 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class GUIControlListReader
 {
-    enum GUIControlID
-    {
-        Picture = 3,
-        Label = 4,
-        Animation = 5,
-        ScrollingPicture = 6,
-        BackgroundLabel = 7,
-        Menu = 10,
-        MenuItem = 11,
-        Location = 30,
-        Layer = 31,
-        Active = 40,
-        Condition = 50,
-        Value = 51,
-        Sound = 80
-    };
-
-    public static List<GUIControlDescription> InternalizeControls(GUIControlDescription parent, BinaryReader2 reader)
+    public static List<GUIControlDescription> InternalizeControls(GUIControlDescription parent, BinaryReader2 reader, GUIControlID? acceptableID = null)
     {
         List<GUIControlDescription> controls = new List<GUIControlDescription>();
 
         short length = reader.ReadInt16BE();
         for (short i = 0; i < length; i++)
         {
+            if (reader.BaseStream.Position == reader.BaseStream.Length)
+            {
+                Debug.LogWarning("Premature end-offile reached while reading GUI control file description! Finishing!");
+                break;
+            }
+
             GUIControlID controlID = (GUIControlID)reader.ReadByte();
+            if ((acceptableID != null) && (acceptableID != controlID))
+            {
+                Debug.LogWarningFormat("Unmatched requested control ID: target={0}, result={1}", acceptableID, controlID);
+                reader.RewindByte();
+
+                break;
+            }
+
             switch (controlID)
             {
                 case GUIControlID.Condition:

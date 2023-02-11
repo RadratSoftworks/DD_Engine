@@ -355,7 +355,7 @@ public class GUIControlSetFactory : MonoBehaviour
             return controlSets[path];
         }
 
-        ResourceFile resourcesToPick = ResourceManager.Instance.GeneralResources;
+        ResourceFile resourcesToPick = ResourceManager.Instance.PickBestResourcePackForFile(path);
 
         if (!resourcesToPick.Exists(path))
         {
