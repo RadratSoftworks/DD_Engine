@@ -48,12 +48,12 @@ public class GUIControlSet
         return langStrings[key];
     }
 
-    public GUIControlSet(GameObject parentContainer, GUIControlDescriptionFile description, Vector2 viewSize)
+    public GUIControlSet(GameObject parentContainer, GUIControlDescriptionFile description, Vector2 viewSize, GUIControlSetInstantiateOptions options)
     {
         langStrings = LocalizerHelper.GetStrings(ResourceManager.Instance.LocalizationResources, description.Filename);
         standardActionLibrary = ActionLibraryLoader.Load(Path.ChangeExtension(description.Filename, ActionLibraryLoader.FileExtension));
 
-        Name = description.Filename;
+        Name = GameUtils.ToUnityName(description.Filename);
 
         actionInterpreter = new ActionInterpreter();
 
@@ -61,10 +61,9 @@ public class GUIControlSet
         gameObject.transform.parent = parentContainer.transform;
         gameObject.transform.localScale = Vector3.one;
         gameObject.transform.position = Vector3.zero;
-        gameObject.SetActive(false);
 
         this.viewSize = GameUtils.ToUnitySize(viewSize);
-        GUIControlSetFactory.Instance.InstantiateControls(this, gameObject, description.Controls);
+        GUIControlSetFactory.Instance.InstantiateControls(this, gameObject, description.Controls, options);
     }
 
     public IEnumerator HandleAction(string id, string actionName)

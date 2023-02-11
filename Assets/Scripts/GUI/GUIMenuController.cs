@@ -33,7 +33,7 @@ public class GUIMenuController : MonoBehaviour
     {
         if (actionLibrary != null)
         {
-            StartCoroutine(actionLibrary.HandleAction(controlSet.ActionInterpreter, name, Constants.OnClickScriptEventName));
+            GameManager.Instance.RunPersistentCoroutine(actionLibrary.HandleAction(controlSet.ActionInterpreter, name, Constants.OnClickScriptEventName));
         }
     }
 }

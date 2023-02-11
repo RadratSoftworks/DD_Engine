@@ -96,6 +96,8 @@ public class GameManager : MonoBehaviour
             }
 
             dialogueAudioController.StopAll();
+            activeGUI = null;
+
             return;
         }
 
@@ -118,7 +120,6 @@ public class GameManager : MonoBehaviour
         activeGadget.SetActive(true);
 
         gadgets.Push(activeGadget);
-        DialogueStateChanged?.Invoke(true);
     }
 
     private void CleanAllPendingGadgets()
@@ -156,6 +157,7 @@ public class GameManager : MonoBehaviour
 
     public void OnResourcesReady()
     {
+        //LoadMinigame("ch1/minigames/PhotoGame.mini");
         LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
@@ -169,7 +171,7 @@ public class GameManager : MonoBehaviour
         PushGadget(containerObject);
 
         GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, scriptBlock, parent);
-        StartCoroutine(interpreter.Execute());
+        StartCoroutine(interpreter.Execute(() => DialogueStateChanged?.Invoke(true)));
     }
 
     public void LoadDialogueSlide(Dialogue parent, DialogueSlide slide)
@@ -239,10 +241,29 @@ public class GameManager : MonoBehaviour
 
     public void LoadControlSet(string filename)
     {
-        GUIControlSet set = GUIControlSetFactory.Instance.LoadControlSet(filename, Constants.CanvasSize);
+        GUIControlSet set = GUIControlSetFactory.Instance.LoadControlSet(filename, Constants.CanvasSize, new GUIControlSetInstantiateOptions());
         if (set != null)
         {
             SetCurrentGUI(set);
+        }
+    }
+
+    public void LoadMinigame(string filename)
+    {
+        ResourceFile resourcesToLoadFrom = ResourceManager.Instance.GeneralResources;
+        if (!resourcesToLoadFrom.Exists(filename))
+        {
+            throw new FileNotFoundException("Can't find minigame script file " + filename);
+        }
+        byte[] data = resourcesToLoadFrom.ReadResourceData(resourcesToLoadFrom.Resources[filename]);
+
+        using (MemoryStream dataStream = new MemoryStream(data))
+        {
+            GUIControlSet set = MinigameLoader.Load(dataStream, filename, Constants.CanvasSize);
+            if (set != null)
+            {
+                SetCurrentGUI(set);
+            }
         }
     }
 
@@ -372,6 +393,11 @@ public class GameManager : MonoBehaviour
     public void SetControlSetScrollSpeeds(Vector2[] speed)
     {
         activeGUI.SetLocationScrollSpeeds(speed);
+    }
+
+    public void RunPersistentCoroutine(IEnumerator coroutine)
+    {
+        StartCoroutine(coroutine);
     }
 
     public bool ContinueConfirmed => confirmedController.Confirmed;

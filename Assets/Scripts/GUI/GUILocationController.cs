@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static GUILayerController;
 
 public class GUILocationController : MonoBehaviour
 {
-    public float durationPerUnit = 1.0f;
-    public float moveAmount = 0.02f;
+    public float durationPerUnit = 0.5f;
+
+    [SerializeField]
+    private float moveAmount = 0.02f;
 
     private GUIControlSet controlSet;
     private PlayerInput playerInput;
@@ -14,10 +17,20 @@ public class GUILocationController : MonoBehaviour
     private GUILayerController panLayerController;
     private List<GUILayerController> layerControllers = new List<GUILayerController>();
 
+    private int scrollInProgressCount = 0;
+    public float MoveAmount => moveAmount;
+
+    public bool ScrollAnimationDone => (scrollInProgressCount == 0);
+
     private void Awake()
     {
         GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
         playerInput = GetComponent<PlayerInput>();
+    }
+
+    private void OnLayerScrollAnimationDone(GUILayerController layerController)
+    {
+        scrollInProgressCount--;
     }
 
     public void Setup(GUIControlSet controlSet, GameObject panLayer)
@@ -36,6 +49,7 @@ public class GUILocationController : MonoBehaviour
 
             if (controller != null)
             {
+                controller.ScrollAnimationFinished += OnLayerScrollAnimationDone;
                 layerControllers.Add(controller);
             }
         }
@@ -44,13 +58,6 @@ public class GUILocationController : MonoBehaviour
     private void OnDialogueStateChanged(bool enabled)
     {
         playerInput.enabled = !enabled;
-    }
-
-    private IEnumerator ScrollDoneCoroutine(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        controlSet.UnregisterPerformingBusyAnimation();
-        yield break;
     }
 
     private void ScrollFromOrigin(Vector2 offset)
@@ -67,8 +74,17 @@ public class GUILocationController : MonoBehaviour
             controller.ScrollFromOrigin(targetOffset);
         }
     }
+    private IEnumerator ScrollDoneCoroutine(bool reportNotBusyAnymore)
+    {
+        yield return new WaitUntil(() => ScrollAnimationDone);
+        if (reportNotBusyAnymore)
+        {
+            controlSet.UnregisterPerformingBusyAnimation();
+        }
+        yield break;
+    }
 
-    public void Scroll(Vector2 amount, bool hasDuration = false, bool notAccountingPanLayerScrollFactor = false)
+    public void Scroll(Vector2 amount, bool hasDuration = false, bool notAccountingPanLayerScrollFactor = false, bool busyWhileAnimating = true, EaseType ease = EaseType.Normal)
     {
         Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, notAccountingPanLayerScrollFactor);
         if (targetPanAmount == Vector3.zero)
@@ -79,18 +95,23 @@ public class GUILocationController : MonoBehaviour
         float duration = 0.0f;
 
         if (hasDuration) {
-            controlSet.RegisterPerformingBusyAnimation();
-            duration = Mathf.Max(targetPanAmount.x, targetPanAmount.y) * durationPerUnit;
+            if (busyWhileAnimating)
+            {
+                controlSet.RegisterPerformingBusyAnimation();
+            }
+
+            scrollInProgressCount = layerControllers.Count;
+            duration = Mathf.Max(Mathf.Abs(targetPanAmount.x), Mathf.Abs(targetPanAmount.y)) * durationPerUnit;
         }
 
         foreach (var controller in layerControllers)
         {
-            controller.ForceScroll(targetPanAmount, duration);
+            controller.ForceScroll(targetPanAmount, duration, ease);
         }
 
-        if (hasDuration)
+        if (hasDuration && busyWhileAnimating)
         {
-            StartCoroutine(ScrollDoneCoroutine(duration));
+            StartCoroutine(ScrollDoneCoroutine(busyWhileAnimating));
         }
     }
 

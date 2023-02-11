@@ -14,6 +14,8 @@ public class GUIActiveController : MonoBehaviour
     // The pivot of the collider should be the main view point we got to center to!
     private Vector3 actionCenterViewPoint;
 
+    public bool PanToCenterWhenSelect { get; set; } = true;
+
     private void Awake()
     {
         layerController = GetComponentInParent<GUILayerController>();
@@ -29,9 +31,11 @@ public class GUIActiveController : MonoBehaviour
         GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
     }
 
-    public void Setup(GUIControlSet set, Vector2 position, Vector2 size, Rect detectBounds)
+    public void Setup(GUIControlSet set, Vector2 position, Vector2 size, Rect detectBounds, bool panToWhenSelected = true)
     {
+        this.PanToCenterWhenSelect = panToWhenSelected;
         controlSet = set;
+
         transform.localPosition = GameUtils.ToUnityCoordinates(detectBounds.position + detectBounds.size / 2);
         Vector3 sizeTransformed = GameUtils.ToUnitySize(size);
 
@@ -77,7 +81,7 @@ public class GUIActiveController : MonoBehaviour
         arrows.SetActive(true);
         isHovered = true;
 
-        StartCoroutine(controlSet.HandleAction(name, Constants.OnFocusScriptEventName));
+        GameManager.Instance.RunPersistentCoroutine(controlSet.HandleAction(name, Constants.OnFocusScriptEventName));
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -90,8 +94,12 @@ public class GUIActiveController : MonoBehaviour
     {
         if (isHovered)
         {
-            layerController.ScrollLocation(GUICanvasSetup.CorrectActiveColliderPanning(arrows.transform.InverseTransformPoint(actionCenterViewPoint)));
-            StartCoroutine(controlSet.HandleAction(name, Constants.OnClickScriptEventName));
+            if (PanToCenterWhenSelect)
+            {
+                layerController.ScrollLocation(GUICanvasSetup.CorrectActiveColliderPanning(arrows.transform.InverseTransformPoint(actionCenterViewPoint)));
+            }
+
+            GameManager.Instance.RunPersistentCoroutine(controlSet.HandleAction(name, Constants.OnClickScriptEventName));
         }
     }
 

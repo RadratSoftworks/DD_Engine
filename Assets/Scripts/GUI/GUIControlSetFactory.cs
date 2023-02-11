@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using DG.Tweening.Plugins.Core.PathCore;
 
 public class GUIControlSetFactory : MonoBehaviour
 {
@@ -78,7 +79,7 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
-    private void LoadGuiConditional(GUIControlSet ownSet, GameObject parent, GUIControlConditionalDescription description)
+    private void LoadGuiConditional(GUIControlSet ownSet, GameObject parent, GUIControlConditionalDescription description, GUIControlSetInstantiateOptions options)
     {
         foreach (var pairSet in description.ControlShowOnCases)
         {
@@ -88,7 +89,7 @@ public class GUIControlSetFactory : MonoBehaviour
             GUIConditionalController conditionalController = anotherInstance.GetComponent<GUIConditionalController>();
             conditionalController.Setup(ownSet, description.ConditionValueVariable, pairSet.Key);
 
-            InstantiateControls(ownSet, anotherInstance, pairSet.Value);
+            InstantiateControls(ownSet, anotherInstance, pairSet.Value, options);
         }
     }
 
@@ -184,7 +185,7 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
-    private GameObject LoadGuiLayer(GUIControlSet ownSet, GameObject parent, GUIControlLayerDescription description)
+    private GameObject LoadGuiLayer(GUIControlSet ownSet, GameObject parent, GUIControlLayerDescription description, GUIControlSetInstantiateOptions options)
     {
         GameObject anotherInstance = Instantiate(guiLayerPrefabObject, parent.transform, false);
         anotherInstance.transform.localPosition = GameUtils.ToUnityCoordinates(description.TopPosition);
@@ -195,11 +196,11 @@ public class GUIControlSetFactory : MonoBehaviour
             controller.SetProperties(ownSet, description.TopPosition, description.Scroll, description.Size);
         }
 
-        InstantiateControls(ownSet, anotherInstance, description.Controls);
+        InstantiateControls(ownSet, anotherInstance, description.Controls, options);
         return anotherInstance;
     }
 
-    private void LoadGuiLocation(GUIControlSet ownSet, GameObject parent, GUIControlLocationDescription description)
+    private void LoadGuiLocation(GUIControlSet ownSet, GameObject parent, GUIControlLocationDescription description, GUIControlSetInstantiateOptions options)
     {
         GameObject anotherInstance = Instantiate(guiLocationPrefabObject, parent.transform, false);
         anotherInstance.transform.localPosition = GameUtils.ToUnityCoordinates(description.TopPosition);
@@ -216,7 +217,7 @@ public class GUIControlSetFactory : MonoBehaviour
             {
                 GUIControlLayerDescription layerDesc = layerUncasted as GUIControlLayerDescription;
 
-                GameObject result = LoadGuiLayer(ownSet, anotherInstance, layerDesc);
+                GameObject result = LoadGuiLayer(ownSet, anotherInstance, layerDesc, options);
                 if ((panLayer == null) || (layerDesc.DefinesPan))
                 {
                     panLayer = result;
@@ -231,7 +232,7 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
-    private void LoadGuiActive(GUIControlSet ownSet, GameObject parent, GUIControlActiveDescription description)
+    private void LoadGuiActive(GUIControlSet ownSet, GameObject parent, GUIControlActiveDescription description, GUIControlSetInstantiateOptions options)
     {
         GameObject anotherInstance = Instantiate(guiActivePrefabObject, parent.transform, false);
         anotherInstance.name = description.Id;
@@ -240,14 +241,14 @@ public class GUIControlSetFactory : MonoBehaviour
 
         if (controller != null)
         {
-            controller.Setup(ownSet, description.TopPosition, description.Size, new Rect(description.BoundPosition, description.BoundSize));
+            controller.Setup(ownSet, description.TopPosition, description.Size, new Rect(description.BoundPosition, description.BoundSize), options.PanToActiveWhenSelected);
         }
     }
 
     private void LoadGuiSound(GameObject parent, GUIControlSoundDescription description)
     {
         GameObject anotherInstance = Instantiate(guiSoundPrefabObject, parent.transform, false);
-        anotherInstance.name = description.Path;
+        anotherInstance.name = GameUtils.ToUnityName(description.Path);
 
         GUISoundController controller = anotherInstance.GetComponent<GUISoundController>();
 
@@ -260,7 +261,7 @@ public class GUIControlSetFactory : MonoBehaviour
     private void LoadGuiScrollingPicture(GameObject parent, GUIControlScrollingPictureDescription description)
     {
         GameObject anotherInstance = Instantiate(guiScrollingPicturePrefabObject, parent.transform, false);
-        anotherInstance.name = description.ImagePath;
+        anotherInstance.name = GameUtils.ToUnityName(description.ImagePath);
         
         GUIScrollingPictureController controller = anotherInstance.GetComponent<GUIScrollingPictureController>();
 
@@ -289,7 +290,7 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
-    public void InstantiateControls(GUIControlSet ownSet, GameObject parent, List<GUIControlDescription> descriptions)
+    public void InstantiateControls(GUIControlSet ownSet, GameObject parent, List<GUIControlDescription> descriptions, GUIControlSetInstantiateOptions options)
     {
         foreach (GUIControlDescription description in descriptions)
         {
@@ -299,7 +300,7 @@ public class GUIControlSetFactory : MonoBehaviour
             }
             else if (description is GUIControlConditionalDescription)
             {
-                LoadGuiConditional(ownSet, parent, description as GUIControlConditionalDescription);
+                LoadGuiConditional(ownSet, parent, description as GUIControlConditionalDescription, options);
             }
             else if (description is GUIControlMenuDescription)
             {
@@ -311,7 +312,7 @@ public class GUIControlSetFactory : MonoBehaviour
             }
             else if (description is GUIControlLocationDescription)
             {
-                LoadGuiLocation(ownSet, parent, description as GUIControlLocationDescription);
+                LoadGuiLocation(ownSet, parent, description as GUIControlLocationDescription, options);
             }
             else if (description is GUIControlSoundDescription)
             {
@@ -319,7 +320,7 @@ public class GUIControlSetFactory : MonoBehaviour
             }
             else if (description is GUIControlActiveDescription)
             {
-                LoadGuiActive(ownSet, parent, description as GUIControlActiveDescription);
+                LoadGuiActive(ownSet, parent, description as GUIControlActiveDescription, options);
             }
             else if (description is GUIControlScrollingPictureDescription)
             {
@@ -336,37 +337,41 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
-    public GUIControlSet LoadControlSet(Stream stream, Vector2 viewResolution, string path = null)
+    public GUIControlSet LoadControlSet(Stream stream, Vector2 viewResolution, GUIControlSetInstantiateOptions options, string path = null)
     {
         var controlDesc = new GUIControlDescriptionFile(stream);
         controlDesc.Filename = path;
 
-        var controlSet = new GUIControlSet(container, controlDesc, viewResolution);
+        var controlSet = new GUIControlSet(container, controlDesc, viewResolution, options);
 
         controlSets.Add(path, controlSet);
         return controlSet;
     }
 
-    public GUIControlSet LoadControlSet(string path, Vector2 viewResolution)
+    public GUIControlSet LoadControlSet(string path, Vector2 viewResolution, GUIControlSetInstantiateOptions options)
     {
         if (controlSets.ContainsKey(path))
         {
             return controlSets[path];
         }
 
-        ResourceFile generalResources = ResourceManager.Instance.GeneralResources;
+        ResourceFile resourcesToPick = ResourceManager.Instance.GeneralResources;
 
-        if (generalResources.Exists(path))
+        if (!resourcesToPick.Exists(path))
         {
-            ResourceInfo controlSetRescInfo = generalResources.Resources[path];
-            byte[] controlSetInfoData = generalResources.ReadResourceData(controlSetRescInfo);
-
-            using (MemoryStream memStream = new MemoryStream(controlSetInfoData))
+            resourcesToPick = ResourceManager.Instance.ProtectedGeneralResources;
+            if (!resourcesToPick.Exists(path))
             {
-                return LoadControlSet(memStream, viewResolution, path);
+                return null;
             }
         }
 
-        return null;
+        ResourceInfo controlSetRescInfo = resourcesToPick.Resources[path];
+        byte[] controlSetInfoData = resourcesToPick.ReadResourceData(controlSetRescInfo);
+
+        using (MemoryStream memStream = new MemoryStream(controlSetInfoData))
+        {
+            return LoadControlSet(memStream, viewResolution, options, path);
+        }
     }
 }

@@ -5,6 +5,7 @@ class FilePaths
 {
     public static readonly string GeneralResourceFileName = "opes_general.opes";
     public static readonly string IntroResourceFileName = "startup_general.opes";
+    public static readonly string ProtectedGeneralResourceFileName = "protected_general.opes";
     public static readonly string LocalizationResourceFileName = "opes_loc-{0}.opes";
     public static readonly string ProtectedLocalizationResourceFileName = "protected_loc-{0}.opes";
 
@@ -19,8 +20,8 @@ class FilePaths
     };
 
     // GUI
-    //public static readonly string MainChapterGUIControlFileName = "ch1/minigames/photoChastity.fwd";
-    public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
+    public static readonly string MainChapterGUIControlFileName = "ch1/locations/docks.fwd";
+    //public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
     
     // Sound
     public static readonly string MenuOptionSwitchSFXFileName = "sound/menu_click_bullet";

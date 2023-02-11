@@ -73,6 +73,10 @@ public class ActionInterpreter
                     RunSetScrollSpeeds(command);
                     break;
 
+                case ActionOpcode.LoadMiniGame:
+                    RunLoadMiniGame(command);
+                    break;
+
                 default:
                     Debug.LogWarning("Unhandled gadget opcode: " + command.Opcode);
                     break;
@@ -101,6 +105,17 @@ public class ActionInterpreter
         }
 
         GameManager.Instance.LoadControlSet(command.Arguments[0] as string);
+    }
+
+    private void RunLoadMiniGame(ScriptCommand<ActionOpcode> command)
+    {
+        if (command.Arguments.Count == 0)
+        {
+            Debug.LogError("Not enough argument for load minigame!");
+            return;
+        }
+
+        GameManager.Instance.LoadMinigame(command.Arguments[0] as string);
     }
 
     private void RunSetLocationOffset(ScriptCommand<ActionOpcode> command)

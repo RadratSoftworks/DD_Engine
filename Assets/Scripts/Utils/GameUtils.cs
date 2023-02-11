@@ -19,4 +19,9 @@ public class GameUtils
     {
         return (int)(-gameSortingPostion);
     }
+
+    public static string ToUnityName(string path)
+    {
+        return path.Replace("/", "_");
+    }
 }

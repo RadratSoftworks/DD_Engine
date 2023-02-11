@@ -11,5 +11,7 @@ public enum ActionOpcode
     Play,
     SetLocationOffset,
     PanLocation,
-    SetScrollSpeeds
+    SetScrollSpeeds,
+    Achieve,
+    LoadMiniGame
 };

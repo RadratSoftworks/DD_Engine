@@ -294,12 +294,14 @@ public class GadgetInterpreter
         GameManager.Instance.SetBackgroundColor(new Color(r, g, b, a));
     }
 
-    public IEnumerator Execute()
+    public IEnumerator Execute(Action onGadgetStart = null)
     {
         if (GameManager.Instance.GUIBusy)
         {
             yield return new WaitUntil(() => !GameManager.Instance.GUIBusy);
         }
+
+        onGadgetStart?.Invoke();
 
         foreach (var command in scriptBlock.Commands)
         {

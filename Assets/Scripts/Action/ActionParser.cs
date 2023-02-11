@@ -19,7 +19,9 @@ public class ActionParser
         { "play", ActionOpcode.Play },
         { "locationoffset", ActionOpcode.SetLocationOffset },
         { "panlocation", ActionOpcode.PanLocation },
-        { "scrollspeeds", ActionOpcode.SetScrollSpeeds }
+        { "scrollspeeds", ActionOpcode.SetScrollSpeeds },
+        { "achieve", ActionOpcode.Achieve },
+        { "loadminigame", ActionOpcode.LoadMiniGame }
     };
 
     public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)

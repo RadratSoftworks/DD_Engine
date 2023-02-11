@@ -1,9 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
+using static GameManager;
 
 public class GUILayerController : MonoBehaviour
 {
+    public enum EaseType
+    {
+        ArcIn = 0,
+        ArcOut = 1,
+        Normal = 2
+    };
+
     public GameObject boundsObject;
 
     [Tooltip("Number divided with the scroll amount to get the amount of movement to scroll the layer")]
@@ -16,6 +24,12 @@ public class GUILayerController : MonoBehaviour
 
     private GUILocationController locationController;
     private GUIControlSet controlSet;
+    private Sequence scrollSequence;
+
+    public delegate void OnLayerScrollAnimationFinished(GUILayerController layerController);
+    public event OnLayerScrollAnimationFinished ScrollAnimationFinished;
+
+    public Vector2 Size => size;
 
     private void Start()
     {
@@ -25,6 +39,7 @@ public class GUILayerController : MonoBehaviour
     private void Awake()
     {
         locationController = transform.parent.gameObject.GetComponent<GUILocationController>();
+        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
     }
 
     public void SetProperties(GUIControlSet controlSet, Vector2 position, Vector2 scroll, Vector2 size)
@@ -38,9 +53,14 @@ public class GUILayerController : MonoBehaviour
         transform.localPosition = originalPosition;
     }
 
-    private Vector3 CalculateDestinationScroll(Vector3 basePoint, Vector2 scrollAmount)
+    public Vector3 CalculateActualScrollAmount(Vector2 scrollAmount)
     {
-        return basePoint + new Vector3((scroll.x / layerScrollFactor) * scrollAmount.x, (scroll.y / layerScrollFactor) * scrollAmount.y, 0.0f);
+        return new Vector3((scroll.x / layerScrollFactor) * scrollAmount.x, (scroll.y / layerScrollFactor) * scrollAmount.y, 0.0f);
+    }
+
+    public Vector3 CalculateDestinationScroll(Vector3 basePoint, Vector2 scrollAmount)
+    {
+        return basePoint + CalculateActualScrollAmount(scrollAmount);
     }
 
     public void ScrollFromOrigin(Vector2 amount)
@@ -71,7 +91,7 @@ public class GUILayerController : MonoBehaviour
         locationController.Scroll(amountRaw, true);
     }
 
-    public void ForceScroll(Vector2 scrollAmount, float duration)
+    public void ForceScroll(Vector2 scrollAmount, float duration, EaseType ease = EaseType.Normal)
     {
         Vector3 dest = CalculateDestinationScroll(transform.localPosition, scrollAmount);
         if (duration == 0.0f)
@@ -80,7 +100,28 @@ public class GUILayerController : MonoBehaviour
             return;
         }
 
-        transform.DOLocalMove(dest, duration);
+        scrollSequence = DOTween.Sequence();
+
+        if (ease == EaseType.Normal)
+        {
+            scrollSequence.Append(transform.DOLocalMove(dest, duration));
+        } else if (ease == EaseType.ArcOut)
+        {
+            scrollSequence.Append(transform.DOLocalMoveX(dest.x, duration).SetEase(Ease.OutQuad));
+            scrollSequence.Join(transform.DOLocalMoveY(dest.y, duration).SetEase(Ease.InQuad));
+        } else
+        {
+            scrollSequence.Append(transform.DOLocalMoveX(dest.x, duration).SetEase(Ease.InQuad));
+            scrollSequence.Join(transform.DOLocalMoveY(dest.y, duration).SetEase(Ease.OutQuad));
+        }
+
+        scrollSequence.OnComplete(() => ScrollAnimationFinished?.Invoke(this));
+    }
+
+    public void CancelPendingScroll()
+    {
+        scrollSequence.Complete();
+        ScrollAnimationFinished?.Invoke(this);
     }
 
     public Vector3 CalculateScrollAmountForLimitedPanFromPos(Vector3 basePoint, Vector2 scrollAmount, bool notAccountingScrollFactor = false)
@@ -90,8 +131,22 @@ public class GUILayerController : MonoBehaviour
         destPoint.y = Mathf.Clamp(destPoint.y, 0.0f, size.y - controlSet.ViewSize.y);
 
         Vector3 actualMoveAmount = destPoint - basePoint;
-        actualMoveAmount.x /= ((scroll.x == 0) ? 1 : scroll.x / layerScrollFactor);
-        actualMoveAmount.y /= ((scroll.y == 0) ? 1 : scroll.y / layerScrollFactor);
+        if (scroll.x == 0)
+        {
+            actualMoveAmount.x = 0.0f;
+        } else
+        {
+            actualMoveAmount.x /= scroll.x / layerScrollFactor;
+        }
+
+        if (scroll.y == 0)
+        {
+            actualMoveAmount.y = 0.0f;
+        }
+        else
+        {
+            actualMoveAmount.y /= scroll.y / layerScrollFactor;
+        }
 
         return actualMoveAmount;
     }
@@ -104,5 +159,21 @@ public class GUILayerController : MonoBehaviour
     public Vector3 CalculateScrollAmountForLimitedPanFromOrigin(Vector2 scrollAmount)
     {
         return CalculateScrollAmountForLimitedPanFromPos(originalPosition, scrollAmount);
+    }
+
+    private void OnDialogueStateChanged(bool enabled)
+    {
+        if (scrollSequence == null)
+        {
+            return;
+        }
+
+        if (enabled)
+        {
+            scrollSequence.Pause();
+        } else
+        {
+            scrollSequence.Play();
+        }
     }
 }

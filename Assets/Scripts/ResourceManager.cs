@@ -14,6 +14,7 @@ public class ResourceManager : MonoBehaviour
     private ResourceFile generalResources;
     private ResourceFile localizationResources;
     private ResourceFile introResources;
+    private ResourceFile protectedGeneralResources;
 
     private List<GameLanguage> supportedGameLanguages = new List<GameLanguage>();
 
@@ -23,6 +24,7 @@ public class ResourceManager : MonoBehaviour
     public ResourceFile GeneralResources => generalResources;
     public ResourceFile LocalizationResources => localizationResources;
     public ResourceFile IntroResources => introResources;
+    public ResourceFile ProtectedGeneralResources => protectedGeneralResources;
 
 
     public static ResourceManager Instance;
@@ -89,6 +91,8 @@ public class ResourceManager : MonoBehaviour
         localizationResources = new ResourceFile(Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, GetLanguageCodeForLocalization())));
         yield return null;
         introResources = new ResourceFile(Path.Join(GameDataPath, FilePaths.IntroResourceFileName));
+        yield return null;
+        protectedGeneralResources = new ResourceFile(Path.Join(GameDataPath, FilePaths.ProtectedGeneralResourceFileName));
         yield return null;
         OnResourcesReady();
         yield break;

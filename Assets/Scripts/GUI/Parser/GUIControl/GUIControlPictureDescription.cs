@@ -18,7 +18,7 @@ public class GUIControlPictureDescription: GUIControlDescription
 
     private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
     {
-        Id = reader.ReadWordLengthString();
+        Id = GameUtils.ToUnityName(reader.ReadWordLengthString());
 
         short x = reader.ReadInt16BE();
         short y = reader.ReadInt16BE();
