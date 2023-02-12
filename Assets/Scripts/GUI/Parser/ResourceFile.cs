@@ -10,16 +10,19 @@ public class ResourceFile
     private static readonly int ResourceInfoBinarySize = 112;
 
     private String filename;
+    private ProtectedFilePatcher filePatcher;
     private Dictionary<string, ResourceInfo> resourcesList;
 
     public Dictionary<string, ResourceInfo> Resources => resourcesList;
 
-    public ResourceFile(string filename)
+    public ResourceFile(ProtectedFilePatcher filePatcher, string filename)
     {
         this.filename = filename;
+        this.filePatcher = filePatcher;
+
         resourcesList = new Dictionary<string, ResourceInfo>(StringComparer.OrdinalIgnoreCase);
 
-        using (var fileStream = File.OpenRead(filename))
+        using (var fileStream = filePatcher.OpenFile(filename))
         {
             using (var fileBinaryReader = new BinaryReader2(fileStream))
             {
@@ -37,7 +40,7 @@ public class ResourceFile
         }
     }
 
-    private void ReadAllResourcesInfo(FileStream fileStream, BinaryReader2 fileBinaryReader)
+    private void ReadAllResourcesInfo(Stream fileStream, BinaryReader2 fileBinaryReader)
     {
         fileStream.Seek(4, SeekOrigin.Current);
         int numberOfResources = fileBinaryReader.ReadInt32();
@@ -80,7 +83,7 @@ public class ResourceFile
             return info.cachedData;
         }
 
-        using (var fileStream = File.OpenRead(filename))
+        using (var fileStream = filePatcher.OpenFile(filename))
         {
             using (var fileBinaryReader = new BinaryReader2(fileStream))
             {

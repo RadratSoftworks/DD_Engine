@@ -1,0 +1,41 @@
+{
+	"files":
+	[
+		{
+			"name": "protected_general.opes.ngdat",
+			"patch":
+			[
+				{
+					"offset": "1D6",
+					"newBytes": "6F 6E 73 2F",
+					"context": "Fix chapter 4 map.action path"
+				},
+				{
+					"offset": "567",
+					"newBytes": "67 65 2E",
+					"context": "Fix chapter 6 bunny_orphange.fwd path"
+				},
+				{
+					"offset": "7A9",
+					"newBytes": "67 75 65 20 63 68 32",
+					"context": "Fix chapter 2 on hospital click"
+				},
+				{
+					"offset": "E51",
+					"newBytes": "72 01 6C 01 54",
+					"context": "Fix chapter 2 dine active control name and bound location"
+				},
+				{
+					"offset": "F86",
+					"newBytes": "6C 75 73 5F",
+					"context": "Fix Chapter 2 Control set Hotel Open No Plus active control"
+				},
+				{
+					"offset": "16D3",
+					"newBytes": "63 6B 0A 6C",
+					"context": "Fix chapter 4 on movie set click"
+				}
+			]
+		}
+	]
+}

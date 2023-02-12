@@ -16,6 +16,7 @@ public class ResourceManager : MonoBehaviour
     private ResourceFile introResources;
     private ResourceFile protectedGeneralResources;
     private ResourceFile protectedLocalizationResources;
+    private ProtectedFilePatcher filePatcher;
 
     private List<GameLanguage> supportedGameLanguages = new List<GameLanguage>();
 
@@ -103,15 +104,15 @@ public class ResourceManager : MonoBehaviour
 
     private IEnumerator LoadDataCoroutine()
     {
-        generalResources = new ResourceFile(Path.Join(GameDataPath, FilePaths.GeneralResourceFileName));
+        generalResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.GeneralResourceFileName));
         yield return null;
-        localizationResources = new ResourceFile(Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, GetLanguageCodeForLocalization())));
+        localizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, GetLanguageCodeForLocalization())));
         yield return null;
-        introResources = new ResourceFile(Path.Join(GameDataPath, FilePaths.IntroResourceFileName));
+        introResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.IntroResourceFileName));
         yield return null;
-        protectedGeneralResources = new ResourceFile(Path.Join(GameDataPath, FilePaths.ProtectedGeneralResourceFileName));
+        protectedGeneralResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.ProtectedGeneralResourceFileName));
         yield return null;
-        protectedLocalizationResources = new ResourceFile(Path.Join(GameDataPath, string.Format(FilePaths.ProtectedLocalizationResourceFileName, GetLanguageCodeForLocalization())));
+        protectedLocalizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.ProtectedLocalizationResourceFileName, GetLanguageCodeForLocalization())));
         yield return null;
         OnResourcesReady();
         yield break;
@@ -124,6 +125,8 @@ public class ResourceManager : MonoBehaviour
 
     void Start()
     {
+        filePatcher = new ProtectedFilePatcher();
+
         QueryAllSupportedLocalizationPack();
         StartCoroutine(LoadDataCoroutine());
     }
