@@ -58,7 +58,7 @@ public class MinigameFileParser
                 MinigameVariable accessVariable = root;
                 for (int i = 0; i < varLayers.Length - 1; i++)
                 {
-                    accessVariable = accessVariable.AddOrGetChildMember(varLayers[0]);
+                    accessVariable = accessVariable.AddOrGetChildMember(varLayers[i]);
                 }
 
                 if (int.TryParse(rhs, out int parsedInt))

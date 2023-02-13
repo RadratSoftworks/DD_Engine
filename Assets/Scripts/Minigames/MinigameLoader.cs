@@ -31,6 +31,17 @@ public class MinigameLoader
                     return TakePhotoMinigameLoader.Instance.Load(infoPhoto, viewResolution);
                 }
 
+            case "fight":
+                {
+                    FightMinigameInfo infoFight = FightMinigameInfoParser.Parse(parsedResult);
+                    if (infoFight == null)
+                    {
+                        return null;
+                    }
+
+                    return FightMinigameLoader.Instance.Load(infoFight, fileStreamPath, viewResolution);
+                }
+
             default:
                 Debug.LogErrorFormat("Unsupported minigame type: {0}", gameType);
                 break;

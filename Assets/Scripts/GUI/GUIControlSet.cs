@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.VisualScripting;
 
 public class GUIControlSet
 {
@@ -53,17 +54,29 @@ public class GUIControlSet
         langStrings = LocalizerHelper.GetStrings(description.Filename);
         standardActionLibrary = ActionLibraryLoader.Load(Path.ChangeExtension(description.Filename, ActionLibraryLoader.FileExtension));
 
-        Name = GameUtils.ToUnityName(description.Filename);
+        Name = description.Filename;
 
         actionInterpreter = new ActionInterpreter();
 
-        gameObject = new GameObject(Path.ChangeExtension(description.Filename, null));
+        gameObject = new GameObject(Path.ChangeExtension(GameUtils.ToUnityName(description.Filename), null));
         gameObject.transform.parent = parentContainer.transform;
         gameObject.transform.localScale = Vector3.one;
         gameObject.transform.position = Vector3.zero;
 
         this.viewSize = GameUtils.ToUnitySize(viewSize);
         GUIControlSetFactory.Instance.InstantiateControls(this, gameObject, description.Controls, options);
+    }
+
+    public GUIControlSet(GameObject parentContainer, GameObject prefab, string filename, Vector2 viewSize)
+    {
+        gameObject = GameObject.Instantiate(prefab, parentContainer.transform, false);
+        Name = GameUtils.ToUnityName(filename);
+
+        gameObject.name = Path.ChangeExtension(GameUtils.ToUnityName(filename), null);
+        gameObject.transform.position = Vector3.zero;
+        gameObject.transform.localScale = Vector3.one;
+
+        actionInterpreter = new ActionInterpreter();
     }
 
     public IEnumerator HandleAction(string id, string actionName)

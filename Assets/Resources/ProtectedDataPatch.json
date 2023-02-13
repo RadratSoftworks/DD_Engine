@@ -3,8 +3,7 @@
 	[
 		{
 			"name": "protected_general.opes.ngdat",
-			"patch":
-			[
+			"patch": [
 				{
 					"offset": "1D6",
 					"newBytes": "6F 6E 73 2F",
@@ -19,6 +18,11 @@
 					"offset": "7A9",
 					"newBytes": "67 75 65 20 63 68 32",
 					"context": "Fix chapter 2 on hospital click"
+				},
+				{
+					"offset": "DC0",
+					"newBytes": "72 79 54",
+					"context": "Fix chapter 2 tryToOpenAgain condition for Movie Set Map"
 				},
 				{
 					"offset": "E51",

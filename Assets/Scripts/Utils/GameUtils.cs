@@ -24,4 +24,15 @@ public class GameUtils
     {
         return path.Replace("/", "_");
     }
+
+    public static bool MakeChoice(int percentageIn100ToBeTrue)
+    {
+        int randResult = Random.Range(0, 100);
+        if (randResult - percentageIn100ToBeTrue <= 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

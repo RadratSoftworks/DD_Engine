@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   focusRegionPrefabObject: {fileID: 4426753642607689400, guid: f05ee66f46e8bd343bb795e023ed01c8, type: 3}
   viewPrefabObject: {fileID: 6343959419072420064, guid: c8731a0f3a6e95343aab46b3ade480fb, type: 3}
+  scrollDurationPerUnit: 1.3
 --- !u!1 &240711679
 GameObject:
   m_ObjectHideFlags: 0
@@ -464,6 +465,7 @@ Transform:
   m_Children:
   - {fileID: 1191797624}
   - {fileID: 188363751}
+  - {fileID: 1298278307}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -678,6 +680,51 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2297837062239337187, guid: 56514a8115d695a4d9d723310f44e88e, type: 3}
   m_PrefabInstance: {fileID: 1202405658}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1298278306
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1298278307}
+  - component: {fileID: 1298278308}
+  m_Layer: 0
+  m_Name: FightMinigameLoader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1298278307
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298278306}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1024011019}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1298278308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298278306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82d486367a8e4c04b82a558aebd5a466, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fightScenePrefabObject: {fileID: 3986510011445563234, guid: f884500b5e352954d8d88bf9491abf18, type: 3}
 --- !u!1001 &1386754159
 PrefabInstance:
   m_ObjectHideFlags: 0

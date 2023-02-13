@@ -9,12 +9,11 @@ public class GUIControlBackgroundLabelDescription : GUIControlDescription
     public int unk1 { get; set; }
     public int unk2 { get; set; }
     public int unk3 { get; set; }
+    public int unk4 { get; set; }
 
     public Color color1 { get; set; }
 
     public Color color2 { get; set; }
-
-    public string UnkString { get; set; }
 
     public GUIControlBackgroundLabelDescription(GUIControlDescription parent, BinaryReader2 reader)
     {
@@ -46,8 +45,7 @@ public class GUIControlBackgroundLabelDescription : GUIControlDescription
             (byte)reader.ReadUInt16BE() / 255.0f,
             alpha);
 
-        UnkString = reader.ReadString();
-
         unk3 = reader.ReadInt16BE();
+        unk4 = reader.ReadInt16BE();
     }
 }

@@ -157,8 +157,8 @@ public class GameManager : MonoBehaviour
 
     public void OnResourcesReady()
     {
-        //LoadMinigame("ch1/minigames/PhotoGame.mini");
-        LoadControlSet(FilePaths.MainChapterGUIControlFileName);
+        LoadMinigame("ch2/minigames/moviesetFight.mini");
+        //LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
     private void LoadGadgetScriptBlock(Dialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock)
@@ -235,7 +235,11 @@ public class GameManager : MonoBehaviour
 
         if (block != null)
         {
-            LoadGadgetScriptBlock(null, string.Format("standaloneGadget_{0}", filename), block);
+            Dialogue tempDialogue = new Dialogue(null, 0);
+            tempDialogue.FileName = filename;
+            tempDialogue.Strings = LocalizerHelper.GetStrings(filename);
+
+            LoadGadgetScriptBlock(tempDialogue, string.Format("standaloneGadget_{0}", filename), block);
         }
     }
 

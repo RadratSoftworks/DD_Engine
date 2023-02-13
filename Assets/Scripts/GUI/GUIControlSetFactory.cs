@@ -43,7 +43,7 @@ public class GUIControlSetFactory : MonoBehaviour
     private GameObject guiLabelPrefabObject;
 
     [SerializeField]
-    private GameObject container;
+    public GameObject container;
 
     private void Start()
     {
@@ -84,12 +84,12 @@ public class GUIControlSetFactory : MonoBehaviour
         foreach (var pairSet in description.ControlShowOnCases)
         {
             GameObject anotherInstance = Instantiate(guiConditionalPrefabObject, parent.transform, false);
-            anotherInstance.name = string.Format("Conditional_{0}_{1}", description.ConditionValueVariable, pairSet.Key);
+            anotherInstance.name = string.Format("Conditional_{0}_{1}", description.ConditionValueVariable, pairSet.Item1);
 
             GUIConditionalController conditionalController = anotherInstance.GetComponent<GUIConditionalController>();
-            conditionalController.Setup(ownSet, description.ConditionValueVariable, pairSet.Key);
+            conditionalController.Setup(ownSet, description.ConditionValueVariable, pairSet.Item1);
 
-            InstantiateControls(ownSet, anotherInstance, pairSet.Value, options);
+            InstantiateControls(ownSet, anotherInstance, pairSet.Item2, options);
         }
     }
 

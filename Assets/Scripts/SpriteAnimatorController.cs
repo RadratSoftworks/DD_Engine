@@ -24,6 +24,8 @@ public class SpriteAnimatorController : MonoBehaviour
     private bool allowLoop = true;
     private bool disableOnDone = true;
 
+    public event Action<SpriteAnimatorController> Done;
+
     public void Setup(Vector2 position, float sortOrder, string animationFilename, string layerName = null, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false)
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -163,6 +165,7 @@ public class SpriteAnimatorController : MonoBehaviour
             gameObject.SetActive(false);
         }
 
+        Done?.Invoke(this);
         yield break;
     }
 
@@ -177,6 +180,21 @@ public class SpriteAnimatorController : MonoBehaviour
     public void Restart(Vector2 basePosition)
     {
         RestartUnityCoords(GameUtils.ToUnityCoordinates(basePosition));
+    }
+
+    public void Enable()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Disable()
+    {
+        gameObject.SetActive(false);   
+    }
+
+    public void SetEnableState(bool enabled)
+    {
+        gameObject.SetActive(enabled);
     }
 
     private void Start()

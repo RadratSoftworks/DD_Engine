@@ -6,10 +6,10 @@ public class GUIControlConditionalDescription : GUIControlDescription
 {
     private String conditionValueVariable;
     private bool unk0;
-    private Dictionary<string, List<GUIControlDescription>> controlOnCases = new Dictionary<string, List<GUIControlDescription>>();
+    private List<Tuple<string, List<GUIControlDescription>>> controlOnCases = new List<Tuple<string, List<GUIControlDescription>>>();
 
     public String ConditionValueVariable => conditionValueVariable;
-    public Dictionary<string, List<GUIControlDescription>> ControlShowOnCases => controlOnCases;
+    public List<Tuple<string, List<GUIControlDescription>>> ControlShowOnCases => controlOnCases;
 
     public GUIControlConditionalDescription(GUIControlDescription parent, BinaryReader2 reader)
     {
@@ -34,7 +34,7 @@ public class GUIControlConditionalDescription : GUIControlDescription
             else
             {
                 GUIControlValueDescription value = (GUIControlValueDescription)control;
-                controlOnCases.Add(value.ExactValue, value.ControlsOnExactValueMatch);
+                controlOnCases.Add(new Tuple<string, List<GUIControlDescription>>(value.ExactValue, value.ControlsOnExactValueMatch));
             }
         }
     }

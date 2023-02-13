@@ -26,6 +26,12 @@ public class GUIControlListReader
                 break;
             }
 
+            if (controlID == (GUIControlID)0)
+            {
+                Debug.LogWarning("Encountering 0 control id, breaking!");
+                break;
+            }
+
             switch (controlID)
             {
                 case GUIControlID.Condition:

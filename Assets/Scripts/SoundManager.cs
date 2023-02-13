@@ -67,6 +67,10 @@ public class SoundManager : MonoBehaviour
 
     public AudioClip GetAudioClip(string path)
     {
+        if (path == null)
+        {
+            return null;
+        }
         string extension = Path.GetExtension(path);
         if ((extension == "") || (extension.Equals(".wav", StringComparison.OrdinalIgnoreCase)))
         {

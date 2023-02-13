@@ -19,7 +19,7 @@ public static class GUIDescriptionDepthNormalizer
 
                 foreach (var condBlock in descriptionCond.ControlShowOnCases)
                 {
-                    UnpackControlsFromConditionals(condBlock.Value, infos, true);
+                    UnpackControlsFromConditionals(condBlock.Item2, infos, true);
                 }
             } else
             {

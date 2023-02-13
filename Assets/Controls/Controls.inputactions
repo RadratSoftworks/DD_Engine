@@ -308,6 +308,114 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "MinigameFight",
+            "id": "ccbf5624-a91f-428f-860b-b7f4c034d003",
+            "actions": [
+                {
+                    "name": "Jab Pressed",
+                    "type": "Button",
+                    "id": "047237c1-529d-4867-b1a1-afc9ac4d5c65",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Punch Pressed",
+                    "type": "Button",
+                    "id": "4e721133-b445-401d-ab63-1c9bdc071e71",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Strong Punch Pressed",
+                    "type": "Button",
+                    "id": "23010689-f664-4a1f-a27b-2a8034bc6424",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Dodge Pressed",
+                    "type": "Button",
+                    "id": "38033dcb-a6c9-41d7-b744-b89923c3ef1b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Continue Requested",
+                    "type": "Button",
+                    "id": "29f015b3-31a0-451b-91be-65b054785eee",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ba6a3743-8acb-4c5c-9e74-a5d6e3e9ceef",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jab Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "111e6aee-3098-44e7-8e86-33a421f8f5c0",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Punch Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f54f56f8-ab1e-4ff6-a7c7-9d08499172be",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Strong Punch Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0e05e9e3-c6d8-4098-8c63-7a48c27de434",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dodge Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2a3a431b-4ff9-4a6d-a02d-dc95213c45eb",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Continue Requested",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

@@ -20,8 +20,8 @@ class FilePaths
     };
 
     // GUI
-    //public static readonly string MainChapterGUIControlFileName = "ch1/locations/docks.fwd";
-    public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
+    public static readonly string MainChapterGUIControlFileName = "ch2/locations/fight_intro.fwd";
+    //public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
     
     // Sound
     public static readonly string MenuOptionSwitchSFXFileName = "sound/menu_click_bullet";
