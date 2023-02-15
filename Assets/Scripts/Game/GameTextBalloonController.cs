@@ -24,6 +24,8 @@ public class GameTextBalloonController : MonoBehaviour
     private Vector2 canvasSize = new Vector2(0, 0);
     private Vector2 stingerPositionRelative = new Vector2(0, 0);
 
+    private IEnumerator currentTextCoroutine;
+
     void Awake()
     {
         ballonText = textObject.GetComponent<TMPro.TMP_Text>();
@@ -84,7 +86,12 @@ public class GameTextBalloonController : MonoBehaviour
     public void ChangeText(string newText)
     {
         gameObject.SetActive(true);
-        StopCoroutine(GraduallyAppearTextCoroutine());
+
+        if (currentTextCoroutine != null)
+        {
+            StopCoroutine(currentTextCoroutine);
+            currentTextCoroutine = null;
+        }
 
         if (IsTextFullItalic(newText))
         {
@@ -103,7 +110,8 @@ public class GameTextBalloonController : MonoBehaviour
         backgroundRenderer.size = rectTransform.sizeDelta;
         balloonRenderer.transform.localPosition = rectTransform.sizeDelta * (isBottom ? Vector2.up :Vector2.down);
 
-        StartCoroutine(GraduallyAppearTextCoroutine());
+        currentTextCoroutine = GraduallyAppearTextCoroutine();
+        StartCoroutine(currentTextCoroutine);
     }
 
     public void SetBalloon(string balloonFilename)
@@ -132,7 +140,12 @@ public class GameTextBalloonController : MonoBehaviour
     {
         if (ballonText.maxVisibleCharacters < ballonText.text.Length)
         {
-            StopCoroutine(GraduallyAppearTextCoroutine());
+            if (currentTextCoroutine != null)
+            {
+                StopCoroutine(currentTextCoroutine);
+                currentTextCoroutine = null;
+            }
+
             ballonText.maxVisibleCharacters = ballonText.text.Length;
         }
     }

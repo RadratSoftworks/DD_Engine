@@ -63,7 +63,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: GameChoices
+  m_DefaultActionMap: 1e9aae1f-ed4e-4ac7-9e82-f4d4f893bfe3
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &2102711790839540155
@@ -237,7 +237,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 20
+  m_SortingLayer: 21
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: cd9d224988c688e4bbf27e45df781706, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -326,7 +326,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 20
+  m_SortingLayer: 21
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: cd9d224988c688e4bbf27e45df781706, type: 3}
   m_Color: {r: 0.82596445, g: 0.8396226, b: 0.30416512, a: 1}

@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class StateMachine<T> : MonoBehaviour, IStateMachine where T : IConvertible
 {
-    protected Dictionary<T, IState> stateDictionary = new Dictionary<T, IState>();
-    protected IState currentState;
+    private Dictionary<T, IState> stateDictionary = new Dictionary<T, IState>();
+    private IState currentState;
+    private T currentStateIdentifier;
+
+    public T CurrentState => currentStateIdentifier;
 
     private void Start()
     {
-        currentState = stateDictionary[GetInitialState()];
+        currentStateIdentifier = GetInitialState();
+        currentState = stateDictionary[currentStateIdentifier];
         if (currentState != null)
         {
             currentState.Enter();
@@ -36,6 +40,7 @@ public class StateMachine<T> : MonoBehaviour, IStateMachine where T : IConvertib
         }
 
         currentState = stateToTransitionTo;
+        currentStateIdentifier = stateValue;
 
         if (currentState != null)
         {

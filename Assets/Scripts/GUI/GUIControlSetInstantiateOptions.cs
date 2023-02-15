@@ -9,8 +9,14 @@ public class GUIControlSetInstantiateOptions
     /// </summary>
     public bool PanToActiveWhenSelected = true;
 
-    public GUIControlSetInstantiateOptions(bool panToActiveWhenSelected = true)
+    /// <summary>
+    /// Destroy this control set immediately when it's disabled
+    /// </summary>
+    public bool DestroyWhenDisabled = false;
+
+    public GUIControlSetInstantiateOptions(bool panToActiveWhenSelected = true, bool destroyWhenDisabled = false)
     {
         this.PanToActiveWhenSelected = panToActiveWhenSelected;
+        this.DestroyWhenDisabled = destroyWhenDisabled;
     }
 }

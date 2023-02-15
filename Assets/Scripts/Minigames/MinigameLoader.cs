@@ -42,6 +42,17 @@ public class MinigameLoader
                     return FightMinigameLoader.Instance.Load(infoFight, fileStreamPath, viewResolution);
                 }
 
+            case "itemswitch":
+                {
+                    ItemSwitchMinigameInfo infoItemSwitch = ItemSwitchMinigameInfoParser.Parse(parsedResult);
+                    if (infoItemSwitch == null)
+                    {
+                        return null;
+                    }
+
+                    return ItemSwitchMinigameLoader.Instance.Load(infoItemSwitch, fileStreamPath, viewResolution);
+                }
+
             default:
                 Debug.LogErrorFormat("Unsupported minigame type: {0}", gameType);
                 break;

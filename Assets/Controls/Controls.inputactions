@@ -2,7 +2,7 @@
     "name": "Controls",
     "maps": [
         {
-            "name": "GUIMenu",
+            "name": "GUI Menu",
             "id": "c6ad814c-3246-4e73-8625-2fdfbdef4f5c",
             "actions": [
                 {
@@ -70,7 +70,7 @@
             ]
         },
         {
-            "name": "GUILocation",
+            "name": "GUI Location",
             "id": "08896353-098d-494c-bf76-17648b7e99f7",
             "actions": [
                 {
@@ -158,7 +158,7 @@
             ]
         },
         {
-            "name": "GUIAction",
+            "name": "GUI Action",
             "id": "ecda4bb5-2c32-4e64-b8fd-06d0e9117c52",
             "actions": [
                 {
@@ -186,7 +186,7 @@
             ]
         },
         {
-            "name": "GameChoices",
+            "name": "Game Choices",
             "id": "1e9aae1f-ed4e-4ac7-9e82-f4d4f893bfe3",
             "actions": [
                 {
@@ -254,7 +254,7 @@
             ]
         },
         {
-            "name": "DialogueBalloon",
+            "name": "Dialogue Balloon",
             "id": "928092f7-d96e-4c4b-adf3-39ca6a835598",
             "actions": [
                 {
@@ -282,7 +282,7 @@
             ]
         },
         {
-            "name": "GameContinue",
+            "name": "Continue Game",
             "id": "052a2584-7e25-4566-b270-baeee7c78b0c",
             "actions": [
                 {
@@ -310,7 +310,7 @@
             ]
         },
         {
-            "name": "MinigameFight",
+            "name": "Fight Minigame",
             "id": "ccbf5624-a91f-428f-860b-b7f4c034d003",
             "actions": [
                 {
@@ -412,6 +412,82 @@
                     "processors": "",
                     "groups": "",
                     "action": "Continue Requested",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Item Switch Minigame Indicator",
+            "id": "6a83b87b-86b5-4105-980a-c711118b7ef7",
+            "actions": [
+                {
+                    "name": "Left Pressed",
+                    "type": "Button",
+                    "id": "8c2b423e-0ac2-466a-8165-eb818ebde768",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Right Pressed",
+                    "type": "Button",
+                    "id": "f06e1bcb-d0fa-4fd8-9777-474c399b0510",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1a499c81-f99b-4938-8d1c-fce8c7732c30",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2200678a-33d8-4837-97f4-b6ad6e8dac60",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Right Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Item Switch Minigame Confirm",
+            "id": "af66e31e-fbd5-4712-bf30-abf02f47d57d",
+            "actions": [
+                {
+                    "name": "Confirm Pressed",
+                    "type": "Button",
+                    "id": "9c192b9c-8d1d-4889-b244-3b9fcb8f0818",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c2acaf40-967d-4577-af56-866aee9c57be",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Confirm Pressed",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

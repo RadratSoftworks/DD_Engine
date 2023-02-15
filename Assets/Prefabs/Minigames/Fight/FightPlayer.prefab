@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4541385626950139692}
   - component: {fileID: 4541385626950139683}
   - component: {fileID: 4541385626950139682}
+  - component: {fileID: 4246703827293980001}
   m_Layer: 0
   m_Name: FightPlayer
   m_TagString: Untagged
@@ -49,6 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animationPrefabObject: {fileID: 4706014351936562840, guid: 3b31eca6b6d54cc43a81d48f312a838a, type: 3}
   picturePrefabObject: {fileID: 987941436643803451, guid: 142205e66f20c424bab9ac01dc757ea9, type: 3}
+  directOpponent: {fileID: 0}
+  frameTriggerIntent: 3
 --- !u!114 &4541385626950139692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,3 +173,33 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4246703827293980001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4541385626950139687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: c9f269bbb99a7a748a64fa3f8913d20a, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: ccbf5624-a91f-428f-860b-b7f4c034d003
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}

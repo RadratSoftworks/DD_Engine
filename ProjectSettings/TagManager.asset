@@ -15,10 +15,10 @@ TagManager:
   - ActiveCollider
   - TakePhotoFocusRegion
   - TakePhotoView
-  - 
-  - 
-  - 
-  - 
+  - FailSurface
+  - BitStress
+  - HardStress
+  - StableStress
   - 
   - 
   - 

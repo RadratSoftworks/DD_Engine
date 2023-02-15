@@ -43,7 +43,8 @@ public class TakePhotoMinigameLoader : MonoBehaviour
     {
         GUIControlSet baseSet = GUIControlSetFactory.Instance.LoadControlSet(info.ControlSetPath, viewResolution, new GUIControlSetInstantiateOptions()
         {
-            PanToActiveWhenSelected = false
+            PanToActiveWhenSelected = false,
+            DestroyWhenDisabled = true
         });
 
         if (baseSet == null)

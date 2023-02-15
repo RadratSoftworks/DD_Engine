@@ -17,7 +17,7 @@ public class FightMinigameLoader : MonoBehaviour
     public GUIControlSet Load(FightMinigameInfo fightInfo, string filename, Vector2 viewSize)
     {
         GUIControlSet fightSceneControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
-            fightScenePrefabObject, filename, viewSize);
+            fightScenePrefabObject, filename, viewSize, new GUIControlSetInstantiateOptions(destroyWhenDisabled: true));
 
         FightSceneController fightSceneController = fightSceneControlSet.GameObject.GetComponent<FightSceneController>();
         if (fightSceneController != null)

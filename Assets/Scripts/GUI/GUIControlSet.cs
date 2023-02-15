@@ -33,7 +33,8 @@ public class GUIControlSet
     public delegate void OnLocationScrollSpeedSetRequested(Vector2[] speeds);
     public event OnLocationScrollSpeedSetRequested LocationScrollSpeedSetRequested;
 
-    public int performingBusyAnimationCount = 0;
+    private int performingBusyAnimationCount = 0;
+    private bool destroyOnDisable;
 
     public Vector2 ViewSize => viewSize;
     private Vector2 viewSize;
@@ -57,6 +58,7 @@ public class GUIControlSet
         Name = description.Filename;
 
         actionInterpreter = new ActionInterpreter();
+        destroyOnDisable = options.DestroyWhenDisabled;
 
         gameObject = new GameObject(Path.ChangeExtension(GameUtils.ToUnityName(description.Filename), null));
         gameObject.transform.parent = parentContainer.transform;
@@ -67,7 +69,7 @@ public class GUIControlSet
         GUIControlSetFactory.Instance.InstantiateControls(this, gameObject, description.Controls, options);
     }
 
-    public GUIControlSet(GameObject parentContainer, GameObject prefab, string filename, Vector2 viewSize)
+    public GUIControlSet(GameObject parentContainer, GameObject prefab, string filename, Vector2 viewSize, GUIControlSetInstantiateOptions options)
     {
         gameObject = GameObject.Instantiate(prefab, parentContainer.transform, false);
         Name = GameUtils.ToUnityName(filename);
@@ -77,6 +79,7 @@ public class GUIControlSet
         gameObject.transform.localScale = Vector3.one;
 
         actionInterpreter = new ActionInterpreter();
+        destroyOnDisable = options.DestroyWhenDisabled;
     }
 
     public IEnumerator HandleAction(string id, string actionName)
@@ -91,8 +94,15 @@ public class GUIControlSet
 
     public void Disable()
     {
-        gameObject.SetActive(false);
         StateChanged?.Invoke(false);
+
+        if (destroyOnDisable)
+        {
+            GameObject.Destroy(gameObject);
+        } else
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     public void Enable()

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FightPlayerController : StateMachine<FighterState>
 {
@@ -8,7 +7,13 @@ public class FightPlayerController : StateMachine<FighterState>
     public GameObject picturePrefabObject;
     public FightOpponentController directOpponent;
 
+    private PlayerInput controlInput;
     public int frameTriggerIntent = 3;
+
+    private void Awake()
+    {
+        controlInput = GetComponent<PlayerInput>();
+    }
 
     public void Setup(FightPlayerInfo playerInfo, string wonScript)
     {
@@ -19,6 +24,8 @@ public class FightPlayerController : StateMachine<FighterState>
         base.AddState(FighterState.Attacking, new FightPlayerAttackingState(this, playerInfo));
         base.AddState(FighterState.TakingDamage, new FightPlayerTakingDamageState(this, playerInfo));
         base.AddState(FighterState.KnockedOut, new FightPlayerKnockedOutState(this, playerInfo, wonScript));
+
+        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
     }
 
     protected override FighterState GetInitialState()
@@ -52,5 +59,10 @@ public class FightPlayerController : StateMachine<FighterState>
 
         directOpponent.GiveDataFrom(this, endIntent);
         GiveData(endIntent);
+    }
+
+    private void OnDialogueStateChanged(bool enabled)
+    {
+        controlInput.enabled = !enabled;
     }
 }

@@ -71,7 +71,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 20
+  m_SortingLayer: 21
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 92bfc41318b39f34489fa606e67d85eb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -155,7 +155,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 20
+  m_SortingLayer: 21
   m_SortingOrder: 1
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -247,7 +247,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 20
+  m_SortingLayer: 21
   m_SortingOrder: 2
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &7237565360307079198
@@ -453,7 +453,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 20
+  m_SortingLayer: 21
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -548,6 +548,6 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: DialogueBalloon
+  m_DefaultActionMap: 928092f7-d96e-4c4b-adf3-39ca6a835598
   m_SplitScreenIndex: 1
   m_Camera: {fileID: 0}

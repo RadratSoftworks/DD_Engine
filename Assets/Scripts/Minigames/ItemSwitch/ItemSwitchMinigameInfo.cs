@@ -7,7 +7,7 @@ public class ItemSwitchMinigameInfo
     public string WonScript;
     public string LoseScript;
 
-    public int ChangeStartDurationPercentage;
+    public int ForcePercentage;
     public int MaxSpeedPercentage;
     public int WinPercentage;
 
@@ -15,6 +15,6 @@ public class ItemSwitchMinigameInfo
     public ItemSwitchDirkHandInfo LeftHandInfo = new ItemSwitchDirkHandInfo();
     public ItemSwitchDirkHandInfo RightHandInfo = new ItemSwitchDirkHandInfo();
 
-    public ItemSwitchStressIndicatorInfo StressIndicatorInfo = new ItemSwitchStressIndicatorInfo();
+    public ItemSwitchStressMachineInfo StressMachineInfo = new ItemSwitchStressMachineInfo();
     public ItemSwitchTimerInfo TimerInfo = new ItemSwitchTimerInfo();
 }

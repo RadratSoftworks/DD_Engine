@@ -5,9 +5,13 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using Unity.VisualScripting;
+using static UnityEngine.UI.Image;
+using UnityEngine.UIElements;
 
 public class SpriteAnimatorController : MonoBehaviour
 {
+    public static readonly int SortOrderNotSet = -1;
+
     class FrameInfo
     {
         public int SpriteIndex { get; set; }
@@ -23,22 +27,49 @@ public class SpriteAnimatorController : MonoBehaviour
     private Vector2 originalPosition;
     private bool allowLoop = true;
     private bool disableOnDone = true;
+    private IEnumerator currentAnimateCoroutine;
 
     public event Action<SpriteAnimatorController> Done;
 
     public void Setup(Vector2 position, float sortOrder, string animationFilename, string layerName = null, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false)
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(sortOrder);
 
-        animationImageOrigin = origin;
-        this.allowLoop = allowLoop;
-        this.disableOnDone = disableOnDone;
+        if (sortOrder >= 0)
+        {
+            spriteRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(sortOrder);
+        }
 
         if (layerName != null)
         {
             spriteRenderer.sortingLayerName = layerName;
         }
+
+        LoadImplementation(position, animationFilename, origin, allowLoop, disableOnDone);
+    }
+
+    public void Reload(Vector2 position, string animationFilename, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false)
+    {
+        if (currentAnimateCoroutine != null)
+        {
+            StopCoroutine(currentAnimateCoroutine);
+            currentAnimateCoroutine = null;
+        }
+
+        spriteToUse.Clear();
+        frameInfos.Clear();
+
+        LoadImplementation(position, animationFilename, origin, allowLoop, disableOnDone);
+
+        currentAnimateCoroutine = AnimateCoroutine();
+        StartCoroutine(currentAnimateCoroutine);
+    }
+
+    private void LoadImplementation(Vector2 position, string animationFilename, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false)
+    {
+        animationImageOrigin = origin;
+        this.allowLoop = allowLoop;
+        this.disableOnDone = disableOnDone;
 
         originalPosition = GameUtils.ToUnityCoordinates(position);
         LoadAnimation(animationFilename);
@@ -171,15 +202,25 @@ public class SpriteAnimatorController : MonoBehaviour
 
     private void RestartUnityCoords(Vector2 basePosition)
     {
-        StopAllCoroutines();
+        if (currentAnimateCoroutine != null)
+        {
+            StopCoroutine(currentAnimateCoroutine);
+            currentAnimateCoroutine = null;
+        }
+
         transform.localPosition = basePosition;
 
-        StartCoroutine(AnimateCoroutine());
+        currentAnimateCoroutine = AnimateCoroutine();
+        StartCoroutine(currentAnimateCoroutine);
     }
 
     public void Restart(Vector2 basePosition)
     {
         RestartUnityCoords(GameUtils.ToUnityCoordinates(basePosition));
+    }
+    public void Restart()
+    {
+        RestartUnityCoords(originalPosition);
     }
 
     public void Enable()
@@ -197,14 +238,25 @@ public class SpriteAnimatorController : MonoBehaviour
         gameObject.SetActive(enabled);
     }
 
+    public void StopAnimating()
+    {
+        if (currentAnimateCoroutine != null)
+        {
+            StopCoroutine(currentAnimateCoroutine);
+            currentAnimateCoroutine = null;
+        }
+    }
+
     private void Start()
     {
         transform.localPosition = originalPosition;
-        StartCoroutine(AnimateCoroutine());
+
+        currentAnimateCoroutine = AnimateCoroutine();
+        StartCoroutine(currentAnimateCoroutine);
     }
 
     private void OnEnable()
     {
-        RestartUnityCoords(originalPosition);
+        Restart();
     }
 }

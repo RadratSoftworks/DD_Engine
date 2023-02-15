@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class ItemSwitchStressIndicatorInfo
+public class ItemSwitchStressMachineInfo
 {
     public string BackgroundImagePath;
     public string IndicatorImagePath;

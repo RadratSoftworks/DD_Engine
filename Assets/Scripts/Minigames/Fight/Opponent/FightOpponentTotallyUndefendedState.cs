@@ -10,6 +10,7 @@ public class FightOpponentTotallyUndefendedState : IState
     private bool stopped = true;
 
     public FightOpponentController stateMachine;
+    private IEnumerator doneConfusedCoroutine;
 
     public FightOpponentTotallyUndefendedState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo)
     {
@@ -46,7 +47,8 @@ public class FightOpponentTotallyUndefendedState : IState
 
         stopped = false;
 
-        stateMachine.StartCoroutine(DoneConfusedCoroutine());
+        doneConfusedCoroutine = DoneConfusedCoroutine();
+        stateMachine.StartCoroutine(doneConfusedCoroutine);
     }
 
     public void Update()
@@ -64,7 +66,7 @@ public class FightOpponentTotallyUndefendedState : IState
         stateMachine.normalLeftHand.Disable();
         stateMachine.normalRightHand.Disable();
 
-        stateMachine.StopCoroutine(DoneConfusedCoroutine());
+        stateMachine.StopCoroutine(doneConfusedCoroutine);
     }
 
     public void ReceiveData(IStateMachine sender, object data)

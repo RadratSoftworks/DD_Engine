@@ -22,7 +22,7 @@ public static class ItemSwitchMinigameInfoParser
             throw new InvalidDataException("Switch minigame background effect path is not valid!");
         }
 
-        backgroundInfo.ImagePath = animVar.Value as string;
+        backgroundInfo.EffectAnimationPath = animVar.Value as string;
 
         if (!animVar.ConvertToVector2(out backgroundInfo.EffectPosition))
         {
@@ -43,7 +43,7 @@ public static class ItemSwitchMinigameInfoParser
         }
     }
 
-    private static void ParseStressIndicatorInfo(MinigameVariable stressVar, ref ItemSwitchStressIndicatorInfo stressInfo)
+    private static void ParseStressMachineInfo(MinigameVariable stressVar, ref ItemSwitchStressMachineInfo stressInfo)
     {
         if (!stressVar.TryGetValue("bg", out stressInfo.BackgroundImagePath))
         {
@@ -83,7 +83,7 @@ public static class ItemSwitchMinigameInfoParser
             throw new Exception("Can't get timer lost animation path!");
         }
 
-        if (!timeVar.TryGetValue("pre", out MinigameVariable preVar) || !wonVar.TryGetValue("anim", out timeInfo.ReadyAnimationPath))
+        if (!timeVar.TryGetValue("pre", out MinigameVariable preVar) || !preVar.TryGetValue("anim", out timeInfo.ReadyAnimationPath))
         {
             throw new Exception("Can't get timer ready animation path!");
         }
@@ -103,7 +103,7 @@ public static class ItemSwitchMinigameInfoParser
             throw new Exception("Can't find script to run when the game is lost!");
         }
 
-        if (!root.TryGetValue("moveAmplitude", out minigameInfo.ChangeStartDurationPercentage))
+        if (!root.TryGetValue("moveAmplitude", out minigameInfo.ForcePercentage))
         {
             throw new Exception("Can't get the move amplitude!");
         }
@@ -146,7 +146,7 @@ public static class ItemSwitchMinigameInfoParser
         ParseBackgroundInfo(bgVar, ref minigameInfo.BackgroundInfo);
         ParseHandInfo(leftHandVar, ref minigameInfo.LeftHandInfo);
         ParseHandInfo(rightHandVar, ref minigameInfo.RightHandInfo);
-        ParseStressIndicatorInfo(stressVar, ref minigameInfo.StressIndicatorInfo);
+        ParseStressMachineInfo(stressVar, ref minigameInfo.StressMachineInfo);
         ParseTimerInfo(timerVar, ref minigameInfo.TimerInfo);
 
         return minigameInfo;

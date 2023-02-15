@@ -13,6 +13,7 @@ public class FightOpponentBlockStateBase : IState
     private FighterState targetState;
 
     private FightAttackIntent lastestFightIntent;
+    private IEnumerator blockDoneCoroutine;
 
     public FightOpponentBlockStateBase(FightOpponentController stateMachine, FightOpponentInfo opponentInfo, FighterState targetState)
     {
@@ -43,7 +44,7 @@ public class FightOpponentBlockStateBase : IState
     {
         stateMachine.headAnim.Disable();
 
-        stateMachine.StopCoroutine(BlockDoneCoroutine());
+        stateMachine.StopCoroutine(blockDoneCoroutine);
         UpdateFightBlockAnimation(false);
     }
 
@@ -70,7 +71,9 @@ public class FightOpponentBlockStateBase : IState
             direction = (FightDirection)data;
 
             UpdateFightBlockAnimation(true);
-            stateMachine.StartCoroutine(BlockDoneCoroutine());
+
+            blockDoneCoroutine = BlockDoneCoroutine();
+            stateMachine.StartCoroutine(blockDoneCoroutine);
         }
         else if (data is FightAttackIntent)
         {
