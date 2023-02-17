@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8289639938904157799}
   - component: {fileID: 209127466610345398}
-  - component: {fileID: 5652561470876507977}
+  - component: {fileID: 4955849333599098423}
   m_Layer: 0
   m_Name: MenuOptions
   m_TagString: Untagged
@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollDuration: 0.4
---- !u!114 &5652561470876507977
+--- !u!114 &4955849333599098423
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -72,8 +72,8 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Desktop Scheme
-  m_DefaultActionMap: GUIMenu
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: GUI Menu
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!1 &2363225673649648605

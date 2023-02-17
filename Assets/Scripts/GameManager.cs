@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     private GUIControlSet activeGUI;
 
     private Dictionary<string, Dialogue> dialogueCache;
-    private Dictionary<string, GameObject> iconCache;
+    private Dictionary<string, SpriteAnimatorController> iconCache;
     private Dictionary<string, ScriptBlock<GadgetOpcode>> gadgetCache;
 
     private SceneAudioController persistentAudioController;
@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
 
         dialogueCache = new Dictionary<string, Dialogue>(StringComparer.OrdinalIgnoreCase);
         gadgetCache = new Dictionary<string, ScriptBlock<GadgetOpcode>>(StringComparer.OrdinalIgnoreCase);
-        iconCache = new Dictionary<string, GameObject>(StringComparer.OrdinalIgnoreCase);
+        iconCache = new Dictionary<string, SpriteAnimatorController>(StringComparer.OrdinalIgnoreCase);
         gadgets = new Stack<GameObject>();
 
         persistentAudioController = GetComponent<SceneAudioController>();
@@ -157,8 +157,8 @@ public class GameManager : MonoBehaviour
 
     public void OnResourcesReady()
     {
-        LoadMinigame("ch6/minigames/PogoJumpChainSawIdolKit.mini");
-        //LoadControlSet(FilePaths.MainChapterGUIControlFileName);
+        //LoadMinigame("ch6/minigames/PogoJumpChainSawIdolKit.mini");
+        LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
     private void LoadGadgetScriptBlock(Dialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock)
@@ -344,20 +344,14 @@ public class GameManager : MonoBehaviour
             controller.Setup(position, 0.0f, path, Constants.IconLayer, null, false, true);
         }
 
-        iconCache.Add(name, animationObj);
+        iconCache.Add(name, controller);
     }
 
     public void DisplayIcon(string iconName, Vector2 position)
     {
-        if (iconCache.TryGetValue(iconName, out GameObject animObj))
+        if (iconCache.TryGetValue(iconName, out SpriteAnimatorController controller))
         {
-            animObj.SetActive(true);
-            
-            SpriteAnimatorController animController = animObj.GetComponent<SpriteAnimatorController>();
-            if (animController != null)
-            {
-                animController.Restart(position);
-            }
+            controller.Enable();
         } else
         {
             if (Constants.IconNameToAnimationPath.TryGetValue(iconName, out string pathValue))

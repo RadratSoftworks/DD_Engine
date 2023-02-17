@@ -24,8 +24,6 @@ public class FightPlayerController : StateMachine<FighterState>
         base.AddState(FighterState.Attacking, new FightPlayerAttackingState(this, playerInfo));
         base.AddState(FighterState.TakingDamage, new FightPlayerTakingDamageState(this, playerInfo));
         base.AddState(FighterState.KnockedOut, new FightPlayerKnockedOutState(this, playerInfo, wonScript));
-
-        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
     }
 
     protected override FighterState GetInitialState()
@@ -55,14 +53,16 @@ public class FightPlayerController : StateMachine<FighterState>
 
     private void OnContinueRequested()
     {
-        FightEndIntent endIntent = new FightEndIntent();
+        // If either one of us is knocked out, end the fight and disable input
+        if ((directOpponent.CurrentState == FighterState.KnockedOut) ||
+            (CurrentState == FighterState.KnockedOut))
+        {
+            FightEndIntent endIntent = new FightEndIntent();
 
-        directOpponent.GiveDataFrom(this, endIntent);
-        GiveData(endIntent);
-    }
+            directOpponent.GiveDataFrom(this, endIntent);
+            GiveData(endIntent);
 
-    private void OnDialogueStateChanged(bool enabled)
-    {
-        controlInput.enabled = !enabled;
+            controlInput.enabled = false;
+        }
     }
 }

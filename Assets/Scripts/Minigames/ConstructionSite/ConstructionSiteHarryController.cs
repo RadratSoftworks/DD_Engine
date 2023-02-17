@@ -25,8 +25,6 @@ public class ConstructionSiteHarryController : MonoBehaviour
         transform.localPosition = GameUtils.ToUnityCoordinates(position);
         animationController.Setup(Vector2.zero, SpriteAnimatorController.SortOrderNotSet,
             AnimationPath, origin: new Vector2(0.5f, 0.5f));
-
-        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
     }
 
     private void FixedUpdate()
@@ -62,13 +60,9 @@ public class ConstructionSiteHarryController : MonoBehaviour
         moveVector += Vector2.down;
     }
 
-    public void OnDialogueStateChanged(bool enabled)
-    {
-        playerInput.enabled = !enabled;
-    }
-
     public void Kill()
     {
         rigidBody.simulated = false;
+        playerInput.enabled = !enabled;
     }
 }

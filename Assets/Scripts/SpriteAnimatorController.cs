@@ -27,7 +27,7 @@ public class SpriteAnimatorController : MonoBehaviour
     private Vector2 originalPosition;
     private bool allowLoop = true;
     private bool disableOnDone = true;
-    private IEnumerator currentAnimateCoroutine;
+    private IEnumerator currentAnimateCoroutine = null;
     private int currentFrame = 0;
 
     public event Action<SpriteAnimatorController> Done;
@@ -143,6 +143,7 @@ public class SpriteAnimatorController : MonoBehaviour
     {
         if (frameInfos.Count == 0)
         {
+            currentAnimateCoroutine = null;
             yield break;
         }
 
@@ -201,17 +202,14 @@ public class SpriteAnimatorController : MonoBehaviour
         }
 
         Done?.Invoke(this);
+
+        currentAnimateCoroutine = null;
         yield break;
     }
 
     private void RestartUnityCoords(Vector2 basePosition)
     {
-        if (currentAnimateCoroutine != null)
-        {
-            StopCoroutine(currentAnimateCoroutine);
-            currentAnimateCoroutine = null;
-        }
-
+        StopAnimating();
         transform.localPosition = basePosition;
 
         currentAnimateCoroutine = AnimateCoroutine();
@@ -222,6 +220,7 @@ public class SpriteAnimatorController : MonoBehaviour
     {
         RestartUnityCoords(GameUtils.ToUnityCoordinates(basePosition));
     }
+
     public void Restart()
     {
         RestartUnityCoords(originalPosition);
@@ -229,16 +228,27 @@ public class SpriteAnimatorController : MonoBehaviour
 
     public void Enable()
     {
+        if (gameObject.activeSelf == false)
+        {
+            currentAnimateCoroutine = null;
+        }
+
         gameObject.SetActive(true);
     }
 
     public void Disable()
     {
+        StopAnimating();
         gameObject.SetActive(false);   
     }
 
     public void SetEnableState(bool enabled)
     {
+        if (!enabled)
+        {
+            StopAnimating();
+        }
+
         gameObject.SetActive(enabled);
     }
 
@@ -253,14 +263,27 @@ public class SpriteAnimatorController : MonoBehaviour
 
     private void Start()
     {
-        transform.localPosition = originalPosition;
-
-        currentAnimateCoroutine = AnimateCoroutine();
-        StartCoroutine(currentAnimateCoroutine);
+        if (currentAnimateCoroutine == null)
+        {
+            StartAnimatingIfNotExists();
+        }
     }
 
     private void OnEnable()
     {
         Restart();
+    }
+
+    private void StartAnimatingIfNotExists()
+    {
+        if (currentAnimateCoroutine != null)
+        {
+            return;
+        }
+        
+        transform.localPosition = originalPosition;
+
+        currentAnimateCoroutine = AnimateCoroutine();
+        StartCoroutine(currentAnimateCoroutine);
     }
 }

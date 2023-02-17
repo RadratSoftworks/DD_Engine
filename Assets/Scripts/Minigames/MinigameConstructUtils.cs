@@ -13,7 +13,7 @@ public static class MinigameConstructUtils
         {
             controller.Setup(position, sortOrder, path, allowLoop: allowLoop);
         }
-        controller.gameObject.SetActive(deactiveByDefault ? false : true);
+        controller.SetEnableState(deactiveByDefault ? false : true);
         return controller;
     }
 
