@@ -53,6 +53,28 @@ public class MinigameLoader
                     return ItemSwitchMinigameLoader.Instance.Load(infoItemSwitch, fileStreamPath, viewResolution);
                 }
 
+            case "fly":
+                {
+                    ConstructionSiteMinigameInfo infoFly = ConstructionSiteMinigameInfoParser.Parse(parsedResult);
+                    if (infoFly == null)
+                    {
+                        return null;
+                    }
+
+                    return ConstructionSiteMinigameLoader.Instance.Load(infoFly, fileStreamPath, viewResolution);
+                }
+
+            case "pogo":
+                {
+                    PogoJumpMinigameInfo infoPogo = PogoJumpMinigameInfoParser.Parse(parsedResult);
+                    if (infoPogo == null)
+                    {
+                        return null;
+                    }
+
+                    return PogoJumpMinigameLoader.Instance.Load(infoPogo, fileStreamPath, viewResolution);
+                }
+
             default:
                 Debug.LogErrorFormat("Unsupported minigame type: {0}", gameType);
                 break;

@@ -28,8 +28,12 @@ public class SpriteAnimatorController : MonoBehaviour
     private bool allowLoop = true;
     private bool disableOnDone = true;
     private IEnumerator currentAnimateCoroutine;
+    private int currentFrame = 0;
 
     public event Action<SpriteAnimatorController> Done;
+
+    public int TotalFrame => frameInfos.Count;
+    public int CurrentFrame => currentFrame;
 
     public void Setup(Vector2 position, float sortOrder, string animationFilename, string layerName = null, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false)
     {
@@ -143,7 +147,7 @@ public class SpriteAnimatorController : MonoBehaviour
         }
 
         int previousSpriteIndex = -1;
-        int currentFrame = 0;
+        currentFrame = 0;
 
         Vector2 basePosition = transform.localPosition;
 

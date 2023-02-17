@@ -16,4 +16,14 @@ public static class MinigameConstructUtils
         controller.gameObject.SetActive(deactiveByDefault ? false : true);
         return controller;
     }
+
+    public static BoxCollider2D SetupBoundsObject(GameObject boundsObj, Rect bounds) {
+        boundsObj.transform.localPosition = GameUtils.ToUnityCoordinates(bounds.center);
+        BoxCollider2D collider = boundsObj.GetComponent<BoxCollider2D>();
+        if (collider != null)
+        {
+            collider.size = GameUtils.ToUnitySize(bounds.size);
+        }
+        return collider;
+    }
 }

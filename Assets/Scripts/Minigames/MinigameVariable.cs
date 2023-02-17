@@ -30,6 +30,20 @@ public class MinigameVariable
         return true;
     }
 
+    public bool ConvertToRect(out Rect result)
+    {
+        result = Rect.zero;
+
+        if (!TryGetValue("x", out int xValue) || !TryGetValue("y", out int yValue) ||
+            !TryGetValue("w", out int wValue) || !TryGetValue("h", out int hValue))
+        {
+            return false;
+        }
+
+        result = new Rect(new Vector2(xValue, yValue), new Vector2(wValue, hValue));
+        return true;
+    }
+
     public bool TryGetValues<T>(string name, out List<T> resultGet)
     {
         resultGet = null;

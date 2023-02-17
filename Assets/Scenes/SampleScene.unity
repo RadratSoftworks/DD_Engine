@@ -214,6 +214,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd48856465d72544a208eeb42dcf45b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &464522999
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 464523000}
+  - component: {fileID: 464523001}
+  m_Layer: 0
+  m_Name: ConstructionSiteMinigameLoader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &464523000
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464522999}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1024011019}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &464523001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464522999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cbd740606033204b90debc9e1be7672, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  constructionSiteScenePrefabObject: {fileID: 507579337962400355, guid: 4318ee810e1436149a0d06a37898ed1b, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,7 +312,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 4.8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -278,7 +323,7 @@ Camera:
   m_TargetEye: 0
   m_HDR: 1
   m_AllowMSAA: 0
-  m_AllowDynamicResolution: 0
+  m_AllowDynamicResolution: 1
   m_ForceIntoRT: 0
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
@@ -291,7 +336,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.13, y: -5, z: -10}
+  m_LocalPosition: {x: 10.847327, y: -1.1294638, z: -4.576817}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -467,6 +512,8 @@ Transform:
   - {fileID: 188363751}
   - {fileID: 1298278307}
   - {fileID: 1253515474}
+  - {fileID: 464523000}
+  - {fileID: 1702944692}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -918,7 +965,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: 052a2584-7e25-4566-b270-baeee7c78b0c
+  m_DefaultActionMap: Continue Game
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &1524439940
@@ -943,6 +990,53 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7237565360405950504, guid: d43607f56304a094c87b344aef781593, type: 3}
   m_PrefabInstance: {fileID: 7237565358975719018}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1702944691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1702944692}
+  - component: {fileID: 1702944693}
+  m_Layer: 0
+  m_Name: PogoJumpMinigameLoader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1702944692
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1702944691}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1024011019}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1702944693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1702944691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ac1716499d727b459e939436bf25828, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guiAnimationPrefab: {fileID: 4706014351936562840, guid: 3b31eca6b6d54cc43a81d48f312a838a, type: 3}
+  guiPicturePrefab: {fileID: 987941436643803451, guid: 142205e66f20c424bab9ac01dc757ea9, type: 3}
+  pogoJumpScenePrefabObject: {fileID: 8906426062789035452, guid: b35f42ecf1787294d8ecddfd1705c064, type: 3}
 --- !u!1 &1793308108
 GameObject:
   m_ObjectHideFlags: 0

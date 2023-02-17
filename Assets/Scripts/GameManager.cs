@@ -157,7 +157,7 @@ public class GameManager : MonoBehaviour
 
     public void OnResourcesReady()
     {
-        LoadMinigame("ch2/minigames/moviesetFight.mini");
+        LoadMinigame("ch6/minigames/PogoJumpChainSawIdolKit.mini");
         //LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 

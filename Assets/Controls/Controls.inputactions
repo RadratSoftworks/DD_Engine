@@ -492,6 +492,122 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Fly Minigame Control",
+            "id": "cf16b00d-2d65-4fd6-b939-235980341fa2",
+            "actions": [
+                {
+                    "name": "Left Pressed",
+                    "type": "Button",
+                    "id": "273ece22-a0e8-4c72-81e0-86293ecb9f32",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Right Pressed",
+                    "type": "Button",
+                    "id": "b1a9565e-5d50-4d05-8157-d11059c0d0f2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Up Pressed",
+                    "type": "Button",
+                    "id": "c9ca36a4-4dca-482c-8438-dae3f3f913f3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Down Pressed",
+                    "type": "Button",
+                    "id": "bcdb2078-4239-4433-8f01-50179939e90a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "92f6c2d4-460f-4b48-bb07-2105c7f9c2c7",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Left Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "949eaafe-a516-4d9e-a7cd-3f86f71b0410",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Right Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "684dd8be-1b46-4ae9-9ea6-0de27f3d73ff",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Up Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "03fa72aa-f0df-45dc-812f-503ebd587f36",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Down Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Pogo Jump Minigame Control",
+            "id": "64ad9cbf-dcc8-4959-8f21-411d6bb2ab8d",
+            "actions": [
+                {
+                    "name": "Confirm Pressed",
+                    "type": "Button",
+                    "id": "bfb8b1bf-48bf-409d-8242-a1e859fb99e6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6b94f8a4-1c5c-4fb4-941b-c81834250d72",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Confirm Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

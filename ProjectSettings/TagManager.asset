@@ -19,9 +19,9 @@ TagManager:
   - BitStress
   - HardStress
   - StableStress
-  - 
-  - 
-  - 
+  - ConstructionSiteDanger
+  - ConstructionSiteDeath
+  - ConstructionSiteFly
   - 
   - 
   - 
