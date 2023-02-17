@@ -63,9 +63,16 @@ public class GUILayerController : MonoBehaviour
         return basePoint + CalculateActualScrollAmount(scrollAmount);
     }
 
-    public void ScrollFromOrigin(Vector2 amount)
+    public void ScrollFromOrigin(Vector2 amount, float duration = 0.0f, bool enablePanAnimation = false)
     {
-        transform.localPosition = CalculateDestinationScroll(originalPosition, amount);
+        if (enablePanAnimation)
+        {
+            scrollSequence = DOTween.Sequence();
+            scrollSequence.Append(transform.DOLocalMove(CalculateDestinationScroll(originalPosition, amount), duration));
+        } else
+        {
+            transform.localPosition = CalculateDestinationScroll(originalPosition, amount);
+        }
     }
 
 

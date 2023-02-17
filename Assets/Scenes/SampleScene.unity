@@ -793,6 +793,7 @@ MonoBehaviour:
   guiConditionalPrefabObject: {fileID: 6563853629906471734, guid: 6951509b66ee68a498f74a049162d9ff, type: 3}
   guiScrollingPicturePrefabObject: {fileID: 7333423592277839260, guid: 4bfa905ec1e8af548b6d6596e50b61b5, type: 3}
   guiLabelPrefabObject: {fileID: 7421573128737498477, guid: 7dc1814f69691e44b9dd8c6f055956f9, type: 3}
+  guiBackgroundLabelPrefabObject: {fileID: 1923929201094403829, guid: d2afec7cc27e7b6469a9dce9bf317b87, type: 3}
   container: {fileID: 1861322847}
 --- !u!4 &1191797624
 Transform:

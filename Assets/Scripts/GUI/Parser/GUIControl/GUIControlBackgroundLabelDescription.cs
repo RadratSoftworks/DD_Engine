@@ -6,14 +6,12 @@ public class GUIControlBackgroundLabelDescription : GUIControlDescription
 {
     public Vector2 TopPosition { get; set; }
     public string TextId { get; set; }
-    public int unk1 { get; set; }
-    public int unk2 { get; set; }
-    public int unk3 { get; set; }
-    public int unk4 { get; set; }
+    public Vector2 MarginSize { get; set; }
+    public string UnkStr { get; set; }
 
-    public Color color1 { get; set; }
+    public Color FillColor { get; set; }
 
-    public Color color2 { get; set; }
+    public Color TextColor { get; set; }
 
     public GUIControlBackgroundLabelDescription(GUIControlDescription parent, BinaryReader2 reader)
     {
@@ -30,22 +28,22 @@ public class GUIControlBackgroundLabelDescription : GUIControlDescription
         TopPosition = new Vector2(x, y);
         TextId = reader.ReadWordLengthString();
 
-        unk1 = reader.ReadInt16BE();
-        unk2 = reader.ReadInt16BE();
+        short marginX = reader.ReadInt16BE();
+        short marginY = reader.ReadInt16BE();
 
+        MarginSize = new Vector2(marginX, marginY);
         float alpha = (byte)reader.ReadUInt16BE() / 255.0f;
 
-        color1 = new Color((byte)reader.ReadUInt16BE() / 255.0f,
+        FillColor = new Color((byte)reader.ReadUInt16BE() / 255.0f,
             (byte)reader.ReadUInt16BE() / 255.0f,
             (byte)reader.ReadUInt16BE() / 255.0f,
             alpha);
 
-        color2 = new Color((byte)reader.ReadUInt16BE() / 255.0f,
+        TextColor = new Color((byte)reader.ReadUInt16BE() / 255.0f,
             (byte)reader.ReadUInt16BE() / 255.0f,
             (byte)reader.ReadUInt16BE() / 255.0f,
             alpha);
 
-        unk3 = reader.ReadInt16BE();
-        unk4 = reader.ReadInt16BE();
+        UnkStr = reader.ReadWordLengthString();
     }
 }

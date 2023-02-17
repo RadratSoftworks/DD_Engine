@@ -43,6 +43,9 @@ public class GUIControlSetFactory : MonoBehaviour
     private GameObject guiLabelPrefabObject;
 
     [SerializeField]
+    private GameObject guiBackgroundLabelPrefabObject;
+
+    [SerializeField]
     public GameObject container;
 
     private void Start()
@@ -290,6 +293,17 @@ public class GUIControlSetFactory : MonoBehaviour
         }
     }
 
+    private void LoadGuiBgLabel(GUIControlSet ownSet, GameObject parent, GUIControlBackgroundLabelDescription description)
+    {
+        GameObject anotherInstance = Instantiate(guiBackgroundLabelPrefabObject, parent.transform, false);
+        GUIBackgroundLabelController controller = anotherInstance.GetComponent<GUIBackgroundLabelController>();
+
+        if (controller != null)
+        {
+            controller.Setup(ownSet, description);
+        }
+    }
+
     public void InstantiateControls(GUIControlSet ownSet, GameObject parent, List<GUIControlDescription> descriptions, GUIControlSetInstantiateOptions options)
     {
         foreach (GUIControlDescription description in descriptions)
@@ -329,6 +343,10 @@ public class GUIControlSetFactory : MonoBehaviour
             else if (description is GUIControlLabelDescription)
             {
                 LoadGuiLabel(ownSet, parent, description as GUIControlLabelDescription);
+            }
+            else if (description is GUIControlBackgroundLabelDescription)
+            {
+                LoadGuiBgLabel(ownSet, parent, description as GUIControlBackgroundLabelDescription);
             }
             else
             {

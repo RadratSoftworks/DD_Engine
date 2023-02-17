@@ -37,7 +37,7 @@ public class GUIActiveController : MonoBehaviour
         controlSet = set;
 
         transform.localPosition = GameUtils.ToUnityCoordinates(detectBounds.position + detectBounds.size / 2);
-        Vector3 sizeTransformed = GameUtils.ToUnitySize(size);
+        Vector3 sizeTransformed = size / 2;
 
         BoxCollider2D collider = GetComponent<BoxCollider2D>();
         if (collider != null)
@@ -47,10 +47,10 @@ public class GUIActiveController : MonoBehaviour
 
         Vector3[] positionMove =
         {
-            Vector3.Scale(sizeTransformed / 2, new Vector3(-1, 1)),
-            Vector3.Scale(sizeTransformed / 2, new Vector3(1, 1)),
-            Vector3.Scale(sizeTransformed / 2, new Vector3(-1, -1)),
-            Vector3.Scale(sizeTransformed / 2, new Vector3(1, -1))
+            Vector3.Scale(sizeTransformed, new Vector3(-1, -1)),
+            Vector3.Scale(sizeTransformed, new Vector3(1, -1)),
+            Vector3.Scale(sizeTransformed, new Vector3(-1, 1)),
+            Vector3.Scale(sizeTransformed, new Vector3(1, 1))
         };
 
         Vector2[] origin =

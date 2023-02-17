@@ -73,6 +73,10 @@ public static class GUIDescriptionDepthNormalizer
 
                 // For side-menu image
                 control.AbsoluteDepth = ++depth;
+            } else if (control is GUIControlBackgroundLabelDescription)
+            {
+                // Two objects
+                depth++;
             }
         }
     }

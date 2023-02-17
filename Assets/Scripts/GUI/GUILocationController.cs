@@ -60,7 +60,7 @@ public class GUILocationController : MonoBehaviour
         playerInput.enabled = !enabled;
     }
 
-    private void ScrollFromOrigin(Vector2 offset)
+    private void ScrollFromOrigin(Vector2 offset, bool enablePanAnimation = false)
     {
         Vector3 targetOffset = panLayerController.CalculateScrollAmountForLimitedPanFromOrigin(offset);
 
@@ -69,11 +69,14 @@ public class GUILocationController : MonoBehaviour
             return;
         }
 
+        float duration = Mathf.Max(Mathf.Abs(targetOffset.x), Mathf.Abs(targetOffset.y)) * durationPerUnit;
+
         foreach (var controller in layerControllers)
         {
-            controller.ScrollFromOrigin(targetOffset);
+            controller.ScrollFromOrigin(targetOffset, duration, enablePanAnimation);
         }
     }
+
     private IEnumerator ScrollDoneCoroutine(bool reportNotBusyAnymore)
     {
         yield return new WaitUntil(() => ScrollAnimationDone);
@@ -137,12 +140,12 @@ public class GUILocationController : MonoBehaviour
 
     private void OnControlSetOffsetChanged(Vector2 offset)
     {
-        ScrollFromOrigin(GameUtils.ToUnityCoordinates(offset));
+        ScrollFromOrigin(GameUtils.ToUnityCoordinates(offset), false);
     }
 
     private void OnPanRequested(Vector2 amount)
     {
-        Scroll(GameUtils.ToUnityCoordinates(amount * new Vector2(-1, 1)), true, true);
+        ScrollFromOrigin(GameUtils.ToUnityCoordinates(amount), true);
     }
 
     private void OnScrollSpeedsSet(Vector2[] speeds)
