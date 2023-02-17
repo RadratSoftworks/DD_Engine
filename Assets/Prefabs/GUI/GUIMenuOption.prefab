@@ -53,7 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49f33f0e9f0b7cd4c8ce2b059ba49a71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distanceXSinkBack: 0.15
+  distanceXSinkBack: 0.23
   sinkDuration: 0.5
 --- !u!212 &2991068980618184158
 SpriteRenderer:
@@ -94,7 +94,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -440058871
-  m_SortingLayer: 18
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -288,7 +288,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -440058871
-  m_SortingLayer: 18
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &157167594932968076
