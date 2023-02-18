@@ -67,6 +67,7 @@ public class ConstructionSiteHostileController : MonoBehaviour
 
             deathAnimation.Done += controller =>
             {
+                GameViewController.Instance.SetNormalView();
                 GameManager.Instance.LoadGadget(deathScriptPath);
             };
 

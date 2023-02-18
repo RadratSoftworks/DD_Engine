@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 // Tried to use vertical layout but it is very inconsistent with pivots...
 public class GameTextBalloonController : MonoBehaviour
 {
+    private const string SkipActionName = "Skip";
+
     private TMPro.TMP_Text ballonText;
     private RectTransform rectTransform;
     private SpriteRenderer backgroundRenderer;
@@ -40,6 +43,34 @@ public class GameTextBalloonController : MonoBehaviour
 
         rectTransform.pivot = this.isBottom ? Vector2.zero : Vector2.up;
         transform.localPosition = sizeTransformed * (this.isBottom ? Vector2.down : Vector2.zero);
+    }
+
+    private void Start()
+    {
+        var dialogueBalloonMap = GameInputManager.Instance.DialogueBalloonActionMap;
+        dialogueBalloonMap.Enable();
+
+        InputAction skipAction = dialogueBalloonMap.FindAction(SkipActionName);
+        skipAction.performed += OnSkip;
+    }
+
+    private void OnDestroy()
+    {
+        var dialogueBalloonMap = GameInputManager.Instance.DialogueBalloonActionMap;
+        dialogueBalloonMap.Disable();
+
+        InputAction skipAction = dialogueBalloonMap.FindAction(SkipActionName);
+        skipAction.performed -= OnSkip;
+    }
+
+    private void OnEnable()
+    {
+        GameInputManager.Instance.DialogueBalloonActionMap.Enable();
+    }
+
+    private void OnDisable()
+    {
+        GameInputManager.Instance.DialogueBalloonActionMap.Disable();
     }
 
     private static bool IsTextFullItalic(string text)
@@ -136,7 +167,7 @@ public class GameTextBalloonController : MonoBehaviour
         stingerObject.transform.localPosition = balloonObject.transform.localPosition + new Vector3(stingerPositionRelative.x, stingerPositionRelative.y * (isBottom ? -1.0f : 1.0f), 0.0f);
     }
 
-    public void OnSkip()
+    public void OnSkip(InputAction.CallbackContext context)
     {
         if (ballonText.maxVisibleCharacters < ballonText.text.Length)
         {

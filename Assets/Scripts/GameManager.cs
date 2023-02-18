@@ -110,6 +110,7 @@ public class GameManager : MonoBehaviour
 
         if (activeGadget == null)
         {
+            GameInputManager.Instance.SetGUIInputActionMapState(true);
             DialogueStateChanged?.Invoke(false);
         }
     }
@@ -132,6 +133,7 @@ public class GameManager : MonoBehaviour
         HideGadgetRelatedObjects();
         activeGadget = null;
 
+        GameInputManager.Instance.SetGUIInputActionMapState(true);
         DialogueStateChanged?.Invoke(false);
     }
 
@@ -157,7 +159,7 @@ public class GameManager : MonoBehaviour
 
     public void OnResourcesReady()
     {
-        //LoadMinigame("ch6/minigames/PogoJumpChainSawIdolKit.mini");
+        //LoadMinigame("ch4/minigames/constructionSite.mini");
         LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
@@ -171,7 +173,10 @@ public class GameManager : MonoBehaviour
         PushGadget(containerObject);
 
         GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, scriptBlock, parent);
-        StartCoroutine(interpreter.Execute(() => DialogueStateChanged?.Invoke(true)));
+        StartCoroutine(interpreter.Execute(() => {
+            GameInputManager.Instance.SetGUIInputActionMapState(false);
+            DialogueStateChanged?.Invoke(true);
+        }));
     }
 
     public void LoadDialogueSlide(Dialogue parent, DialogueSlide slide)

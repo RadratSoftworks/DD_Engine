@@ -117,6 +117,15 @@
                     "processors": "",
                     "interactions": "CustomHolding(duration=0.1)",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Active Confirmed",
+                    "type": "Button",
+                    "id": "103ec0a5-4568-4777-8f2e-a340c5dbbc2d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -218,32 +227,15 @@
                     "action": "Move Joystick",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "GUI Action",
-            "id": "ecda4bb5-2c32-4e64-b8fd-06d0e9117c52",
-            "actions": [
-                {
-                    "name": "Select",
-                    "type": "Button",
-                    "id": "ab26dead-d260-4909-9923-26b4abec90bf",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "b7a25331-8b7b-4e28-b811-acf29471b527",
+                    "id": "6036360d-5a92-49c8-966f-9d1be6580715",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
                     "groups": "Default Scheme",
-                    "action": "Select",
+                    "action": "Active Confirmed",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -288,7 +280,18 @@
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
+                    "action": "Choice Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "888f0ecf-6a79-4851-9b24-b5cfd2e65cbb",
+                    "path": "<Gamepad>/leftStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
                     "action": "Choice Up",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -297,6 +300,17 @@
                     "name": "",
                     "id": "a5ef098d-dd6a-4457-b0db-72a4f5b204db",
                     "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
+                    "action": "Choice Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bca363ab-2947-4fba-8f71-5ca40ada9493",
+                    "path": "<Gamepad>/leftStick/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -310,7 +324,7 @@
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
                     "action": "Choice Confirm",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -482,7 +496,7 @@
             ]
         },
         {
-            "name": "Item Switch Minigame Indicator",
+            "name": "Item Switch Minigame",
             "id": "6a83b87b-86b5-4105-980a-c711118b7ef7",
             "actions": [
                 {
@@ -501,6 +515,15 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Confirm Pressed",
+                    "type": "Button",
+                    "id": "0a6b2005-2a69-48a3-8e44-25608e2e0b5d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
                     "initialStateCheck": false
                 }
             ],
@@ -526,27 +549,10 @@
                     "action": "Right Pressed",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Item Switch Minigame Confirm",
-            "id": "af66e31e-fbd5-4712-bf30-abf02f47d57d",
-            "actions": [
-                {
-                    "name": "Confirm Pressed",
-                    "type": "Button",
-                    "id": "9c192b9c-8d1d-4889-b244-3b9fcb8f0818",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "c2acaf40-967d-4577-af56-866aee9c57be",
+                    "id": "e9eae393-07a5-4ca0-b91e-03db4879dac0",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
@@ -558,7 +564,7 @@
             ]
         },
         {
-            "name": "Fly Minigame Control",
+            "name": "Fly Minigame",
             "id": "cf16b00d-2d65-4fd6-b939-235980341fa2",
             "actions": [
                 {
@@ -596,6 +602,15 @@
                     "processors": "",
                     "interactions": "CustomHolding(duration=0.1)",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Joystick Moved",
+                    "type": "Value",
+                    "id": "def3f994-492b-48a5-a1ce-b4538a995b9d",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -605,7 +620,7 @@
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
                     "action": "Left Pressed",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -616,7 +631,7 @@
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
                     "action": "Right Pressed",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -627,7 +642,7 @@
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
                     "action": "Up Pressed",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -638,15 +653,26 @@
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
                     "action": "Down Pressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8396532a-954e-4a00-9b41-294c8a8fbf6d",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
+                    "action": "Joystick Moved",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "Pogo Jump Minigame Control",
+            "name": "Pogo Jump Minigame",
             "id": "64ad9cbf-dcc8-4959-8f21-411d6bb2ab8d",
             "actions": [
                 {

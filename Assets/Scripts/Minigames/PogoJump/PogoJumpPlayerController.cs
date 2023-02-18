@@ -7,12 +7,12 @@ using UnityEngine.InputSystem;
 public class PogoJumpPlayerController : MonoBehaviour
 {
     private const int PlayerDrawLayer = 0;
+    private const string JumpConfirmPressedActionName = "Confirm Pressed";
 
     private List<SpriteAnimatorController> jumpLevelAnimControllers = new List<SpriteAnimatorController>();
     
     private AudioSource jumpSound;
     private SpriteAnimatorController currentJumpAnim;
-    private PlayerInput playerInput;
 
     private int difficulty;
     private bool jumpTriggered;
@@ -23,7 +23,33 @@ public class PogoJumpPlayerController : MonoBehaviour
     private void Awake()
     {
         jumpSound = GetComponent<AudioSource>();
-        playerInput = GetComponent<PlayerInput>();
+    }
+
+    private void Start()
+    {
+        var pogoJumpActionMap = GameInputManager.Instance.PogoJumpMinigameActionMap;
+        pogoJumpActionMap.Enable();
+
+        InputAction confirmAction = pogoJumpActionMap.FindAction(JumpConfirmPressedActionName);
+        confirmAction.performed += OnConfirmPressed;
+    }
+
+    private void UnbindInput()
+    {
+        var pogoJumpActionMap = GameInputManager.Instance.PogoJumpMinigameActionMap;
+
+        InputAction confirmAction = pogoJumpActionMap.FindAction(JumpConfirmPressedActionName);
+        confirmAction.performed -= OnConfirmPressed;
+
+        pogoJumpActionMap.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        if (GameInputManager.Instance.PogoJumpMinigameActionMap.enabled)
+        {
+            UnbindInput();
+        }
     }
 
     public void Setup(PogoJumpMinigameInfo minigameInfo, GameObject animationPrefab)
@@ -54,10 +80,9 @@ public class PogoJumpPlayerController : MonoBehaviour
         wonMinigameScriptPath = minigameInfo.WonScript;
 
         jumpSound.clip = SoundManager.Instance.GetAudioClip(minigameInfo.JumpSoundPath);
-        playerInput.enabled = true;
     }
 
-    private void OnConfirmPressed()
+    public void OnConfirmPressed(InputAction.CallbackContext context)
     {
         if (jumpPressedThisFrame)
         {
@@ -109,7 +134,7 @@ public class PogoJumpPlayerController : MonoBehaviour
         if (controller == jumpLevelAnimControllers.Last())
         {
             // Won the minigame
-            playerInput.enabled = false;
+            UnbindInput();
             GameManager.Instance.LoadGadget(wonMinigameScriptPath);
         } else
         {

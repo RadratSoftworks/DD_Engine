@@ -23,8 +23,6 @@ public class ItemSwitchSceneController : MonoBehaviour
     [SerializeField]
     private ItemSwitchTimerController timerController;
 
-    private PlayerInput controlInput;
-
     private bool gameFinished;
     private bool gameWon;
 
@@ -33,7 +31,6 @@ public class ItemSwitchSceneController : MonoBehaviour
 
     private void Awake()
     {
-        controlInput = GetComponent<PlayerInput>();
     }
 
     private void SetupTimerLogic()
@@ -68,6 +65,8 @@ public class ItemSwitchSceneController : MonoBehaviour
                 gameWon = false;
             }
         };
+
+        stressMachineController.ConfirmPressed += () => OnConfirmPressed();
     }
 
     public void Setup(ItemSwitchMinigameInfo minigameInfo)
@@ -96,11 +95,10 @@ public class ItemSwitchSceneController : MonoBehaviour
         SetupTimerLogic();
     }
 
-    private void OnConfirmPressed()
+    public void OnConfirmPressed()
     {
         if (gameFinished)
         {
-            controlInput.enabled = false;
             GameManager.Instance.LoadGadget(gameWon ? wonScript : lostScript);
         }
     }

@@ -37,6 +37,9 @@ public class ConstructionSiteSceneController : MonoBehaviour
     [SerializeField]
     private ConstructionSiteHarryController harryController;
 
+    [SerializeField]
+    private CompositeCollider2D cameraBounds;
+
     public void Setup(ConstructionSiteMinigameInfo info)
     {
         backgroundRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
@@ -56,5 +59,8 @@ public class ConstructionSiteSceneController : MonoBehaviour
         winHostile.Setup(info.Win);
 
         harryController.Setup(info.FlyPosition);
+
+        // Switch to full view
+        GameViewController.Instance.SetFullViewWithFocus(harryController.transform, cameraBounds);
     }
 }

@@ -16,6 +16,21 @@ public class GUIActiveController : MonoBehaviour
 
     public bool PanToCenterWhenSelect { get; set; } = true;
 
+    private void RegOrUnregAction(bool reg)
+    {
+        var actionMap = GameInputManager.Instance.GUILocationActionMap;
+        InputAction activeConfirmed = actionMap.FindAction("Active Confirmed");
+
+        if (reg)
+        {
+            activeConfirmed.performed += OnSelect;
+        }
+        else
+        {
+            activeConfirmed.performed -= OnSelect;
+        }
+    }
+
     private void Awake()
     {
         layerController = GetComponentInParent<GUILayerController>();
@@ -24,11 +39,22 @@ public class GUIActiveController : MonoBehaviour
     private void Start()
     {
         arrows.SetActive(false);
+        RegOrUnregAction(true);
     }
 
     private void OnDestroy()
     {
         GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
+    }
+
+    private void OnEnable()
+    {
+        RegOrUnregAction(true);
+    }
+
+    private void OnDisable()
+    {
+        RegOrUnregAction(false);
     }
 
     public void Setup(GUIControlSet set, Vector2 position, Vector2 size, Rect detectBounds, bool panToWhenSelected = true)
@@ -90,7 +116,7 @@ public class GUIActiveController : MonoBehaviour
         isHovered = false;
     }
 
-    public void OnSelect()
+    public void OnSelect(InputAction.CallbackContext context)
     {
         if (isHovered)
         {

@@ -12,7 +12,6 @@ public class GUILocationController : MonoBehaviour
     private float moveAmount = 0.02f;
 
     private GUIControlSet controlSet;
-    private PlayerInput playerInput;
 
     private GUILayerController panLayerController;
     private List<GUILayerController> layerControllers = new List<GUILayerController>();
@@ -22,10 +21,46 @@ public class GUILocationController : MonoBehaviour
 
     public bool ScrollAnimationDone => (scrollInProgressCount == 0);
 
-    private void Awake()
+    private void RegOrUnregAction(bool reg)
     {
-        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
-        playerInput = GetComponent<PlayerInput>();
+        var actionMap = GameInputManager.Instance.GUILocationActionMap;
+
+        InputAction moveLeft = actionMap.FindAction("Move Left");
+        InputAction moveRight = actionMap.FindAction("Move Right");
+        InputAction moveUp = actionMap.FindAction("Move Up");
+        InputAction moveDown = actionMap.FindAction("Move Down");
+        InputAction moveJoystick = actionMap.FindAction("Move Joystick");
+
+        if (reg)
+        {
+            moveLeft.performed += OnMoveLeft;
+            moveRight.performed += OnMoveRight;
+            moveUp.performed += OnMoveUp;
+            moveDown.performed += OnMoveDown;
+            moveJoystick.performed += OnMoveJoystick;
+        } else
+        {
+            moveLeft.performed -= OnMoveLeft;
+            moveRight.performed -= OnMoveRight;
+            moveUp.performed -= OnMoveUp;
+            moveDown.performed -= OnMoveDown;
+            moveJoystick.performed -= OnMoveJoystick;
+        }
+    }
+
+    private void Start()
+    {
+        RegOrUnregAction(true);
+    }
+
+    private void OnEnable()
+    {
+        RegOrUnregAction(true);
+    }
+
+    private void OnDestroy()
+    {
+        RegOrUnregAction(false);
     }
 
     private void OnLayerScrollAnimationDone(GUILayerController layerController)
@@ -53,11 +88,6 @@ public class GUILocationController : MonoBehaviour
                 layerControllers.Add(controller);
             }
         }
-    }
-
-    private void OnDialogueStateChanged(bool enabled)
-    {
-        playerInput.enabled = !enabled;
     }
 
     private void ScrollFromOrigin(Vector2 offset, bool enablePanAnimation = false)
@@ -118,29 +148,29 @@ public class GUILocationController : MonoBehaviour
         }
     }
 
-    public void OnMoveLeft(InputValue value)
+    public void OnMoveLeft(InputAction.CallbackContext context)
     {
-        Scroll(Vector3.right * moveAmount * value.Get<float>());
+        Scroll(Vector3.right * moveAmount * context.ReadValue<float>());
     }
 
-    public void OnMoveRight(InputValue value)
+    public void OnMoveRight(InputAction.CallbackContext context)
     {
-        Scroll(Vector3.left * moveAmount * value.Get<float>());
+        Scroll(Vector3.left * moveAmount * context.ReadValue<float>());
     }
 
-    public void OnMoveUp(InputValue value)
+    public void OnMoveUp(InputAction.CallbackContext context)
     {
-        Scroll(Vector3.down * moveAmount *value.Get<float>());
+        Scroll(Vector3.down * moveAmount * context.ReadValue<float>());
     }
 
-    public void OnMoveDown(InputValue value)
+    public void OnMoveDown(InputAction.CallbackContext context)
     {
-        Scroll(Vector3.up * moveAmount * value.Get<float>());
+        Scroll(Vector3.up * moveAmount * context.ReadValue<float>());
     }
 
-    public void OnMoveJoystick(InputValue value)
+    public void OnMoveJoystick(InputAction.CallbackContext context)
     {
-        Scroll(value.Get<Vector2>() * -moveAmount);
+        Scroll(context.ReadValue<Vector2>() * -moveAmount);
     }
 
     private void OnControlSetOffsetChanged(Vector2 offset)

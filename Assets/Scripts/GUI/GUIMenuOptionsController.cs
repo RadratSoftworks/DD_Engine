@@ -1,6 +1,8 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class GUIMenuOptionsController : MonoBehaviour
 {
@@ -11,9 +13,42 @@ public class GUIMenuOptionsController : MonoBehaviour
     public delegate void ButtonClicked(string id);
     public event ButtonClicked OnButtonClicked;
 
+    private void RegOrUnregAction(bool reg)
+    {
+        var actionMap = GameInputManager.Instance.GUIMenuActionMap;
+
+        InputAction navigateDown = actionMap.FindAction("Navigate Down");
+        InputAction navigateUp = actionMap.FindAction("Navigate Up");
+        InputAction submit = actionMap.FindAction("Submit");
+
+        if (reg)
+        {
+            navigateDown.performed += OnNavigateDown;
+            navigateUp.performed += OnNavigateUp;
+            submit.performed += OnSubmit;
+        }
+        else
+        {
+            navigateDown.performed -= OnNavigateDown;
+            navigateUp.performed -= OnNavigateUp;
+            submit.performed -= OnSubmit;
+        }
+    }
+
     private void Start()
     {
         DOTween.Init();
+        RegOrUnregAction(true);
+    }
+
+    private void OnEnable()
+    {
+        RegOrUnregAction(true);
+    }
+
+    private void OnDisable()
+    {
+        RegOrUnregAction(false);
     }
 
     private void Update()
@@ -63,17 +98,17 @@ public class GUIMenuOptionsController : MonoBehaviour
         SelectOption(newChildIndex, true);
     }
 
-    private void OnNavigateDown()
+    public void OnNavigateDown(InputAction.CallbackContext context)
     {
         OnGameOptionChoosen((currentChildIndex + 1) % transform.childCount);
     }
 
-    private void OnNavigateUp()
+    public void OnNavigateUp(InputAction.CallbackContext context)
     {
         OnGameOptionChoosen((currentChildIndex == 0) ? (transform.childCount - 1) : (currentChildIndex - 1));
     }
 
-    private void OnSubmit()
+    public void OnSubmit(InputAction.CallbackContext context)
     {
         GameObject currentChild = transform.GetChild(currentChildIndex).gameObject;
         OnButtonClicked?.Invoke(currentChild.name);

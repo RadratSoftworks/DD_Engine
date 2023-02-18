@@ -15,12 +15,51 @@ public class ConstructionSiteHarryController : MonoBehaviour
     private Rigidbody2D rigidBody;
     private Vector2 moveVector;
 
-    private PlayerInput playerInput;
+    private void RegOrUnregControl(bool register)
+    {
+        var flyActionMap = GameInputManager.Instance.FlyMinigameActionMap;
+
+        InputAction leftPressed = flyActionMap.FindAction("Left Pressed");
+        InputAction rightPressed = flyActionMap.FindAction("Right Pressed");
+        InputAction upPressed = flyActionMap.FindAction("Up Pressed");
+        InputAction downPressed = flyActionMap.FindAction("Down Pressed");
+        InputAction joystickMoved = flyActionMap.FindAction("Joystick Moved");
+
+        if (register)
+        {
+            flyActionMap.Enable();
+
+            leftPressed.performed += OnLeftPressed;
+            rightPressed.performed += OnRightPressed;
+            upPressed.performed += OnUpPressed;
+            downPressed.performed += OnDownPressed;
+            joystickMoved.performed += OnJoystickMoved;
+        }
+        else
+        {
+            flyActionMap.Disable();
+
+            leftPressed.performed -= OnLeftPressed;
+            rightPressed.performed -= OnRightPressed;
+            upPressed.performed -= OnUpPressed;
+            downPressed.performed -= OnDownPressed;
+            joystickMoved.performed -= OnJoystickMoved;
+        }
+    }
+
+    private void Start()
+    {
+        RegOrUnregControl(true);
+    }
+
+    private void OnDestroy()
+    {
+        RegOrUnregControl(false);
+    }
 
     public void Setup(Vector2 position)
     {
         rigidBody = GetComponent<Rigidbody2D>();
-        playerInput = GetComponent<PlayerInput>();
 
         transform.localPosition = GameUtils.ToUnityCoordinates(position);
         animationController.Setup(Vector2.zero, SpriteAnimatorController.SortOrderNotSet,
@@ -40,29 +79,33 @@ public class ConstructionSiteHarryController : MonoBehaviour
         moveVector = Vector2.zero;
     }
 
-    private void OnLeftPressed()
+    public void OnLeftPressed(InputAction.CallbackContext context)
     {
         moveVector += Vector2.left;
     }
 
-    private void OnRightPressed()
+    public void OnRightPressed(InputAction.CallbackContext context)
     {
         moveVector += Vector2.right;
     }
 
-    private void OnUpPressed()
+    public void OnUpPressed(InputAction.CallbackContext context)
     {
         moveVector += Vector2.up;
     }
 
-    private void OnDownPressed()
+    public void OnDownPressed(InputAction.CallbackContext context)
     {
         moveVector += Vector2.down;
+    }
+
+    public void OnJoystickMoved(InputAction.CallbackContext context)
+    {
+        moveVector += context.ReadValue<Vector2>();
     }
 
     public void Kill()
     {
         rigidBody.simulated = false;
-        playerInput.enabled = !enabled;
     }
 }

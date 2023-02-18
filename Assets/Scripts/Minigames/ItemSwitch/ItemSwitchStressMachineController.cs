@@ -10,6 +10,7 @@ public class ItemSwitchStressMachineController : MonoBehaviour
     private ItemSwitchStressIndicatorController indicatorController;
 
     public event Action<ItemSwitchStressStatus> StressStatusEntered;
+    public event Action ConfirmPressed;
 
     public bool Passed => indicatorController.Passed;
 
@@ -22,6 +23,7 @@ public class ItemSwitchStressMachineController : MonoBehaviour
 
         indicatorController.Setup(stressInfo, forceFactor, maxSpeedFactor);
         indicatorController.StressStatusEntered += status => StressStatusEntered?.Invoke(status);
+        indicatorController.ConfirmPressed += () => ConfirmPressed?.Invoke();
     }
 
     public void KickOff()

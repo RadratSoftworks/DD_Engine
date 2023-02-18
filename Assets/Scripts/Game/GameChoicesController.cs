@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class GameChoicesController : MonoBehaviour
@@ -31,6 +31,65 @@ public class GameChoicesController : MonoBehaviour
         backgroundRenderer = backgroundObject.GetComponent<SpriteRenderer>();
         highlightRenderer = highlightObject.GetComponent<SpriteRenderer>();
         choicesTransform = choicesObject.GetComponent<RectTransform>();
+    }
+
+    private void RegOrUnregActions(bool register)
+    {
+        var inputMap = GameInputManager.Instance.GameChoicesActionMap;
+
+        InputAction choiceUp = inputMap.FindAction("Choice Up");
+        InputAction choiceDown = inputMap.FindAction("Choice Down");
+        InputAction choiceConfirmed = inputMap.FindAction("Choice Confirm");
+
+        if (register)
+        {
+            choiceUp.performed += OnChoiceUp;
+            choiceDown.performed += OnChoiceDown;
+            choiceConfirmed.performed += OnChoiceConfirm;
+        } else
+        {
+            choiceUp.performed -= OnChoiceUp;
+            choiceDown.performed -= OnChoiceDown;
+            choiceConfirmed.performed -= OnChoiceConfirm;
+        }
+    }
+
+    private void SetInputState(bool enabled = true)
+    {
+        var inputMap = GameInputManager.Instance.GameChoicesActionMap;
+        if (inputMap.enabled == enabled)
+        {
+            return;
+        }
+
+        if (enabled)
+        {
+            inputMap.Enable();
+        } else
+        {
+            inputMap.Disable();
+        }
+    }
+
+    private void Start()
+    {
+        SetInputState(true);
+        RegOrUnregActions(true);
+    }
+
+    private void OnDestroy()
+    {
+        RegOrUnregActions(false);
+    }
+
+    private void OnEnable()
+    {
+        SetInputState(true);
+    }
+
+    private void OnDisable()
+    {
+        SetInputState(false);
     }
 
     public void Close()
@@ -89,17 +148,17 @@ public class GameChoicesController : MonoBehaviour
         UpdateHighlight();
     }
 
-    private void OnChoiceUp()
+    public void OnChoiceUp(InputAction.CallbackContext context)
     {
         SetActiveChoice((activeChoice == 0) ? (choicesToDialogueIds.Count - 1) : (activeChoice - 1));
     }
 
-    private void OnChoiceDown()
+    public void OnChoiceDown(InputAction.CallbackContext context)
     {
         SetActiveChoice((activeChoice + 1) % choicesToDialogueIds.Count);
     }
 
-    private void OnChoiceConfirm()
+    public void OnChoiceConfirm(InputAction.CallbackContext context)
     {
         (Dialogue dialogue, DialogueSlide dialogueSlide) = choicesToDialogueIds[activeChoice];
         ChoiceConfirmed?.Invoke(dialogue, dialogueSlide);

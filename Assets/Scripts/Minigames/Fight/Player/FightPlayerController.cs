@@ -6,13 +6,48 @@ public class FightPlayerController : StateMachine<FighterState>
     public GameObject animationPrefabObject;
     public GameObject picturePrefabObject;
     public FightOpponentController directOpponent;
-
-    private PlayerInput controlInput;
     public int frameTriggerIntent = 3;
+
+    private void RegOrUnregControl(bool register)
+    {
+        var fightActionMap = GameInputManager.Instance.FightMinigameActionMap;
+
+        InputAction jabPressed = fightActionMap.FindAction("Jab Pressed");
+        InputAction punchPressed = fightActionMap.FindAction("Punch Pressed");
+        InputAction strongPunchPressed = fightActionMap.FindAction("Strong Punch Pressed");
+        InputAction dodgePressed = fightActionMap.FindAction("Dodge Pressed");
+        InputAction continueRequested = fightActionMap.FindAction("Continue Requested");
+
+        if (register)
+        {
+            fightActionMap.Enable();
+
+            jabPressed.performed += OnJabPressed;
+            punchPressed.performed += OnPunchPressed;
+            strongPunchPressed.performed += OnStrongPunchPressed;
+            dodgePressed.performed += OnDodgePressed;
+            continueRequested.performed += OnContinueRequested;
+        }
+        else
+        {
+            fightActionMap.Disable();
+
+            jabPressed.performed -= OnJabPressed;
+            punchPressed.performed -= OnPunchPressed;
+            strongPunchPressed.performed -= OnStrongPunchPressed;
+            dodgePressed.performed -= OnDodgePressed;
+            continueRequested.performed -= OnContinueRequested;
+        }
+    }
 
     private void Awake()
     {
-        controlInput = GetComponent<PlayerInput>();
+        RegOrUnregControl(true);
+    }
+
+    private void OnDestroy()
+    {
+        RegOrUnregControl(false);
     }
 
     public void Setup(FightPlayerInfo playerInfo, string wonScript)
@@ -31,27 +66,27 @@ public class FightPlayerController : StateMachine<FighterState>
         return FighterState.Idle;
     }
 
-    private void OnJabPressed()
+    public void OnJabPressed(InputAction.CallbackContext context)
     {
         GiveData(FightPunchType.Jab);
     }
 
-    private void OnPunchPressed()
+    public void OnPunchPressed(InputAction.CallbackContext context)
     {
         GiveData(FightPunchType.Punch);
     }
 
-    private void OnStrongPunchPressed()
+    public void OnStrongPunchPressed(InputAction.CallbackContext context)
     {
         GiveData(FightPunchType.StrongPunch);
     }
 
-    private void OnDodgePressed()
+    public void OnDodgePressed(InputAction.CallbackContext context)
     {
         GiveData(FightPunchType.Dodging);
     }
 
-    private void OnContinueRequested()
+    public void OnContinueRequested(InputAction.CallbackContext context)
     {
         // If either one of us is knocked out, end the fight and disable input
         if ((directOpponent.CurrentState == FighterState.KnockedOut) ||
@@ -61,8 +96,6 @@ public class FightPlayerController : StateMachine<FighterState>
 
             directOpponent.GiveDataFrom(this, endIntent);
             GiveData(endIntent);
-
-            controlInput.enabled = false;
         }
     }
 }

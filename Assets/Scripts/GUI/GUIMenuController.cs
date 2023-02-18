@@ -6,16 +6,18 @@ using System.Text;
 
 public class GUIMenuController : MonoBehaviour
 {
+    [SerializeField]
+    private GUIMenuOptionsController menuOptionsController;
+
     private ActionLibrary actionLibrary;
     private GUIControlSet controlSet;
+
+    public GameObject Options => menuOptionsController.gameObject;
 
     // Start is called before the first frame update
     void Start()
     {
-        GameObject menuOptions = transform.Find("MenuOptions")?.gameObject;
-        GUIMenuOptionsController controller = menuOptions.GetComponent<GUIMenuOptionsController>();
-
-        controller.OnButtonClicked += OnButtonClicked;
+        menuOptionsController.OnButtonClicked += OnButtonClicked;
     }
 
     // Update is called once per frame

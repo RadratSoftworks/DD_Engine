@@ -114,7 +114,7 @@ public class GUIControlSetFactory : MonoBehaviour
         GUIMenuController controller = gameObject.GetComponent<GUIMenuController>();
         controller.Setup(ownSet, description.ActionHandlerFilePath);
 
-        GameObject gameObjectOptions = gameObject.transform.Find("MenuOptions")?.gameObject;
+        GameObject gameObjectOptions = controller.Options;
         Vector2 currentPosition = new Vector2(0.0f, 0.0f);
 
         LoadGuiAnimation(gameObject, new GUIControlAnimationDescription()

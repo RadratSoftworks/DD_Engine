@@ -13,7 +13,6 @@ public class ItemSwitchStressIndicatorController : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rigidBody;
-    private PlayerInput controlInput;
 
     private float forceFactor;
     private float maxSpeedFactor;
@@ -28,6 +27,43 @@ public class ItemSwitchStressIndicatorController : MonoBehaviour
 
     public bool Passed => stillInStable;
 
+    public event System.Action ConfirmPressed;
+
+    private void RegOrUnregControl(bool register)
+    {
+        var itemSwitchActionMap = GameInputManager.Instance.ItemSwitchMinigameActionMap;
+
+        InputAction leftPressed = itemSwitchActionMap.FindAction("Left Pressed");
+        InputAction rightPressed = itemSwitchActionMap.FindAction("Right Pressed");
+        InputAction confirmPressed = itemSwitchActionMap.FindAction("Confirm Pressed");
+
+        if (register)
+        {
+            itemSwitchActionMap.Enable();
+
+            leftPressed.performed += OnLeftPressed;
+            rightPressed.performed += OnRightPressed;
+            confirmPressed.performed += OnConfirmPressed;
+        } else
+        {
+            itemSwitchActionMap.Disable();
+
+            leftPressed.performed -= OnLeftPressed;
+            rightPressed.performed -= OnRightPressed;
+            confirmPressed.performed -= OnConfirmPressed;
+        }
+    }
+
+    private void Start()
+    {
+        RegOrUnregControl(true);
+    }
+
+    private void OnDestroy()
+    {
+        RegOrUnregControl(false);
+    }
+
     public void Setup(ItemSwitchStressMachineInfo stressInfo, float forceFactor, float maxSpeedFactor)
     {
         this.forceFactor = forceFactor;
@@ -37,7 +73,6 @@ public class ItemSwitchStressIndicatorController : MonoBehaviour
         stillInStable = true;
 
         spriteRenderer = GetComponent<SpriteRenderer>();
-        controlInput = GetComponent<PlayerInput>();
 
         if (spriteRenderer != null)
         {
@@ -69,14 +104,19 @@ public class ItemSwitchStressIndicatorController : MonoBehaviour
         StressStatusEntered?.Invoke(ItemSwitchStressStatus.Stable);
     }
 
-    private void OnLeftPressed()
+    private void OnLeftPressed(InputAction.CallbackContext context)
     {
         nextForceVector = Vector2.left;
     }
 
-    private void OnRightPressed()
+    private void OnRightPressed(InputAction.CallbackContext context)
     {
         nextForceVector = Vector2.right;
+    }
+
+    private void OnConfirmPressed(InputAction.CallbackContext context)
+    {
+        ConfirmPressed?.Invoke();
     }
 
     private void FixedUpdate()
@@ -113,7 +153,6 @@ public class ItemSwitchStressIndicatorController : MonoBehaviour
             stillInStable = false;
 
             StressStatusEntered?.Invoke(ItemSwitchStressStatus.Shutdown);
-            controlInput.enabled = false;
         }
     }
 
@@ -154,6 +193,5 @@ public class ItemSwitchStressIndicatorController : MonoBehaviour
     public void Freeze()
     {
         rigidBody.simulated = false;
-        controlInput.enabled = false;
     }
 }
