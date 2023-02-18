@@ -138,6 +138,11 @@ public class GUILocationController : MonoBehaviour
         Scroll(Vector3.up * moveAmount * value.Get<float>());
     }
 
+    public void OnMoveJoystick(InputValue value)
+    {
+        Scroll(value.Get<Vector2>() * -moveAmount);
+    }
+
     private void OnControlSetOffsetChanged(Vector2 offset)
     {
         ScrollFromOrigin(GameUtils.ToUnityCoordinates(offset), false);

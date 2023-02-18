@@ -40,7 +40,7 @@
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Desktop Scheme",
+                    "groups": "Default Scheme",
                     "action": "Navigate Down",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -51,7 +51,7 @@
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Desktop Scheme",
+                    "groups": "Default Scheme",
                     "action": "Navigate Up",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -62,7 +62,7 @@
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -108,6 +108,15 @@
                     "processors": "",
                     "interactions": "CustomHolding(duration=0.1)",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Move Joystick",
+                    "type": "Value",
+                    "id": "3a616c33-b44f-4dc9-b905-c963977cdaca",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "CustomHolding(duration=0.1)",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -117,7 +126,18 @@
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Desktop Scheme",
+                    "groups": "Default Scheme",
+                    "action": "Move Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a93d966c-38bb-4086-a921-9126777fb727",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
                     "action": "Move Left",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -128,7 +148,18 @@
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Desktop Scheme",
+                    "groups": "Default Scheme",
+                    "action": "Move Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7415dfb6-f452-40a6-ac0d-d76c0580c704",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
                     "action": "Move Right",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -139,7 +170,18 @@
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
+                    "action": "Move Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f4ecc1d9-f965-493a-8a8a-272b116085bb",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
                     "action": "Move Up",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -150,8 +192,30 @@
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
                     "action": "Move Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "596cedd2-9e75-45a1-96b7-00c4be5396b9",
+                    "path": "<Gamepad>/dpad/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
+                    "action": "Move Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "76d3b366-19b0-4166-92be-f5654aaa3d08",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
+                    "action": "Move Joystick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -178,7 +242,7 @@
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Default Scheme",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -612,16 +676,21 @@
     ],
     "controlSchemes": [
         {
-            "name": "Desktop Scheme",
-            "bindingGroup": "Desktop Scheme",
+            "name": "Default Scheme",
+            "bindingGroup": "Default Scheme",
             "devices": [
                 {
                     "devicePath": "<Keyboard>",
-                    "isOptional": false,
+                    "isOptional": true,
                     "isOR": false
                 },
                 {
                     "devicePath": "<Mouse>",
+                    "isOptional": true,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Gamepad>",
                     "isOptional": true,
                     "isOR": false
                 }
