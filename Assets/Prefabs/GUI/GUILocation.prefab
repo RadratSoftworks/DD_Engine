@@ -45,4 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   durationPerUnit: 2
-  moveAmount: 0.02
+  moveAmount: 0.015

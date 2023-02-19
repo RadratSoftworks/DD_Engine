@@ -199,6 +199,7 @@ public class GadgetInterpreter
             target = GameUtils.ToUnityCoordinates(target);
 
             int duration = int.Parse(command.Arguments[3] as string);
+            duration = GameManager.Instance.GetRealFrames(duration);
 
             GamePanController panController = gameObj.GetComponent<GamePanController>();
             if (panController != null)
@@ -221,6 +222,8 @@ public class GadgetInterpreter
         if (gameObjectByLayer.TryGetValue(layer, out GameObject gameObj))
         {
             int frames = int.Parse(command.Arguments[1] as string);
+            frames = GameManager.Instance.GetRealFrames(frames);
+
             GameImageFadeController fadeController = gameObj.GetComponent<GameImageFadeController>();
                 
             if (fadeController != null)
@@ -310,6 +313,8 @@ public class GadgetInterpreter
                 case GadgetOpcode.Pause:
                     {
                         int frameToPause = int.Parse(command.Arguments[0] as string);
+                        frameToPause = GameManager.Instance.GetRealFrames(frameToPause);
+
                         if (frameToPause < 0)
                         {
                             // Wait for confirmation basically!

@@ -92,7 +92,7 @@ public class GUILocationController : MonoBehaviour
 
     private void ScrollFromOrigin(Vector2 offset, bool enablePanAnimation = false)
     {
-        Vector3 targetOffset = panLayerController.CalculateScrollAmountForLimitedPanFromOrigin(offset);
+        Vector3 targetOffset = panLayerController.CalculateScrollAmountForLimitedPanFromOrigin(offset, false, true);
 
         if (targetOffset == Vector3.zero)
         {
@@ -117,9 +117,9 @@ public class GUILocationController : MonoBehaviour
         yield break;
     }
 
-    public void Scroll(Vector2 amount, bool hasDuration = false, bool notAccountingPanLayerScrollFactor = false, bool busyWhileAnimating = true, EaseType ease = EaseType.Normal)
+    public void Scroll(Vector2 amount, bool hasDuration = false, bool busyWhileAnimating = true, bool accountingScrollFactor = true, bool forFrameScroll = false, EaseType ease = EaseType.Normal)
     {
-        Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, notAccountingPanLayerScrollFactor);
+        Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, forFrameScroll, accountingScrollFactor);
         if (targetPanAmount == Vector3.zero)
         {
             return;
@@ -150,27 +150,27 @@ public class GUILocationController : MonoBehaviour
 
     public void OnMoveLeft(InputAction.CallbackContext context)
     {
-        Scroll(Vector3.right * moveAmount * context.ReadValue<float>());
+        Scroll(Vector3.right * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
     }
 
     public void OnMoveRight(InputAction.CallbackContext context)
     {
-        Scroll(Vector3.left * moveAmount * context.ReadValue<float>());
+        Scroll(Vector3.left * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
     }
 
     public void OnMoveUp(InputAction.CallbackContext context)
     {
-        Scroll(Vector3.down * moveAmount * context.ReadValue<float>());
+        Scroll(Vector3.down * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
     }
 
     public void OnMoveDown(InputAction.CallbackContext context)
     {
-        Scroll(Vector3.up * moveAmount * context.ReadValue<float>());
+        Scroll(Vector3.up * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
     }
 
     public void OnMoveJoystick(InputAction.CallbackContext context)
     {
-        Scroll(context.ReadValue<Vector2>() * -moveAmount);
+        Scroll(context.ReadValue<Vector2>() * -moveAmount, forFrameScroll: true);
     }
 
     private void OnControlSetOffsetChanged(Vector2 offset)

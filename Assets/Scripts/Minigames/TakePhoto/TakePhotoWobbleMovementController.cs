@@ -38,7 +38,7 @@ public class TakePhotoWobbleMovementController : MonoBehaviour
 
     private IEnumerator ScrollAndWait(Vector2 scrollSize, GUILayerController.EaseType easeType = GUILayerController.EaseType.Normal)
     {
-        locationController.Scroll(scrollSize, hasDuration: true, notAccountingPanLayerScrollFactor: true, busyWhileAnimating: false, ease: easeType);
+        locationController.Scroll(scrollSize, hasDuration: true, accountingScrollFactor: true, busyWhileAnimating: false, ease: easeType);
         yield return new WaitUntil(() => locationController.ScrollAnimationDone);
     }
 

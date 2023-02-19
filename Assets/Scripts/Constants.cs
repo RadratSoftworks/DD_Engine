@@ -14,6 +14,7 @@ public class Constants
     public static readonly string OnFocusScriptEventName = "onFocus";
     public static readonly int SoundFrequency = 11025;
     public static readonly int SoundChannelCount = 1;
+    public static readonly int BaseGameFps = 25;
 
     public static readonly string TextBalloonObjectName = "TextBalloon";
     public static readonly string IconLayer = "Icon";

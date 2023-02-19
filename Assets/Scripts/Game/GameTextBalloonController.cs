@@ -22,6 +22,7 @@ public class GameTextBalloonController : MonoBehaviour
 
     public Color normalTextBackgroundColor = Color.white;
     public Color fullItalicTextBackgroundColor = Color.yellow;
+    public float timePerCharacterReveal = 0.015f;
 
     private bool isBottom = false;
     private Vector2 canvasSize = new Vector2(0, 0);
@@ -80,6 +81,8 @@ public class GameTextBalloonController : MonoBehaviour
 
     private IEnumerator GraduallyAppearTextCoroutine()
     {
+        var waitTime = new WaitForSeconds(timePerCharacterReveal);
+
         while (ballonText.maxVisibleCharacters < ballonText.text.Length)
         {
             ballonText.maxVisibleCharacters = Mathf.Min(ballonText.maxVisibleCharacters + 1, ballonText.text.Length);
@@ -96,7 +99,7 @@ public class GameTextBalloonController : MonoBehaviour
                 AdjustStingerPosition();
             }
 
-            yield return null;
+            yield return waitTime;
         }
 
         yield break;

@@ -180,14 +180,16 @@ public class SpriteAnimatorController : MonoBehaviour
             }
             else
             {
-                if (frame.Duration == 1)
+                int durationReal = GameManager.Instance.GetRealFrames(frame.Duration);
+
+                if (durationReal == 1)
                 {
                     yield return null;
                 }
                 else
                 {
                     // Not sure if that unroll above optimize anything, but well
-                    for (int i = 0; i < frame.Duration; i++)
+                    for (int i = 0; i < durationReal; i++)
                     {
                         yield return null;
                     }

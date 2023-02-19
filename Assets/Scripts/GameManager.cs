@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
     private SpriteRenderer backgroundRenderer;
 
     private Stack<GameObject> gadgets;
+    private float targetFrameFactor = 3;
 
     public ActionInterpreter CurrentActionInterpreter => activeGUI?.ActionInterpreter ?? defaultActionInterpreter;
 
@@ -70,8 +71,8 @@ public class GameManager : MonoBehaviour
 
         defaultActionInterpreter = new ActionInterpreter();
 
-        Application.targetFrameRate = 30;
-        QualitySettings.vSyncCount = 1;
+        Application.targetFrameRate = 60;
+        targetFrameFactor = 60.0f / Constants.BaseGameFps;
 
         ResourceManager.Instance.OnResourcesReady += OnResourcesReady;
     }
@@ -168,8 +169,8 @@ public class GameManager : MonoBehaviour
 
     public void OnResourcesReady()
     {
-        LoadMinigame("ch4/minigames/constructionSite.mini");
-        //LoadControlSet(FilePaths.MainChapterGUIControlFileName);
+        //LoadMinigame("ch4/minigames/constructionSite.mini");
+        LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
     private void LoadGadgetScriptBlock(Dialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock)
@@ -415,8 +416,14 @@ public class GameManager : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
+    public int GetRealFrames(int gameFrames)
+    {
+        return (int)(gameFrames * targetFrameFactor);
+    }
+
     public bool ContinueConfirmed => confirmedController.Confirmed;
     public bool LastTextFinished => textBalloonTopController.LastTextFinished && textBalloonBottomController.LastTextFinished;
 
     public bool GUIBusy => (activeGUI != null) && (activeGUI.Busy);
+    public float FrameScale => targetFrameFactor;
 }
