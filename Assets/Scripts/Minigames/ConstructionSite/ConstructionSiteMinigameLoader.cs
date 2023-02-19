@@ -18,6 +18,18 @@ public class ConstructionSiteMinigameLoader : MonoBehaviour
             constructionSiteScenePrefabObject, filename, viewResolution,
             new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: false));
 
+        constructionSiteControlSet.StateChanged += enabled =>
+        {
+            if (enabled)
+            {
+                GameInputManager.Instance.FlyMinigameActionMap.Enable();
+            }
+            else
+            {
+                GameInputManager.Instance.FlyMinigameActionMap.Disable();
+            }
+        };
+
         ConstructionSiteSceneController constructionSiteSceneController = constructionSiteControlSet.GameObject.GetComponent<ConstructionSiteSceneController>();
         if (constructionSiteSceneController != null)
         {

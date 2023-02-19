@@ -27,8 +27,6 @@ public class ConstructionSiteHarryController : MonoBehaviour
 
         if (register)
         {
-            flyActionMap.Enable();
-
             leftPressed.performed += OnLeftPressed;
             rightPressed.performed += OnRightPressed;
             upPressed.performed += OnUpPressed;
@@ -37,8 +35,6 @@ public class ConstructionSiteHarryController : MonoBehaviour
         }
         else
         {
-            flyActionMap.Disable();
-
             leftPressed.performed -= OnLeftPressed;
             rightPressed.performed -= OnRightPressed;
             upPressed.performed -= OnUpPressed;

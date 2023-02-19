@@ -168,8 +168,8 @@ public class GameManager : MonoBehaviour
 
     public void OnResourcesReady()
     {
-        //LoadMinigame("ch4/minigames/constructionSite.mini");
-        LoadControlSet(FilePaths.MainChapterGUIControlFileName);
+        LoadMinigame("ch4/minigames/constructionSite.mini");
+        //LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
     private void LoadGadgetScriptBlock(Dialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock)

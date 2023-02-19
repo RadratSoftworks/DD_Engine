@@ -20,8 +20,6 @@ public class FightPlayerController : StateMachine<FighterState>
 
         if (register)
         {
-            fightActionMap.Enable();
-
             jabPressed.performed += OnJabPressed;
             punchPressed.performed += OnPunchPressed;
             strongPunchPressed.performed += OnStrongPunchPressed;
@@ -30,8 +28,6 @@ public class FightPlayerController : StateMachine<FighterState>
         }
         else
         {
-            fightActionMap.Disable();
-
             jabPressed.performed -= OnJabPressed;
             punchPressed.performed -= OnPunchPressed;
             strongPunchPressed.performed -= OnStrongPunchPressed;

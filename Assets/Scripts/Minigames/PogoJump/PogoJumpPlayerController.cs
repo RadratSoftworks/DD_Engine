@@ -28,7 +28,6 @@ public class PogoJumpPlayerController : MonoBehaviour
     private void Start()
     {
         var pogoJumpActionMap = GameInputManager.Instance.PogoJumpMinigameActionMap;
-        pogoJumpActionMap.Enable();
 
         InputAction confirmAction = pogoJumpActionMap.FindAction(JumpConfirmPressedActionName);
         confirmAction.performed += OnConfirmPressed;
@@ -40,8 +39,6 @@ public class PogoJumpPlayerController : MonoBehaviour
 
         InputAction confirmAction = pogoJumpActionMap.FindAction(JumpConfirmPressedActionName);
         confirmAction.performed -= OnConfirmPressed;
-
-        pogoJumpActionMap.Disable();
     }
 
     private void OnDestroy()
