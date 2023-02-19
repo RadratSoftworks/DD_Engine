@@ -16,7 +16,7 @@ public class ConstructionSiteMinigameLoader : MonoBehaviour
     {
         GUIControlSet constructionSiteControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
             constructionSiteScenePrefabObject, filename, viewResolution,
-            new GUIControlSetInstantiateOptions(destroyWhenDisabled: true));
+            new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: false));
 
         ConstructionSiteSceneController constructionSiteSceneController = constructionSiteControlSet.GameObject.GetComponent<ConstructionSiteSceneController>();
         if (constructionSiteSceneController != null)

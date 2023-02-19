@@ -22,7 +22,7 @@ public class PogoJumpMinigameLoader : MonoBehaviour
     {
         GUIControlSet pogoJumpControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
             pogoJumpScenePrefabObject, filename, viewResolution,
-            new GUIControlSetInstantiateOptions(destroyWhenDisabled: true));
+            new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: true));
 
         PogoJumpSceneController pogoJumpSceneController = pogoJumpControlSet.GameObject.GetComponent<PogoJumpSceneController>();
         if (pogoJumpSceneController != null)

@@ -14,9 +14,15 @@ public class GUIControlSetInstantiateOptions
     /// </summary>
     public bool DestroyWhenDisabled = false;
 
-    public GUIControlSetInstantiateOptions(bool panToActiveWhenSelected = true, bool destroyWhenDisabled = false)
+    /// <summary>
+    /// Preferred to use D-Pad for touch control. Note that some controls may override this option (menu).
+    /// </summary>
+    public bool PreferredDpad = false;
+
+    public GUIControlSetInstantiateOptions(bool panToActiveWhenSelected = true, bool destroyWhenDisabled = false, bool preferredDpad = false)
     {
         this.PanToActiveWhenSelected = panToActiveWhenSelected;
         this.DestroyWhenDisabled = destroyWhenDisabled;
+        this.PreferredDpad = preferredDpad;
     }
 }

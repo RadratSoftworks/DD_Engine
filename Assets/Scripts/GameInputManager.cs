@@ -3,6 +3,12 @@ using UnityEngine.InputSystem;
 
 public class GameInputManager : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject dpadControl;
+
+    [SerializeField]
+    private GameObject joystickControl;
+
     public static GameInputManager Instance;
     private PlayerInput playerInput;
 
@@ -57,6 +63,19 @@ public class GameInputManager : MonoBehaviour
         {
             guiLocationActionMap.Disable();
             guiMenuActionMap.Disable();
+        }
+    }
+
+    public void SetNavigationTouchControl(bool isJoystick)
+    {
+        if (isJoystick)
+        {
+            dpadControl.SetActive(false);
+            joystickControl.SetActive(true);
+        } else
+        {
+            dpadControl.SetActive(true);
+            joystickControl.SetActive(false);
         }
     }
 }

@@ -18,7 +18,7 @@ public class ItemSwitchMinigameLoader : MonoBehaviour
     {
         GUIControlSet itemSwitchControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
             itemSwitchScenePrefabObject, filename, viewResolution,
-            new GUIControlSetInstantiateOptions(destroyWhenDisabled: true));
+            new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: true));
 
         ItemSwitchSceneController itemSwitchSceneController = itemSwitchControlSet.GameObject.GetComponent<ItemSwitchSceneController>();
         if (itemSwitchSceneController != null)

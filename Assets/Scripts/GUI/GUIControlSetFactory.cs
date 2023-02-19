@@ -139,6 +139,8 @@ public class GUIControlSetFactory : MonoBehaviour
                 }
             }
         }
+
+        ownSet.PreferredDpad = true;
     }
 
     private void LoadGuiMenuItem(GUIControlSet ownSet, GameObject parent, GUIControlMenuItemDescription description, ref Vector2 position)

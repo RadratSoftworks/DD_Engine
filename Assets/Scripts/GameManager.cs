@@ -111,6 +111,11 @@ public class GameManager : MonoBehaviour
         if (activeGadget == null)
         {
             GameInputManager.Instance.SetGUIInputActionMapState(true);
+
+            if (activeGUI != null) {
+                activeGUI.EnableRecommendedTouchControl();
+            }
+
             DialogueStateChanged?.Invoke(false);
         }
     }
@@ -154,7 +159,11 @@ public class GameManager : MonoBehaviour
         CleanAllPendingGadgets();
 
         activeGUI = newGUI;
+
         activeGUI.Enable();
+        activeGUI.EnableRecommendedTouchControl();
+
+        GameInputManager.Instance.SetGUIInputActionMapState(true);
     }
 
     public void OnResourcesReady()
@@ -174,7 +183,10 @@ public class GameManager : MonoBehaviour
 
         GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, scriptBlock, parent);
         StartCoroutine(interpreter.Execute(() => {
+            // Use a dpad for dialogue navigation
             GameInputManager.Instance.SetGUIInputActionMapState(false);
+            GameInputManager.Instance.SetNavigationTouchControl(false);
+
             DialogueStateChanged?.Invoke(true);
         }));
     }

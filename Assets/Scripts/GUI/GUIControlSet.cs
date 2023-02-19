@@ -20,6 +20,7 @@ public class GUIControlSet
     public GameObject GameObject => gameObject;
     public ActionInterpreter ActionInterpreter => actionInterpreter;
     public string Name { get; set; }
+    public bool PreferredDpad { get; set; }
 
     public delegate void OnStateChanged(bool enabled);
     public event OnStateChanged StateChanged;
@@ -59,6 +60,7 @@ public class GUIControlSet
 
         actionInterpreter = new ActionInterpreter();
         destroyOnDisable = options.DestroyWhenDisabled;
+        PreferredDpad = options.PreferredDpad;
 
         gameObject = new GameObject(Path.ChangeExtension(GameUtils.ToUnityName(description.Filename), null));
         gameObject.transform.parent = parentContainer.transform;
@@ -80,6 +82,7 @@ public class GUIControlSet
 
         actionInterpreter = new ActionInterpreter();
         destroyOnDisable = options.DestroyWhenDisabled;
+        PreferredDpad = options.PreferredDpad;
     }
 
     public IEnumerator HandleAction(string id, string actionName)
@@ -111,6 +114,11 @@ public class GUIControlSet
 
         gameObject.SetActive(true);
         StateChanged?.Invoke(true);
+    }
+
+    public void EnableRecommendedTouchControl()
+    {
+        GameInputManager.Instance.SetNavigationTouchControl(!PreferredDpad);
     }
 
     public void RegisterPerformingBusyAnimation()
