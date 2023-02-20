@@ -43,7 +43,7 @@ public class GadgetInterpreter
         if (gameObjectByLayer.TryGetValue(layer, out GameObject existingObject)) {
             if ((existingObject != null) && existingObject.name.Equals(animFileName, StringComparison.OrdinalIgnoreCase))
             {
-                SpriteAnimatorController existingController = existingObject.GetComponent<SpriteAnimatorController>();
+                SpriteAnimatorController existingController = existingObject.GetComponentInChildren<SpriteAnimatorController>();
                 if (existingController != null)
                 {
                     existingController.Restart(position);
@@ -55,11 +55,12 @@ public class GadgetInterpreter
 
         GameObject animObject = GameObject.Instantiate(GameManager.Instance.gameAnimationPrefabObject, parent.transform, false);
         animObject.name = animFileName;
+        animObject.transform.localPosition = GameUtils.ToUnityCoordinates(position);
 
-        SpriteAnimatorController controller = animObject.GetComponent<SpriteAnimatorController>();
+        SpriteAnimatorController controller = animObject.GetComponentInChildren<SpriteAnimatorController>();
         if (controller != null)
         {
-            controller.Setup(position, 0, animFileName, GetSortingLayer(layer));
+            controller.Setup(Vector2.zero, 0, animFileName, GetSortingLayer(layer));
         }
 
         if (existingObject)
@@ -224,7 +225,7 @@ public class GadgetInterpreter
             int frames = int.Parse(command.Arguments[1] as string);
             frames = GameManager.Instance.GetRealFrames(frames);
 
-            GameImageFadeController fadeController = gameObj.GetComponent<GameImageFadeController>();
+            GameImageFadeController fadeController = gameObj.GetComponentInChildren<GameImageFadeController>();
                 
             if (fadeController != null)
             {

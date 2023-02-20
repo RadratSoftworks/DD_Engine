@@ -73,6 +73,8 @@ public class GameChoicesController : MonoBehaviour
 
     private void Start()
     {
+        GameInputManager.Instance.SetGUIInputActionMapState(false);
+
         SetInputState(true);
         RegOrUnregActions(true);
     }

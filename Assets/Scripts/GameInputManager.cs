@@ -32,6 +32,8 @@ public class GameInputManager : MonoBehaviour
     public InputActionMap FlyMinigameActionMap => flyMinigameActionMap;
     public InputActionMap PogoJumpMinigameActionMap => pogojumpMinigameActionMap;
 
+    private bool guiInputActionMapEnabled = false;
+
     private void Start()
     {
         Instance = this;
@@ -55,6 +57,11 @@ public class GameInputManager : MonoBehaviour
 
     public void SetGUIInputActionMapState(bool enabled)
     {
+        if (guiInputActionMapEnabled == enabled)
+        {
+            return;
+        }
+
         if (enabled)
         {
             guiLocationActionMap.Enable();
@@ -64,6 +71,8 @@ public class GameInputManager : MonoBehaviour
             guiLocationActionMap.Disable();
             guiMenuActionMap.Disable();
         }
+
+        guiInputActionMapEnabled = enabled;
     }
 
     public void SetNavigationTouchControl(bool isJoystick)

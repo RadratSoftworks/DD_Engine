@@ -18,6 +18,8 @@ public class GameContinueConfirmatorController : MonoBehaviour
 
     private void OnEnable()
     {
+        GameInputManager.Instance.SetGUIInputActionMapState(false);
+
         if (hearing)
         {
             GameInputManager.Instance.ContinueGameActionMap.Enable();

@@ -191,7 +191,6 @@ public class GameManager : MonoBehaviour
         HideGadgetRelatedObjects();
         activeGadget = null;
 
-        GameInputManager.Instance.SetGUIInputActionMapState(true);
         DialogueStateChanged?.Invoke(false);
 
         // Clear gadget path
@@ -250,9 +249,7 @@ public class GameManager : MonoBehaviour
         GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, scriptBlock, parent);
         StartCoroutine(interpreter.Execute(() => {
             // Use a dpad for dialogue navigation
-            GameInputManager.Instance.SetGUIInputActionMapState(false);
             GameInputManager.Instance.SetNavigationTouchControl(false);
-
             DialogueStateChanged?.Invoke(true);
         }));
     }
@@ -428,13 +425,13 @@ public class GameManager : MonoBehaviour
     {
         GameObject animationObj = Instantiate(gameAnimationPrefabObject, dialogueContainer.transform, false);
         animationObj.transform.localScale = Vector3.one;
-        animationObj.transform.localPosition = Vector3.zero;
+        animationObj.transform.localPosition = GameUtils.ToUnityCoordinates(position);
         animationObj.name = string.Format("icon_{0}", name);
 
-        SpriteAnimatorController controller = animationObj.GetComponent<SpriteAnimatorController>();
+        SpriteAnimatorController controller = animationObj.GetComponentInChildren<SpriteAnimatorController>();
         if (controller != null)
         {
-            controller.Setup(position, 0.0f, path, Constants.IconLayer, null, false, true);
+            controller.Setup(Vector2.zero, 0.0f, path, Constants.IconLayer, null, false, true);
         }
 
         iconCache.Add(name, controller);

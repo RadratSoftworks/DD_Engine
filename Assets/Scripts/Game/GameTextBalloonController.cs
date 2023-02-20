@@ -48,6 +48,8 @@ public class GameTextBalloonController : MonoBehaviour
 
     private void Start()
     {
+        GameInputManager.Instance.SetGUIInputActionMapState(false);
+
         var dialogueBalloonMap = GameInputManager.Instance.DialogueBalloonActionMap;
         dialogueBalloonMap.Enable();
 
