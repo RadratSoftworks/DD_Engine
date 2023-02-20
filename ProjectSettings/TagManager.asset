@@ -51,6 +51,21 @@ TagManager:
   - name: GameBackground
     uniqueID: 210191615
     locked: 0
+  - name: GameLayerV
+    uniqueID: 1809750679
+    locked: 0
+  - name: GameLayerU
+    uniqueID: 3405100163
+    locked: 0
+  - name: GameLayerT
+    uniqueID: 205302327
+    locked: 0
+  - name: GameLayerS
+    uniqueID: 3837632553
+    locked: 0
+  - name: GameLayerR
+    uniqueID: 344487403
+    locked: 0
   - name: GameLayerQ
     uniqueID: 1908523575
     locked: 0

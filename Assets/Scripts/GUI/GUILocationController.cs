@@ -90,6 +90,11 @@ public class GUILocationController : MonoBehaviour
         }
     }
 
+    public Vector2 GetCurrentScrollOffset()
+    {
+        return panLayerController.GetCurrentScrollOffset();
+    }
+
     private void ScrollFromOrigin(Vector2 offset, bool enablePanAnimation = false)
     {
         Vector3 targetOffset = panLayerController.CalculateScrollAmountForLimitedPanFromOrigin(offset, false, true);

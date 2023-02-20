@@ -15,6 +15,8 @@ public class ActionInterpreter
 
     private List<string> variableChangedReportList = new List<string>();
 
+    public static Dictionary<string, string> GlobalScriptValues => globalScriptValues;
+
     public ActionInterpreter()
     {
     }
@@ -75,6 +77,14 @@ public class ActionInterpreter
 
                 case ActionOpcode.LoadMiniGame:
                     RunLoadMiniGame(command);
+                    break;
+
+                case ActionOpcode.ResumeSave:
+                    RunResumeSave(command);
+                    break;
+
+                case ActionOpcode.SwitchNgi:
+                    RunSwitchNgi(command);
                     break;
 
                 default:
@@ -144,6 +154,16 @@ public class ActionInterpreter
             int.Parse(command.Arguments[1] as string));
 
         GameManager.Instance.PanControlSet(amount);
+    }
+
+    private void RunResumeSave(ScriptCommand<ActionOpcode> command)
+    {
+        GameManager.Instance.LoadGame();
+    }
+
+    private void RunSwitchNgi(ScriptCommand<ActionOpcode> command)
+    {
+        Application.OpenURL(Constants.SwitchNgiUri);
     }
 
     private void ClearGlobals(ScriptCommand<ActionOpcode> command)

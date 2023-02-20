@@ -4,8 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+using Newtonsoft.Json;
+
 public class GameManager : MonoBehaviour
 {
+    private class GadgetObjectInfo
+    {
+        public string Path;
+        public int Id;
+        public bool Saveable;
+        public GameObject Object;
+    }
+
     public static GameManager Instance;
 
     public GameObject gameAnimationPrefabObject;
@@ -18,7 +28,7 @@ public class GameManager : MonoBehaviour
     public GameObject dialogueChoices;
     public GameObject backgroundObject;
 
-    private GameObject activeGadget;
+    private GadgetObjectInfo activeGadget;
     private GUIControlSet activeGUI;
 
     private Dictionary<string, Dialogue> dialogueCache;
@@ -34,10 +44,21 @@ public class GameManager : MonoBehaviour
     private GameChoicesController dialogueChoicesController;
     private SpriteRenderer backgroundRenderer;
 
-    private Stack<GameObject> gadgets;
+    private Stack<GadgetObjectInfo> gadgets;
     private float targetFrameFactor = 3;
 
+    private GameSave gameSave;
+    private bool allowSave = false;
+
     public ActionInterpreter CurrentActionInterpreter => activeGUI?.ActionInterpreter ?? defaultActionInterpreter;
+
+    public bool ContinueConfirmed => confirmedController.Confirmed;
+    public bool LastTextFinished => textBalloonTopController.LastTextFinished && textBalloonBottomController.LastTextFinished;
+    public bool GUIBusy => (activeGUI != null) && (activeGUI.Busy);
+    public float FrameScale => targetFrameFactor;
+
+    private string SavePath => Path.Join(Application.persistentDataPath, "save.json");
+    private const string globalVarDictKey = "global";
 
     // When there's no more dialogue display, the dialogue state will be disabled
     public delegate void OnDialogueStateChanged(bool enable);
@@ -51,7 +72,8 @@ public class GameManager : MonoBehaviour
         dialogueCache = new Dictionary<string, Dialogue>(StringComparer.OrdinalIgnoreCase);
         gadgetCache = new Dictionary<string, ScriptBlock<GadgetOpcode>>(StringComparer.OrdinalIgnoreCase);
         iconCache = new Dictionary<string, SpriteAnimatorController>(StringComparer.OrdinalIgnoreCase);
-        gadgets = new Stack<GameObject>();
+        gadgets = new Stack<GadgetObjectInfo>();
+        gameSave = new GameSave();
 
         persistentAudioController = GetComponent<SceneAudioController>();
         dialogueAudioController = dialogueContainer.GetComponent<SceneAudioController>();
@@ -75,6 +97,14 @@ public class GameManager : MonoBehaviour
         targetFrameFactor = 60.0f / Constants.BaseGameFps;
 
         ResourceManager.Instance.OnResourcesReady += OnResourcesReady;
+
+        // Add save exists variable to global values
+        if (File.Exists(SavePath))
+        {
+            ActionInterpreter.GlobalScriptValues.Add(Constants.SaveExistsVarName, "true");
+        }
+
+        gameSave.ActionValues[globalVarDictKey] = ActionInterpreter.GlobalScriptValues;
     }
 
     private void HideGadgetRelatedObjects()
@@ -83,6 +113,16 @@ public class GameManager : MonoBehaviour
         textBalloonTopController.HideText();
         dialogueChoicesController.Close();
         backgroundRenderer.color = Color.clear;
+    }
+
+    private void TrySaveOnDialogue()
+    {
+        gameSave.CurrentGadgetPath = activeGadget.Path;
+        gameSave.CurrentGadgetId = activeGadget.Id;
+
+        allowSave = activeGadget.Saveable;
+
+        SaveGame();
     }
 
     public void ReturnGadget()
@@ -99,12 +139,15 @@ public class GameManager : MonoBehaviour
             dialogueAudioController.StopAll();
             activeGUI = null;
 
+            gameSave.CurrentControlSetPath = null;
+            SaveGame();
+
             return;
         }
 
         gadgets.Pop();
 
-        GameObject.Destroy(activeGadget);
+        GameObject.Destroy(activeGadget.Object);
 
         HideGadgetRelatedObjects();
         activeGadget = (gadgets.Count == 0) ? null : gadgets.Peek();
@@ -118,22 +161,31 @@ public class GameManager : MonoBehaviour
             }
 
             DialogueStateChanged?.Invoke(false);
+        } else
+        {
+            TrySaveOnDialogue();
         }
     }
 
-    public void PushGadget(GameObject newActive)
+    private void PushGadget(GadgetObjectInfo newActive)
     {
         activeGadget = newActive;
-        activeGadget.SetActive(true);
+        activeGadget.Object.SetActive(true);
 
+        TrySaveOnDialogue();
         gadgets.Push(activeGadget);
     }
 
     private void CleanAllPendingGadgets()
     {
+        if (gadgets.Count == 0)
+        {
+            return;
+        }
+
         while (gadgets.Count != 0)
         {
-            GameObject.Destroy(gadgets.Pop());
+            GameObject.Destroy(gadgets.Pop().Object);
         }
 
         HideGadgetRelatedObjects();
@@ -141,6 +193,12 @@ public class GameManager : MonoBehaviour
 
         GameInputManager.Instance.SetGUIInputActionMapState(true);
         DialogueStateChanged?.Invoke(false);
+
+        // Clear gadget path
+        gameSave.CurrentGadgetPath = null;
+        gameSave.CurrentGadgetId = -1;
+
+        SaveGame();
     }
 
     public void SetCurrentGUI(GUIControlSet newGUI)
@@ -165,6 +223,7 @@ public class GameManager : MonoBehaviour
         activeGUI.EnableRecommendedTouchControl();
 
         GameInputManager.Instance.SetGUIInputActionMapState(true);
+        gameSave.CurrentControlSetPath = activeGUI.Name;
     }
 
     public void OnResourcesReady()
@@ -173,14 +232,20 @@ public class GameManager : MonoBehaviour
         LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
-    private void LoadGadgetScriptBlock(Dialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock)
+    private void LoadGadgetScriptBlock(Dialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock, int scriptId = -1, bool savable = true)
     {
         GameObject containerObject = Instantiate(gameScenePrefabObject, dialogueContainer.transform, false);
         containerObject.name = name;
         containerObject.transform.localPosition = Vector3.zero;
         containerObject.transform.localScale = Vector3.one;
 
-        PushGadget(containerObject);
+        PushGadget(new GadgetObjectInfo()
+        {
+            Path = parent.FileName,
+            Id = scriptId,
+            Saveable = savable,
+            Object = containerObject
+        });
 
         GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, scriptBlock, parent);
         StartCoroutine(interpreter.Execute(() => {
@@ -192,18 +257,14 @@ public class GameManager : MonoBehaviour
         }));
     }
 
-    public void LoadDialogueSlide(Dialogue parent, DialogueSlide slide)
-    {
-        LoadGadgetScriptBlock(parent, string.Format("Slide_{0}_{1}", slide.Id, parent.FileName), slide.DialogScript);
-    }
-
-    public void LoadDialogue(string filename)
+    private Dialogue RetrieveDialogue(string filename)
     {
         Dialogue dialogue = null;
         if (dialogueCache.ContainsKey(filename))
         {
             dialogue = dialogueCache[filename];
-        } else
+        }
+        else
         {
             ResourceFile generalResources = ResourceManager.Instance.GeneralResources;
             if (!generalResources.Exists(filename))
@@ -221,6 +282,20 @@ public class GameManager : MonoBehaviour
                 dialogueCache.Add(filename, dialogue);
             }
         }
+
+        return dialogue;
+    }
+
+    public void LoadDialogueSlide(Dialogue parent, DialogueSlide slide)
+    {
+        // A dialogue can be saved or not depends on the Gadget script that load the location or dialogue. We can also depends on the previous slide too, no worries,
+        // as they all assign savable from the same script root.
+        LoadGadgetScriptBlock(parent, string.Format("Slide_{0}_{1}", slide.Id, parent.FileName), slide.DialogScript, slide.Id, allowSave);
+    }
+
+    public void LoadDialogue(string filename)
+    {
+        Dialogue dialogue = RetrieveDialogue(filename);
 
         if (dialogue != null)
         {
@@ -257,7 +332,7 @@ public class GameManager : MonoBehaviour
             tempDialogue.FileName = filename;
             tempDialogue.Strings = LocalizerHelper.GetStrings(filename);
 
-            LoadGadgetScriptBlock(tempDialogue, string.Format("standaloneGadget_{0}", filename), block);
+            LoadGadgetScriptBlock(tempDialogue, string.Format("standaloneGadget_{0}", filename), block, savable: block.Saveable);
         }
     }
 
@@ -421,9 +496,102 @@ public class GameManager : MonoBehaviour
         return (int)(gameFrames * targetFrameFactor);
     }
 
-    public bool ContinueConfirmed => confirmedController.Confirmed;
-    public bool LastTextFinished => textBalloonTopController.LastTextFinished && textBalloonBottomController.LastTextFinished;
+    private void RestoreGameSaveTracking()
+    {
+        gameSave.ActionValues[globalVarDictKey] = ActionInterpreter.GlobalScriptValues;
+    }
 
-    public bool GUIBusy => (activeGUI != null) && (activeGUI.Busy);
-    public float FrameScale => targetFrameFactor;
+    private void InitializeFromGameSave()
+    {
+        // Update global action values
+        foreach (var item in gameSave.ActionValues[globalVarDictKey])
+        {
+            if (item.Key != Constants.SaveExistsVarName)
+            {
+                ActionInterpreter.GlobalScriptValues[item.Key] = item.Value;
+            }
+        }
+
+        if (gameSave.CurrentControlSetPath != null)
+        {
+            if (Path.GetExtension(gameSave.CurrentControlSetPath).Equals(FilePaths.MinigameFileExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                LoadMinigame(gameSave.CurrentControlSetPath);
+            }
+            else
+            {
+                LoadControlSet(gameSave.CurrentControlSetPath);
+
+                if ((activeGUI != null) && (activeGUI.Location != null))
+                {
+                    activeGUI.Location.Scroll(gameSave.CurrentLocationOffset);
+                }
+            }
+        }
+
+        if (gameSave.CurrentGadgetPath != null)
+        {
+            if (Path.GetExtension(gameSave.CurrentGadgetPath).Equals(FilePaths.GadgetScriptFileExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                LoadGadget(gameSave.CurrentGadgetPath);
+            } else
+            {
+                if (gameSave.CurrentGadgetId >= 0)
+                {
+                    Dialogue dialogue = RetrieveDialogue(gameSave.CurrentGadgetPath);
+                    DialogueSlide dialogueSlide = dialogue.GetDialogueSlideWithId(gameSave.CurrentGadgetId);
+
+                    LoadDialogueSlide(dialogue, dialogueSlide);
+                }
+            }
+        }
+
+        // After we done loading, restore the game save data to keep tracking current game progress
+        RestoreGameSaveTracking();
+    }
+
+    public void LoadGame()
+    {
+        using (StreamReader file = File.OpenText(SavePath))
+        {
+            JsonSerializer serializer = new JsonSerializer()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            gameSave = serializer.Deserialize(file, typeof(GameSave)) as GameSave;
+        }
+
+        allowSave = true;
+
+        if (gameSave != null)
+        {
+            InitializeFromGameSave();
+        }
+    }
+
+    private void SaveGame()
+    {
+        if (!allowSave)
+        {
+            return;
+        }
+
+        using (StreamWriter file = new StreamWriter(SavePath))
+        {
+            if ((activeGUI != null) && (activeGUI.Location != null))
+            {
+                gameSave.CurrentLocationOffset = activeGUI.Location.GetCurrentScrollOffset();
+            }
+
+            JsonSerializer serializer = new JsonSerializer()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            serializer.Serialize(file, gameSave);
+        }
+    }
 }

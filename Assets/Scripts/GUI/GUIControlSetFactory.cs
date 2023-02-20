@@ -207,6 +207,11 @@ public class GUIControlSetFactory : MonoBehaviour
 
     private void LoadGuiLocation(GUIControlSet ownSet, GameObject parent, GUIControlLocationDescription description, GUIControlSetInstantiateOptions options)
     {
+        if (ownSet.Location != null)
+        {
+            throw new InvalidOperationException("Only one location can exist in one control set!");
+        }
+
         GameObject anotherInstance = Instantiate(guiLocationPrefabObject, parent.transform, false);
         anotherInstance.transform.localPosition = GameUtils.ToUnityCoordinates(description.TopPosition);
         anotherInstance.name = description.Name;
@@ -235,6 +240,8 @@ public class GUIControlSetFactory : MonoBehaviour
         {
             controller.Setup(ownSet, panLayer);
         }
+
+        ownSet.Location = controller;
     }
 
     private void LoadGuiActive(GUIControlSet ownSet, GameObject parent, GUIControlActiveDescription description, GUIControlSetInstantiateOptions options)

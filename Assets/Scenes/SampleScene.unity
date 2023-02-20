@@ -441,10 +441,10 @@ RectTransform:
   m_Father: {fileID: 18623149}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 400, y: -224.99998}
-  m_SizeDelta: {x: 0, y: 449.99997}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 400, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &315295293
 MonoBehaviour:
@@ -3339,7 +3339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d258102470bcef47abcd500ad0e9396, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameDataPath: E:\Game\DD_RV_opes
+  GameDataPath: G:\bent\DD_RV\opes
   EnglishFontAsset: {fileID: 11400000, guid: bde68bbb4549b484197703a36709abf8, type: 2}
   SimplifiedChineseFontAsset: {fileID: 11400000, guid: 862006d1828a53a4ca8c61764b89c78b, type: 2}
 --- !u!1 &1916137331

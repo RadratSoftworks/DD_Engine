@@ -76,6 +76,30 @@ public class GUILayerController : MonoBehaviour
         }
     }
 
+    public Vector2 GetCurrentScrollOffset()
+    {
+        Vector2 amountRaw = new Vector2(transform.localPosition.x, transform.localPosition.y) - originalPosition;
+
+        if (scroll.x == 0)
+        {
+            amountRaw.x = 0;
+        }
+        else
+        {
+            amountRaw.x /= scroll.x / layerScrollFactor;
+        }
+
+        if (scroll.y == 0)
+        {
+            amountRaw.y = 0;
+        }
+        else
+        {
+            amountRaw.y /= scroll.y / layerScrollFactor;
+        }
+
+        return amountRaw;
+    }
 
     // Return the amount of time until scrolling is done!
     public void ScrollLocation(Vector2 amountRaw)

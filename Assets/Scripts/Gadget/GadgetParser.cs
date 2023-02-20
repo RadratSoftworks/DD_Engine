@@ -70,6 +70,11 @@ public class GadgetParser
                 {
                     continue;
                 }
+                if (commandLine == "unsavable")
+                {
+                    blocks.Saveable = false;
+                    continue;
+                }
                 var commands = commandLine.Split(' ');
 
                 if (!stringToGadgetOps.ContainsKey(commands[0]))

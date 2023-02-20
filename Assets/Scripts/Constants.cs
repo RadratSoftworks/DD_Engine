@@ -14,11 +14,14 @@ public class Constants
     public static readonly string OnFocusScriptEventName = "onFocus";
     public static readonly int SoundFrequency = 11025;
     public static readonly int SoundChannelCount = 1;
-    public static readonly int BaseGameFps = 25;
+    public static readonly int BaseGameFps = 30;
 
     public static readonly string TextBalloonObjectName = "TextBalloon";
     public static readonly string IconLayer = "Icon";
     public static readonly string Anonymous = "Anonymous";
+    public static readonly string SaveExistsVarName = "save_exists";
+
+    public static readonly string SwitchNgiUri = "https://anni.12l1.com";
 
     public static readonly Dictionary<GameLanguage, string> GameLanguageToResourceLanguageCodeDict =
         new Dictionary<GameLanguage, string>()

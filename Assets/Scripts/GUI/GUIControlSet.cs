@@ -20,7 +20,8 @@ public class GUIControlSet
     public GameObject GameObject => gameObject;
     public ActionInterpreter ActionInterpreter => actionInterpreter;
     public string Name { get; set; }
-    public bool PreferredDpad { get; set; }
+    public bool PreferredDpad { get; set; } = false;
+    public GUILocationController Location { get; set; } = null;
 
     public delegate void OnStateChanged(bool enabled);
     public event OnStateChanged StateChanged;

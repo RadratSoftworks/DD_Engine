@@ -20,9 +20,13 @@ class FilePaths
     };
 
     // GUI
-    public static readonly string MainChapterGUIControlFileName = "ch2/locations/office.fwd";
-    //public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
+    //public static readonly string MainChapterGUIControlFileName = "ch2/locations/office.fwd";
+    public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
     
     // Sound
     public static readonly string MenuOptionSwitchSFXFileName = "sound/menu_click_bullet";
+
+    // Extension
+    public static readonly string MinigameFileExtension = ".mini";
+    public static readonly string GadgetScriptFileExtension = ".gdg";
 }

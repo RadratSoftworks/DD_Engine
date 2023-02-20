@@ -13,5 +13,7 @@ public enum ActionOpcode
     PanLocation,
     SetScrollSpeeds,
     Achieve,
-    LoadMiniGame
+    LoadMiniGame,
+    ResumeSave,
+    SwitchNgi
 };
