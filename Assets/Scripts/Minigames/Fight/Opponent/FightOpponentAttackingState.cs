@@ -10,7 +10,6 @@ public class FightOpponentAttackingState : IState
     private int punchFrame;
     private int currentFrame;
 
-    private FighterState nextState;
     private int pendingAnimation = 0;
 
     private FightSoundMakerController soundMakerController;
@@ -27,7 +26,7 @@ public class FightOpponentAttackingState : IState
         punchFxAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
             opponentInfo.PunchEffectAnimPath, Vector2.zero, FightOpponentConstants.OpponentHandFxDepth, allowLoop: false);
 
-        punchFrame = opponentInfo.PunchHitTime;
+        punchFrame = GameManager.Instance.GetRealFrames(opponentInfo.PunchHitTime);
 
         punchAnim.Done += OnAnimationDone;
         punchFxAnim.Done += OnAnimationDone;
@@ -42,6 +41,9 @@ public class FightOpponentAttackingState : IState
     {
         currentFrame = 0;
         pendingAnimation = 2;
+
+        stateMachine.normalLeftHand.Disable();
+        stateMachine.normalRightHand.Disable();
 
         punchAnim.Enable();
     }

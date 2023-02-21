@@ -23,6 +23,7 @@ public class FightPlayerAttackingState : IState
 
     private int framesCountTriggerDamage = -1;
     private int frameTriggerDamage;
+    private int frameTriggerIntent;
 
     private int frameTriggerJabDamage;
     private int frameTriggerPunchDamage;
@@ -93,6 +94,9 @@ public class FightPlayerAttackingState : IState
                 break;
         }
 
+        frameTriggerDamage = GameManager.Instance.GetRealFrames(frameTriggerDamage);
+        frameTriggerIntent = GameManager.Instance.GetRealFrames(stateMachine.frameTriggerIntent);
+
         currentAnim.Enable();
     }
 
@@ -158,7 +162,7 @@ public class FightPlayerAttackingState : IState
 
         framesCountTriggerDamage++;
 
-        if (framesCountTriggerDamage == stateMachine.frameTriggerIntent)
+        if (framesCountTriggerDamage == frameTriggerIntent)
         {
             stateMachine.directOpponent.GiveDataFrom(stateMachine, new FightAttackIntent()
             {

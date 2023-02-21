@@ -40,7 +40,7 @@ public class FightOpponentController : StateMachine<FighterState>
             deactiveByDefault: false, allowLoop: true);
 
         normalRightHand = MinigameConstructUtils.InstantiateAndGet(animationPrefabObject, transform,
-            opponentInfo.RightHandAnimPath, Vector2.zero, FightOpponentConstants.OpponentHeadDepth,
+            opponentInfo.RightHandAnimPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth,
             deactiveByDefault: false, allowLoop: true);
 
         base.AddState(FighterState.Idle, new FightOpponentIdleState(this, opponentInfo));
