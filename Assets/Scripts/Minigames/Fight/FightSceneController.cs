@@ -22,6 +22,12 @@ public class FightSceneController : MonoBehaviour
     [SerializeField]
     private GUISoundController backgroundSoundController;
 
+    [SerializeField]
+    private FightHealthBarController playerHealthBar;
+
+    [SerializeField]
+    private FightHealthBarController enemyHealthBarController;
+
     public void Setup(FightMinigameInfo fightInfo)
     {
         playerController.Setup(fightInfo.PlayerInfo, fightInfo.FileLoseScript);
@@ -34,5 +40,8 @@ public class FightSceneController : MonoBehaviour
             fightInfo.BackgroundPicture);
 
         backgroundSoundController.Setup(fightInfo.BackgroundSoundPath, 0);
+
+        playerHealthBar.Setup(playerController.GetComponent<FighterHealthController>(), true);
+        enemyHealthBarController.Setup(opponentController.GetComponent<FighterHealthController>(), false);
     }
 }

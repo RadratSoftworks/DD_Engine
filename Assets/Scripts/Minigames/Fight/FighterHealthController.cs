@@ -31,6 +31,6 @@ public class FighterHealthController : MonoBehaviour
         currentHealth = Math.Max(0, currentHealth - damageCount);
         HealthChanged?.Invoke();
 
-        Debug.Log("Current health points: " + currentHealth);
+        //Debug.Log("Current health points: " + currentHealth);
     }
 }

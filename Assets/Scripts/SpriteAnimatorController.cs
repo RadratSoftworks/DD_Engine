@@ -17,11 +17,13 @@ public class SpriteAnimatorController : MonoBehaviour
         public int SpriteIndex { get; set; }
         public int Duration { get; set; }
         public Vector2 Position { get; set; }
+        public bool InGameCoordinates { get; set; } = true;
     };
 
     private SpriteRenderer spriteRenderer;
     private List<Sprite> spriteToUse = new List<Sprite>();
     private List<FrameInfo> frameInfos = new List<FrameInfo>();
+    private Dictionary<string, int> spriteFileLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
     private Vector2? animationImageOrigin;
     private Vector2 originalPosition;
@@ -29,6 +31,7 @@ public class SpriteAnimatorController : MonoBehaviour
     private bool disableOnDone = true;
     private IEnumerator currentAnimateCoroutine = null;
     private int currentFrame = 0;
+    private bool started = false;
 
     public event Action<SpriteAnimatorController> Done;
 
@@ -91,7 +94,8 @@ public class SpriteAnimatorController : MonoBehaviour
         byte[] animationFileData = resourcePack.ReadResourceData(resourcePack.Resources[filename]);
         using (StreamReader reader = new StreamReader(new MemoryStream(animationFileData)))
         {
-            Dictionary<string, int> spriteFileLookup = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            spriteFileLookup.Clear();
+
             do
             {
                 string lineDesc = reader.ReadLine();
@@ -113,30 +117,47 @@ public class SpriteAnimatorController : MonoBehaviour
                     Debug.Log("Invalid animation instruction: " + lineDesc);
                     continue;
                 }
-                FrameInfo frame = new FrameInfo()
-                {
-                    Duration = int.Parse(comps[1]),
-                    Position = new Vector2(int.Parse(comps[2]), int.Parse(comps[3]))
-                };
-                if (spriteFileLookup.ContainsKey(comps[0]))
-                {
-                    frame.SpriteIndex = spriteFileLookup[comps[0]];
-                } else
-                {
-                    ResourceFile resourcesToChoose = ResourceManager.Instance.PickBestResourcePackForFile(comps[0]);
-                    Sprite resultLoad = SpriteManager.Instance.Load(resourcesToChoose, comps[0], animationImageOrigin);
-                    if (resultLoad == null)
-                    {
-                        Debug.LogError("Can't find frame image path: " + comps[0]);
-                        continue;
-                    }
-                    frame.SpriteIndex = spriteToUse.Count;
-                    spriteFileLookup.Add(comps[0], frame.SpriteIndex);
-                    spriteToUse.Add(resultLoad);
-                }
-                frameInfos.Add(frame);
+                AddFrame(comps[0], new Vector2(int.Parse(comps[2]), int.Parse(comps[3])), int.Parse(comps[1]));
             } while (true);
         }
+    }
+
+    public void AddFrame(string frameImagePath, Vector2 position, int durationInBaseGameFrames, bool inGameCoordinates = true)
+    {
+        FrameInfo frame = new FrameInfo()
+        {
+            Duration = durationInBaseGameFrames,
+            Position = position,
+            InGameCoordinates = inGameCoordinates
+        };
+        if (spriteFileLookup.ContainsKey(frameImagePath))
+        {
+            frame.SpriteIndex = spriteFileLookup[frameImagePath];
+        }
+        else
+        {
+            ResourceFile resourcesToChoose = ResourceManager.Instance.PickBestResourcePackForFile(frameImagePath);
+            Sprite resultLoad = SpriteManager.Instance.Load(resourcesToChoose, frameImagePath, animationImageOrigin);
+            if (resultLoad == null)
+            {
+                Debug.LogError("Can't find frame image path: " + frameImagePath);
+                return;
+            }
+            frame.SpriteIndex = spriteToUse.Count;
+            spriteFileLookup.Add(frameImagePath, frame.SpriteIndex);
+            spriteToUse.Add(resultLoad);
+        }
+        frameInfos.Add(frame);
+    }
+
+    public void SetOriginalPosition(Vector2 position)
+    {
+        originalPosition = position;
+    }
+
+    public void SetOriginalPositionToCurrent()
+    {
+        originalPosition = transform.localPosition;
     }
 
     private IEnumerator AnimateCoroutine()
@@ -171,7 +192,7 @@ public class SpriteAnimatorController : MonoBehaviour
                 previousSpriteIndex = frame.SpriteIndex;
             }
 
-            transform.localPosition = basePosition + GameUtils.ToUnityCoordinates(frame.Position);
+            transform.localPosition = basePosition + (frame.InGameCoordinates ? GameUtils.ToUnityCoordinates(frame.Position) : frame.Position);
             currentFrame++;
 
             if (frame.Duration <= 0)
@@ -269,10 +290,16 @@ public class SpriteAnimatorController : MonoBehaviour
         {
             StartAnimatingIfNotExists();
         }
+
+        started = true;
     }
 
     private void OnEnable()
     {
+        if (!started)
+        {
+            return;
+        }
         Restart();
     }
 
@@ -282,7 +309,12 @@ public class SpriteAnimatorController : MonoBehaviour
         {
             return;
         }
-        
+
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
+
         transform.localPosition = originalPosition;
 
         currentAnimateCoroutine = AnimateCoroutine();
