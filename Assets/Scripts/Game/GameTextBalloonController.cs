@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -7,6 +6,13 @@ using UnityEngine.InputSystem;
 // Tried to use vertical layout but it is very inconsistent with pivots...
 public class GameTextBalloonController : MonoBehaviour
 {
+    public enum Placement
+    {
+        Top,
+        Middle,
+        Bottom
+    }
+
     private const string SkipActionName = "Skip";
 
     private TMPro.TMP_Text ballonText;
@@ -22,13 +28,51 @@ public class GameTextBalloonController : MonoBehaviour
 
     public Color normalTextBackgroundColor = Color.white;
     public Color fullItalicTextBackgroundColor = Color.yellow;
+    public Color fullMiddleTextBackgroundColor = Color.clear;
+    public Color fullMiddleTextColor = Color.white;
     public float timePerCharacterReveal = 0.015f;
 
-    private bool isBottom = false;
+    private Placement textPlacement = Placement.Top;
     private Vector2 canvasSize = new Vector2(0, 0);
     private Vector2 stingerPositionRelative = new Vector2(0, 0);
 
     private IEnumerator currentTextCoroutine;
+
+    private Vector2 GetPivot()
+    {
+        switch (textPlacement)
+        {
+            case Placement.Top:
+                return Vector2.up;
+
+            case Placement.Middle:
+                return new Vector2(0.5f, 0.5f);
+
+            case Placement.Bottom:
+                return Vector2.zero;
+
+            default:
+                throw new System.Exception("Unknown text placement type!");
+        }
+    }
+
+    private Vector2 GetSpritePivot()
+    {
+        switch (textPlacement)
+        {
+            case Placement.Top:
+                return Vector2.up;
+
+            case Placement.Middle:
+                return new Vector2(0.5f, 0.5f);
+
+            case Placement.Bottom:
+                return Vector2.zero;
+
+            default:
+                throw new System.Exception("Unknown text placement type!");
+        }
+    }
 
     void Awake()
     {
@@ -42,8 +86,8 @@ public class GameTextBalloonController : MonoBehaviour
         Vector2 sizeTransformed = GameUtils.ToUnitySize(canvasSize);
         rectTransform.sizeDelta = new Vector2(sizeTransformed.x, rectTransform.sizeDelta.y);
 
-        rectTransform.pivot = this.isBottom ? Vector2.zero : Vector2.up;
-        transform.localPosition = sizeTransformed * (this.isBottom ? Vector2.down : Vector2.zero);
+        rectTransform.pivot = GetPivot();
+        transform.localPosition = sizeTransformed * ((textPlacement == Placement.Bottom) ? Vector2.down : (textPlacement == Placement.Top) ? Vector2.zero : new Vector2(0.5f, -0.5f));
     }
 
     private void Start()
@@ -81,6 +125,11 @@ public class GameTextBalloonController : MonoBehaviour
         return text.StartsWith("<i>") && text.EndsWith("</i>");
     }
 
+    private static bool IsTextFullMiddle(string text)
+    {
+        return text.StartsWith("<m>") && text.EndsWith("</m>");
+    }
+
     private IEnumerator GraduallyAppearTextCoroutine()
     {
         var waitTime = new WaitForSeconds(timePerCharacterReveal);
@@ -94,7 +143,12 @@ public class GameTextBalloonController : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
 
             backgroundRenderer.size = rectTransform.sizeDelta;
-            balloonRenderer.transform.localPosition = rectTransform.sizeDelta * (isBottom ? Vector2.up : Vector2.down);
+
+
+            if (textPlacement != Placement.Middle)
+            {
+                balloonRenderer.transform.localPosition = rectTransform.sizeDelta * ((textPlacement == Placement.Bottom) ? Vector2.up : Vector2.down);
+            }
 
             if (stingerObject.activeSelf)
             {
@@ -107,10 +161,10 @@ public class GameTextBalloonController : MonoBehaviour
         yield break;
     }
 
-    public void Setup(Vector2 size, bool isBottom)
+    public void Setup(Vector2 size, Placement textPlacement)
     {
         // More data initializations will be done in Awake
-        this.isBottom = isBottom;
+        this.textPlacement = textPlacement;
         this.canvasSize = size;
     }
 
@@ -132,6 +186,12 @@ public class GameTextBalloonController : MonoBehaviour
         if (IsTextFullItalic(newText))
         {
             backgroundRenderer.color = balloonRenderer.color = fullItalicTextBackgroundColor;
+        } else if (IsTextFullMiddle(newText))
+        {
+            backgroundRenderer.color = balloonRenderer.color = fullMiddleTextBackgroundColor;
+            ballonText.color = fullMiddleTextColor;
+
+            newText = newText.Replace("<m>", "").Replace("</m>", "");
         } else
         {
             backgroundRenderer.color = balloonRenderer.color = normalTextBackgroundColor;
@@ -144,7 +204,11 @@ public class GameTextBalloonController : MonoBehaviour
         stingerObject.SetActive(false);
 
         backgroundRenderer.size = rectTransform.sizeDelta;
-        balloonRenderer.transform.localPosition = rectTransform.sizeDelta * (isBottom ? Vector2.up :Vector2.down);
+
+        if (textPlacement != Placement.Middle)
+        {
+            balloonRenderer.transform.localPosition = rectTransform.sizeDelta * GetPivot();
+        }
 
         currentTextCoroutine = GraduallyAppearTextCoroutine();
         StartCoroutine(currentTextCoroutine);
@@ -153,7 +217,7 @@ public class GameTextBalloonController : MonoBehaviour
     public void SetBalloon(string balloonFilename)
     {
         balloonRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
-            balloonFilename, isBottom ? Vector2.zero : Vector2.up);
+            balloonFilename, GetSpritePivot());
     }
 
     public void SetStinger(Vector2 stingerPos, string stingerFilename)
@@ -161,7 +225,7 @@ public class GameTextBalloonController : MonoBehaviour
         stingerObject.SetActive(true);
 
         stingerRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
-            stingerFilename, isBottom ? Vector2.zero : Vector2.up);
+            stingerFilename, GetSpritePivot());
 
         stingerPositionRelative = GameUtils.ToUnityCoordinates(stingerPos);
         AdjustStingerPosition();
@@ -169,7 +233,7 @@ public class GameTextBalloonController : MonoBehaviour
 
     private void AdjustStingerPosition()
     {
-        stingerObject.transform.localPosition = balloonObject.transform.localPosition + new Vector3(stingerPositionRelative.x, stingerPositionRelative.y * (isBottom ? -1.0f : 1.0f), 0.0f);
+        stingerObject.transform.localPosition = balloonObject.transform.localPosition + new Vector3(stingerPositionRelative.x, stingerPositionRelative.y * ((textPlacement == Placement.Bottom) ? -1.0f : 1.0f), 0.0f);
     }
 
     public void OnSkip(InputAction.CallbackContext context)

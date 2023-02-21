@@ -50,7 +50,9 @@ public static class LocalizerHelper
                     .Replace("{B}", "<b>", StringComparison.OrdinalIgnoreCase)
                     .Replace("{/B}", "</b>", StringComparison.OrdinalIgnoreCase)
                     .Replace("{I}", "<i>", StringComparison.OrdinalIgnoreCase)
-                    .Replace("{/I}", "</i>", StringComparison.OrdinalIgnoreCase);
+                    .Replace("{/I}", "</i>", StringComparison.OrdinalIgnoreCase)
+                    .Replace("{M}", "<m>", StringComparison.OrdinalIgnoreCase)
+                    .Replace("{/M}", "</m>", StringComparison.OrdinalIgnoreCase);
 
                 dict.Add(comps[0], decoded);
             } while (true);

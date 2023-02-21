@@ -9,6 +9,9 @@ public class GUILocationController : MonoBehaviour
     public float durationPerUnit = 0.5f;
 
     [SerializeField]
+    private float maxScrollDuration = 0.6f;
+
+    [SerializeField]
     private float moveAmount = 0.02f;
 
     private GUIControlSet controlSet;
@@ -104,7 +107,7 @@ public class GUILocationController : MonoBehaviour
             return;
         }
 
-        float duration = Mathf.Max(Mathf.Abs(targetOffset.x), Mathf.Abs(targetOffset.y)) * durationPerUnit;
+        float duration = Mathf.Min(Mathf.Max(Mathf.Abs(targetOffset.x), Mathf.Abs(targetOffset.y)) * durationPerUnit, maxScrollDuration);
 
         foreach (var controller in layerControllers)
         {

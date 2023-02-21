@@ -44,5 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de2a93640e3bf7e4fa052c2c03b3620e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  durationPerUnit: 2
+  durationPerUnit: 0.45
+  maxScrollDuration: 0.6
   moveAmount: 0.015

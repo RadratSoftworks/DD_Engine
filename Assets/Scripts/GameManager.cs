@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameScenePrefabObject;
     public GameObject dialogueContainer;
     public GameObject textBalloonTop;
+    public GameObject textBalloonMiddle;
     public GameObject textBalloonBottom;
     public GameObject continueConfirmator;
     public GameObject dialogueChoices;
@@ -38,6 +39,7 @@ public class GameManager : MonoBehaviour
     private SceneAudioController persistentAudioController;
     private SceneAudioController dialogueAudioController;
     private GameTextBalloonController textBalloonTopController;
+    private GameTextBalloonController textBalloonMiddleController;
     private GameTextBalloonController textBalloonBottomController;
     private ActionInterpreter defaultActionInterpreter;
     private GameContinueConfirmatorController confirmedController;
@@ -79,13 +81,15 @@ public class GameManager : MonoBehaviour
         dialogueAudioController = dialogueContainer.GetComponent<SceneAudioController>();
 
         textBalloonTopController = textBalloonTop.GetComponent<GameTextBalloonController>();
+        textBalloonMiddleController = textBalloonMiddle.GetComponent<GameTextBalloonController>();
         textBalloonBottomController = textBalloonBottom.GetComponent<GameTextBalloonController>();
         confirmedController = continueConfirmator.GetComponent<GameContinueConfirmatorController>();
         dialogueChoicesController = dialogueChoices.GetComponent<GameChoicesController>();
         backgroundRenderer = backgroundObject.GetComponent<SpriteRenderer>();
 
-        textBalloonTopController.Setup(Constants.CanvasSize, false);
-        textBalloonBottomController.Setup(Constants.CanvasSize, true);
+        textBalloonTopController.Setup(Constants.CanvasSize, GameTextBalloonController.Placement.Top);
+        textBalloonMiddleController.Setup(Constants.CanvasSize, GameTextBalloonController.Placement.Middle);
+        textBalloonBottomController.Setup(Constants.CanvasSize, GameTextBalloonController.Placement.Bottom);
         dialogueChoicesController.Setup(Constants.CanvasSize);
 
         backgroundRenderer.size = GameUtils.ToUnitySize(Constants.CanvasSize);
@@ -218,11 +222,14 @@ public class GameManager : MonoBehaviour
 
         activeGUI = newGUI;
 
-        activeGUI.Enable();
-        activeGUI.EnableRecommendedTouchControl();
+        if (activeGUI != null)
+        {
+            activeGUI.Enable();
+            activeGUI.EnableRecommendedTouchControl();
 
-        GameInputManager.Instance.SetGUIInputActionMapState(true);
-        gameSave.CurrentControlSetPath = activeGUI.Name;
+            GameInputManager.Instance.SetGUIInputActionMapState(true);
+            gameSave.CurrentControlSetPath = activeGUI.Name;
+        }
     }
 
     public void OnResourcesReady()
@@ -358,6 +365,10 @@ public class GameManager : MonoBehaviour
             {
                 SetCurrentGUI(set);
             }
+
+            // Save when we entered a minigame
+            gameSave.CurrentControlSetPath = filename;
+            SaveGame();
         }
     }
 
@@ -398,7 +409,8 @@ public class GameManager : MonoBehaviour
     private GameTextBalloonController SelectTextController(string position)
     {
         bool isTop = position.Equals("top", StringComparison.OrdinalIgnoreCase);
-        return isTop ? textBalloonTopController : textBalloonBottomController;
+        bool isMiddle = position.Equals("mid", StringComparison.OrdinalIgnoreCase);
+        return isTop ? textBalloonTopController : (isMiddle ? textBalloonMiddleController : textBalloonBottomController);
     }
 
     public void ShowText(string text, string where)
@@ -524,6 +536,10 @@ public class GameManager : MonoBehaviour
                     activeGUI.Location.Scroll(gameSave.CurrentLocationOffset);
                 }
             }
+        } else
+        {
+            // Still clear active control set anyway
+            SetCurrentGUI(null);
         }
 
         if (gameSave.CurrentGadgetPath != null)

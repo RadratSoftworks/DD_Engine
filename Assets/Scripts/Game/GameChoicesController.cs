@@ -30,7 +30,6 @@ public class GameChoicesController : MonoBehaviour
     {
         backgroundRenderer = backgroundObject.GetComponent<SpriteRenderer>();
         highlightRenderer = highlightObject.GetComponent<SpriteRenderer>();
-        choicesTransform = choicesObject.GetComponent<RectTransform>();
     }
 
     private void RegOrUnregActions(bool register)
@@ -110,7 +109,7 @@ public class GameChoicesController : MonoBehaviour
         // Set highlight
         RectTransform childTransform = singleChoiceTransforms[activeChoice];
 
-        highlightObject.transform.localPosition = childTransform.localPosition;
+        highlightObject.transform.localPosition = childTransform.localPosition + new Vector3(0, choicesTransform.localPosition.y, 0);
         highlightRenderer.size = childTransform.sizeDelta;
 
         highlightRenderer.color = highlightColor;
@@ -124,7 +123,7 @@ public class GameChoicesController : MonoBehaviour
         }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(choicesTransform);
-        backgroundRenderer.size = choicesTransform.sizeDelta;
+        backgroundRenderer.size = choicesTransform.sizeDelta + new Vector2(0, choicesTransform.localPosition.y * 2.5f);
 
         UpdateHighlight();
     }
@@ -217,5 +216,8 @@ public class GameChoicesController : MonoBehaviour
     public void Setup(Vector2 canvasSize)
     {
         transform.localPosition = GameUtils.ToUnityCoordinates(canvasSize * Vector2.up);
+
+        choicesTransform = choicesObject.GetComponent<RectTransform>();
+        choicesTransform.sizeDelta = new Vector2(GameUtils.ToUnitySize(canvasSize).x, choicesTransform.sizeDelta.y);
     }
 }
