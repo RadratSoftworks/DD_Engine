@@ -9,7 +9,7 @@ public class FightOpponentKnockedOutState : IState
     public FightOpponentKnockedOutState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo, string scriptToRun)
     {
         knockedOutAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
-            opponentInfo.KnockedOutAnimPath, Vector2.zero);
+            opponentInfo.KnockedOutAnimPath, Vector2.zero, FightOpponentConstants.OpponentFullSpriteDepth);
 
         this.scriptToRun = scriptToRun;
     }

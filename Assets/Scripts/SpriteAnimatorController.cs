@@ -165,6 +165,8 @@ public class SpriteAnimatorController : MonoBehaviour
         if (frameInfos.Count == 0)
         {
             currentAnimateCoroutine = null;
+            Done?.Invoke(this);
+
             yield break;
         }
 

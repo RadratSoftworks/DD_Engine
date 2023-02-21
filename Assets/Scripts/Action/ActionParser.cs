@@ -23,7 +23,8 @@ public class ActionParser
         { "achieve", ActionOpcode.Achieve },
         { "loadminigame", ActionOpcode.LoadMiniGame },
         { "resumesave", ActionOpcode.ResumeSave },
-        { "switchngi", ActionOpcode.SwitchNgi }
+        { "switchngi", ActionOpcode.SwitchNgi },
+        { "timer", ActionOpcode.Timer }
     };
 
     public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)

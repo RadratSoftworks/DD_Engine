@@ -55,12 +55,12 @@ public class GadgetInterpreter
 
         GameObject animObject = GameObject.Instantiate(GameManager.Instance.gameAnimationPrefabObject, parent.transform, false);
         animObject.name = animFileName;
-        animObject.transform.localPosition = GameUtils.ToUnityCoordinates(position);
+        animObject.transform.localPosition = Vector2.zero;
 
         SpriteAnimatorController controller = animObject.GetComponentInChildren<SpriteAnimatorController>();
         if (controller != null)
         {
-            controller.Setup(Vector2.zero, 0, animFileName, GetSortingLayer(layer));
+            controller.Setup(position, 0, animFileName, GetSortingLayer(layer));
         }
 
         if (existingObject)

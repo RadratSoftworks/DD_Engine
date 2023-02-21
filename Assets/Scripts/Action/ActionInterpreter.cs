@@ -7,6 +7,12 @@ using UnityEngine;
 
 public class ActionInterpreter
 {
+    private class TimerInfo
+    {
+        public string ScriptToRun { get; set; }
+        public IEnumerator Coroutine { get; set; }
+    };
+
     private static Dictionary<string, string> globalScriptValues = new Dictionary<string, string>();
     private ScriptBlock<ActionOpcode> block;
 
@@ -14,11 +20,36 @@ public class ActionInterpreter
     public event OnVariableChanged VariableChanged;
 
     private List<string> variableChangedReportList = new List<string>();
+    private Dictionary<string, TimerInfo> timers = new Dictionary<string, TimerInfo>();
 
     public static Dictionary<string, string> GlobalScriptValues => globalScriptValues;
 
     public ActionInterpreter()
     {
+    }
+
+    public void ClearState()
+    {
+        foreach (var pendingTimer in timers)
+        {
+            GameManager.Instance.StopPersistentCoroutine(pendingTimer.Value.Coroutine);
+        }
+
+        timers.Clear();
+    }
+
+    private IEnumerator TimerCoroutine(string name, int frames, string script)
+    {
+        int frameCount = GameManager.Instance.GetRealFrames(frames);
+        for (int i = 0; i < frameCount; i++)
+        {
+            yield return null;
+        }
+        yield return new WaitUntil(() => !GameManager.Instance.GadgetActive);
+        // Remove from management
+        timers.Remove(name);
+        GameManager.Instance.LoadGadget(script);
+        yield break;
     }
 
     public IEnumerator Execute(ScriptBlock<ActionOpcode> block)
@@ -85,6 +116,10 @@ public class ActionInterpreter
 
                 case ActionOpcode.SwitchNgi:
                     RunSwitchNgi(command);
+                    break;
+
+                case ActionOpcode.Timer:
+                    RunTimer(command);
                     break;
 
                 default:
@@ -246,6 +281,54 @@ public class ActionInterpreter
         }
 
         GameManager.Instance.SetControlSetScrollSpeeds(speeds);
+    }
+
+    private void RunTimer(ScriptCommand<ActionOpcode> command)
+    {
+        if (command.Arguments.Count < 2)
+        {
+            Debug.LogError("Not enough arguments for timer!");
+            return;
+        }
+
+        string name = command.Arguments[0] as string;
+        string action = command.Arguments[1] as string;
+
+        if (action.Equals("stop", StringComparison.OrdinalIgnoreCase))
+        {
+            if (timers.ContainsKey(name))
+            {
+                GameManager.Instance.StopPersistentCoroutine(timers[name].Coroutine);
+                timers.Remove(name);
+            }
+        } else
+        {
+            if (command.Arguments.Count < 4)
+            {
+                Debug.LogError("Not enough arguments to start timer!");
+                return;
+            }
+
+            int frames = int.Parse(command.Arguments[2] as string);
+            string scriptPath = command.Arguments[3] as string;
+
+            TimerInfo timer = new TimerInfo()
+            {
+                Coroutine = TimerCoroutine(name, frames, scriptPath),
+                ScriptToRun = scriptPath
+            };
+
+            if (timers.ContainsKey(name))
+            {
+                Debug.LogErrorFormat("An timer with the same name ({0}) is still pending!", name);
+            }
+            else
+            {
+                timers[name] = timer;
+            }
+
+            GameManager.Instance.RunPersistentCoroutine(timer.Coroutine);
+        }
     }
 
     public string GetValue(string variableName, out bool isGlobal)

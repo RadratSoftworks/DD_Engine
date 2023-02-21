@@ -37,12 +37,132 @@
 				{
 					"offset": "1093",
 					"newBytes": "74 69 6F 6E 73",
-					"context":  "Fix Chapter 3 Map load movie set location wrong path"
+					"context": "Fix Chapter 3 Map load movie set location wrong path"
 				},
 				{
 					"offset": "16D3",
 					"newBytes": "63 6B 0A 6C",
 					"context": "Fix chapter 4 on movie set click"
+				},
+				{
+					"offset": "1BF6",
+					"newBytes": "63",
+					"context": "Fix chapter 4 prepare launch harry from catapult"
+				},
+				{
+					"offset": "1C32",
+					"newBytes": "6E 63 68 5F",
+					"context":  "Fix chapter 4 ready to launch active"
+				},
+				{
+					"offset": "1E23",
+					"newBytes": "6D 61 6C",
+					"context": "Fix can't examine small pile chapter 4"
+				},
+				{
+					"offset": "1F3D",
+					"newBytes": "6F 6E 43 6C",
+					"context": "Fix chapter 4 examine large pile"
+				},
+				{
+					"offset": "1F8F",
+					"newBytes": "6A 2E 6F",
+					"context": "Fix chapter 4 dig no more"
+				},
+				{
+					"offset": "2064",
+					"newBytes": "61 0A 0A",
+					"context": "Fix chapter 4 storage room pick shovel action"
+				},
+				{
+					"offset": "2385",
+					"newBytes": "72 6F 6F 6D 5F",
+					"context":  "Fix chapter 4 talk to Harry when done smashing wind port"
+				},
+				{
+					"offset": "2AB8",
+					"newBytes": "74 69 6F",
+					"context": "Fix chapter 4 storage room catapult csd path"
+				},
+				{
+					"offset": "62BB",
+					"newBytes": "69 6D 67 2F 63",
+					"context": "Fix chapter 4 control set catapult path"
+				},
+				{
+					"offset": "6473",
+					"newBytes": "6A",
+					"context": "Fix chapter 4 get in catapult active name in control set"
+				},
+				{
+					"offset": "69F3",
+					"newBytes": "75 6C 6C",
+					"context": "Fix chapter 4 condition shovel action"
+				},
+				{
+					"offset": "7289",
+					"newBytes": "65 5F 73 65 74",
+					"context": "Fix chapter 5 movie set first dialogue"
+				},
+				{
+					"offset": "75A4",
+					"newBytes": "5F 72 65 70",
+					"context": "Fix chapter 5 hospital open repeat"
+				},
+				{
+					"offset": "76EB",
+					"newBytes": "63 61 74 69",
+					"context": "Fix chapter 5 map path in office action"
+				},
+				{
+					"offset": "78D4",
+					"newBytes": "5F 75 70 5F 70",
+					"context": "Fix chapter 5 picked up penguin condition variable"
+				},
+				{
+					"offset": "7BA3",
+					"newBytes": "61 74 69",
+					"context": "Fix chapter 5 plus animation in map"
+				},
+				{
+					"offset": "7C06",
+					"newBytes": "6F 70 65 6E 5F",
+					"context": "Fix chapter 5 hospital open repeat"
+				},
+				{
+					"offset": "7DA1",
+					"newBytes": "2F 64 69 61 6c 6f 67 75 65 73 2f 63 75 74 5f 64 61 70 68 6e 65 5f 6f 75 74",
+					"context": "Fix chapter 6 cut daphne template dialog wrong path"
+				},
+				{
+					"offset": "7F1E",
+					"newBytes": "6B 0A 6C 6f",
+					"context": "Fix chapter 6 idol right load dialogue opcode"
+				},
+				{
+					"offset": "7F83",
+					"newBytes": "6F 6C 5F 6D 6F",
+					"context": "Fix chapter 6 idol movable dialogue path"
+				},
+				{
+					"offset": "813B",
+					"newBytes": "61 6C 6F 67 75",
+					"context": "Fix chapter 6 art first dialogue path"
+				},
+				{
+					"offset": "8B7E",
+					"newBytes": "6E 75 6C",
+					"context": "Fix chapter 6 idols condition trigger value"
+				},
+				{
+					"offset": "8BC5",
+					"newBytes": "70 68",
+					"context": "Fix chapter 6 orphanage lone idol statue image path"
+				},
+				{
+					"offset": "90DC",
+					"newBytes": "2F 61 6E 69 6D",
+					"context": "Fix chapter 6 butterfly animation path"
 				}
 			]
 		}

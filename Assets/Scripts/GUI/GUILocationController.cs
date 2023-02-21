@@ -188,7 +188,10 @@ public class GUILocationController : MonoBehaviour
 
     private void OnPanRequested(Vector2 amount)
     {
+        // Temporary disable inputs
+        GameInputManager.Instance.SetGUIInputActionMapState(false);
         ScrollFromOrigin(GameUtils.ToUnityCoordinates(amount), true);
+        GameInputManager.Instance.SetGUIInputActionMapState(true);
     }
 
     private void OnScrollSpeedsSet(Vector2[] speeds)

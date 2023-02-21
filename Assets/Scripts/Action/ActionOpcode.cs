@@ -15,5 +15,6 @@ public enum ActionOpcode
     Achieve,
     LoadMiniGame,
     ResumeSave,
-    SwitchNgi
+    SwitchNgi,
+    Timer
 };

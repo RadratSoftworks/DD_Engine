@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
     public bool ContinueConfirmed => confirmedController.Confirmed;
     public bool LastTextFinished => textBalloonTopController.LastTextFinished && textBalloonBottomController.LastTextFinished;
     public bool GUIBusy => (activeGUI != null) && (activeGUI.Busy);
+    public bool GadgetActive => (activeGadget != null);
     public float FrameScale => targetFrameFactor;
 
     private string SavePath => Path.Join(Application.persistentDataPath, "save.json");
@@ -229,12 +230,17 @@ public class GameManager : MonoBehaviour
 
             GameInputManager.Instance.SetGUIInputActionMapState(true);
             gameSave.CurrentControlSetPath = activeGUI.Name;
+
+            if (activeGadget == null)
+            {
+                SaveGame();
+            }
         }
     }
 
     public void OnResourcesReady()
     {
-        //LoadMinigame("ch4/minigames/constructionSite.mini");
+        //LoadMinigame("ch2/minigames/moviesetFight.mini");
         LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
@@ -500,6 +506,11 @@ public class GameManager : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
+    public void StopPersistentCoroutine(IEnumerator coroutine)
+    {
+        StopCoroutine(coroutine);
+    }
+
     public int GetRealFrames(int gameFrames)
     {
         return (int)(gameFrames * targetFrameFactor);
@@ -512,6 +523,8 @@ public class GameManager : MonoBehaviour
 
     private void InitializeFromGameSave()
     {
+        allowSave = false;
+
         // Update global action values
         foreach (var item in gameSave.ActionValues[globalVarDictKey])
         {
@@ -559,6 +572,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        allowSave = true;
+
         // After we done loading, restore the game save data to keep tracking current game progress
         RestoreGameSaveTracking();
     }
@@ -575,8 +590,6 @@ public class GameManager : MonoBehaviour
 
             gameSave = serializer.Deserialize(file, typeof(GameSave)) as GameSave;
         }
-
-        allowSave = true;
 
         if (gameSave != null)
         {

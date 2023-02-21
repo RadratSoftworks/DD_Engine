@@ -41,7 +41,7 @@ public class FightSceneController : MonoBehaviour
 
         backgroundSoundController.Setup(fightInfo.BackgroundSoundPath, 0);
 
-        playerHealthBar.Setup(playerController.GetComponent<FighterHealthController>(), true);
-        enemyHealthBarController.Setup(opponentController.GetComponent<FighterHealthController>(), false);
+        playerHealthBar.Setup(playerController.GetComponent<FighterHealthController>(), false);
+        enemyHealthBarController.Setup(opponentController.GetComponent<FighterHealthController>(), true);
     }
 }

@@ -175,6 +175,8 @@ public class GameTextBalloonController : MonoBehaviour
 
     public void ChangeText(string newText)
     {
+        GameInputManager.Instance.SetGUIInputActionMapState(false);
+
         gameObject.SetActive(true);
 
         if (currentTextCoroutine != null)

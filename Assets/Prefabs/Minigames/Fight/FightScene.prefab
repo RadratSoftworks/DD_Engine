@@ -154,8 +154,8 @@ MonoBehaviour:
   opponentSoundMakerController: {fileID: 6067802025841560344}
   backgroundSpriteRenderer: {fileID: 1653077794331830718}
   backgroundSoundController: {fileID: 5509847133701464074}
-  playerHealthBar: {fileID: 8516444618705539050}
-  enemyHealthBarController: {fileID: 3865690524991465047}
+  playerHealthBar: {fileID: 3865690524991465047}
+  enemyHealthBarController: {fileID: 8516444618705539050}
 --- !u!1 &7565920147744843433
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,7 +200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 33223316054336128, guid: 73316c4fe468b2b4f8251dc66868e74a, type: 3}
       propertyPath: m_Name
-      value: EnemyHealthBar
+      value: PlayerHealthBar
       objectReference: {fileID: 0}
     - target: {fileID: 33223316054336134, guid: 73316c4fe468b2b4f8251dc66868e74a, type: 3}
       propertyPath: m_RootOrder
@@ -554,7 +554,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 33223316054336128, guid: 73316c4fe468b2b4f8251dc66868e74a, type: 3}
       propertyPath: m_Name
-      value: PlayerHealthBar
+      value: EnemyHealthBar
       objectReference: {fileID: 0}
     - target: {fileID: 33223316054336134, guid: 73316c4fe468b2b4f8251dc66868e74a, type: 3}
       propertyPath: m_RootOrder
