@@ -8,6 +8,8 @@ public class FightPlayerController : StateMachine<FighterState>
     public FightOpponentController directOpponent;
     public int frameTriggerIntent = 3;
 
+    private bool continueTriggered = false;
+
     private void RegOrUnregControl(bool register)
     {
         var fightActionMap = GameInputManager.Instance.FightMinigameActionMap;
@@ -84,6 +86,11 @@ public class FightPlayerController : StateMachine<FighterState>
 
     public void OnContinueRequested(InputAction.CallbackContext context)
     {
+        if (continueTriggered)
+        {
+            return;
+        }
+
         // If either one of us is knocked out, end the fight and disable input
         if ((directOpponent.CurrentState == FighterState.KnockedOut) ||
             (CurrentState == FighterState.KnockedOut))
@@ -92,6 +99,8 @@ public class FightPlayerController : StateMachine<FighterState>
 
             directOpponent.GiveDataFrom(this, endIntent);
             GiveData(endIntent);
+
+            continueTriggered = true;
         }
     }
 }

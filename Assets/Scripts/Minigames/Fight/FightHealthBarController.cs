@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DG.Tweening;
 
 public class FightHealthBarController : MonoBehaviour
 {
@@ -9,9 +8,12 @@ public class FightHealthBarController : MonoBehaviour
     private const string BarBGImagePath = "img/minigames/ch2_fight/Bar_BG_{0}";
     private const string BarDeathImagePath = "img/minigames/ch2_fight/Bar_FG_{0}_1";
     private const int TotalHeartbeatFrames = 3;
-    private const int HeartbeatPerFrameDuration = 6; 
+    private const int HeartbeatPerFrameDuration = 6;
 
     private FighterHealthController healthController;
+
+    [SerializeField]
+    private float healthReduceAnimDuration = 0.8f;
 
     [SerializeField]
     private SpriteAnimatorController heartbeatAnimationController;
@@ -34,6 +36,7 @@ public class FightHealthBarController : MonoBehaviour
     private void Start()
     {
         healthController.HealthChanged += OnHealthChange;
+        DOTween.Init();
     }
 
     private void SetupHeartbeatAnimation()
@@ -78,6 +81,6 @@ public class FightHealthBarController : MonoBehaviour
         float percentage = (float)healthController.CurrentHealth / healthController.MaxHealth;
         Vector3 xAdv = (1.0f - percentage) * indicatorLength * (isLeft ? Vector3.left : Vector3.right);
 
-        healthBarIndicator.transform.localPosition = originalPosition + xAdv;
+        healthBarIndicator.transform.DOLocalMove(originalPosition + xAdv, healthReduceAnimDuration);
     }
 }
