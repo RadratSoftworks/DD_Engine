@@ -5,6 +5,8 @@ using UnityEngine;
 public class FightOpponentController : StateMachine<FighterState>
 {
     public GameObject animationPrefabObject;
+    public GameObject movingHands;
+
     public FightPlayerController directOpponent;
 
     [Range(0, 100)]
@@ -35,11 +37,11 @@ public class FightOpponentController : StateMachine<FighterState>
             opponentInfo.HeadAnimPath, Vector2.zero, FightOpponentConstants.OpponentHeadDepth,
             deactiveByDefault: false, allowLoop: true);
 
-        normalLeftHand = MinigameConstructUtils.InstantiateAndGet(animationPrefabObject, transform,
+        normalLeftHand = MinigameConstructUtils.InstantiateAndGet(animationPrefabObject, movingHands.transform,
             opponentInfo.LeftHandAnimPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth,
             deactiveByDefault: false, allowLoop: true);
 
-        normalRightHand = MinigameConstructUtils.InstantiateAndGet(animationPrefabObject, transform,
+        normalRightHand = MinigameConstructUtils.InstantiateAndGet(animationPrefabObject, movingHands.transform,
             opponentInfo.RightHandAnimPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth,
             deactiveByDefault: false, allowLoop: true);
 

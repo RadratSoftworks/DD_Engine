@@ -42,8 +42,7 @@ public class FightOpponentAttackingState : IState
         currentFrame = 0;
         pendingAnimation = 2;
 
-        stateMachine.normalLeftHand.Disable();
-        stateMachine.normalRightHand.Disable();
+        stateMachine.movingHands.SetActive(false);
 
         punchAnim.Enable();
     }
@@ -52,6 +51,8 @@ public class FightOpponentAttackingState : IState
     {
         punchFxAnim.Disable();
         punchAnim.Disable();
+
+        stateMachine.movingHands.SetActive(true);
     }
 
     public void ReceiveData(IStateMachine sender, object data)

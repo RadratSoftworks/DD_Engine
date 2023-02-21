@@ -20,10 +20,10 @@ public class FightOpponentBlockStateBase : IState
         this.stateMachine = stateMachine;
         this.targetState = targetState;
 
-        leftHandBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
+        leftHandBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.movingHands.transform,
             opponentInfo.LeftHandBlockAnimPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth, true);
 
-        rightHandBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
+        rightHandBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.movingHands.transform,
             opponentInfo.RightHandAnimBlockPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth, true);
     }
 
