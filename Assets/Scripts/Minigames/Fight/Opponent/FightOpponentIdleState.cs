@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FightOpponentIdleState : IState
 {
@@ -11,6 +9,7 @@ public class FightOpponentIdleState : IState
     private float previousTimePoint = -1.0f;
 
     private bool stopAttacking = false;
+    private int dueAttack = 0;
 
     public FightOpponentIdleState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo)
     {
@@ -28,6 +27,8 @@ public class FightOpponentIdleState : IState
         stateMachine.normalRightHand.Enable();
 
         stateMachine.headAnim.Enable();
+
+        dueAttack = Random.Range(stateMachine.attackingIntervalMin, stateMachine.attackingIntervalMax);
     }
 
     public void Leave()
@@ -88,7 +89,7 @@ public class FightOpponentIdleState : IState
         timePassed += Time.time - previousTimePoint;
         previousTimePoint = Time.time;
 
-        if (timePassed > stateMachine.attackingInterval)
+        if (timePassed > dueAttack)
         {
             stateMachine.Transition(FighterState.PrepareAttacking, FightDirection.Right);
             timePassed = 0.0f;

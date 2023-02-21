@@ -16,7 +16,8 @@ public class FightOpponentController : StateMachine<FighterState>
 
     public float blockAttackStateDuration = 0.2f;
 
-    public float attackingInterval = 4.0f;
+    public int attackingIntervalMin = 5;
+    public int attackingIntervalMax = 10;
 
     public int damageDealt = 10;
 
