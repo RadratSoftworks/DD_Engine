@@ -16,5 +16,8 @@ public enum ActionOpcode
     LoadMiniGame,
     ResumeSave,
     SwitchNgi,
-    Timer
+    Timer,
+    DeleteSaves,
+    SaveSettings,
+    DeleteSettings
 };

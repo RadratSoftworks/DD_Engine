@@ -110,6 +110,7 @@ public class GameManager : MonoBehaviour
         }
 
         gameSave.ActionValues[globalVarDictKey] = ActionInterpreter.GlobalScriptValues;
+        GameSettings.RestoreSettings();
     }
 
     private void HideGadgetRelatedObjects()

@@ -63,6 +63,11 @@ public static class GUIDescriptionDepthNormalizer
             {
                 NormalizeImpl((control as GUIControlLocationDescription).Layers, ref depth);
             }
+            else if (control is GUIControlSettingMultiValuesOptionDescription)
+            {
+                // Text and selected highlight
+                depth += 2;
+            }
             else if (control is GUIControlMenuDescription)
             {
                 NormalizeImpl((control as GUIControlMenuDescription).MenuItemControls, ref depth);

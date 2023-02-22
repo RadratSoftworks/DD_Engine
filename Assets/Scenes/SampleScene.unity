@@ -519,10 +519,10 @@ RectTransform:
   m_Father: {fileID: 18623149}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 400, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 400, y: -179.41681}
+  m_SizeDelta: {x: 0, y: 358.83362}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &315295293
 MonoBehaviour:
@@ -2006,6 +2006,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   guiPicturePrefabObject: {fileID: 987941436643803451, guid: 142205e66f20c424bab9ac01dc757ea9, type: 3}
   guiMenuOptionPrefabObject: {fileID: 2991068980618184153, guid: 6e7fd4c02a018a849b145d2025daa095, type: 3}
+  guiSetingMultiValuesOptionPrefabObject: {fileID: 5349321663951329886, guid: 63b348fea2b84be489a713485a6caa41, type: 3}
   guiAnimationPrefabObject: {fileID: 4706014351936562840, guid: 3b31eca6b6d54cc43a81d48f312a838a, type: 3}
   guiMenuPrefabObject: {fileID: 2363225673649648605, guid: ea7791bd8bc20a04884f849646bbbf81, type: 3}
   guiLayerPrefabObject: {fileID: 3870559244570601837, guid: a2deb474a411ca74e9f6271e7650f3c4, type: 3}

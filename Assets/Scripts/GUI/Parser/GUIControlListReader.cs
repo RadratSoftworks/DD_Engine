@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GUIControlListReader
 {
-    public static List<GUIControlDescription> InternalizeControls(GUIControlDescription parent, BinaryReader2 reader, GUIControlID? acceptableID = null)
+    public static List<GUIControlDescription> InternalizeControls(GUIControlDescription parent, BinaryReader2 reader, List<GUIControlID> acceptableID = null)
     {
         List<GUIControlDescription> controls = new List<GUIControlDescription>();
 
@@ -18,7 +18,7 @@ public class GUIControlListReader
             }
 
             GUIControlID controlID = (GUIControlID)reader.ReadByte();
-            if ((acceptableID != null) && (acceptableID != controlID))
+            if ((acceptableID != null) && !acceptableID.Contains(controlID))
             {
                 Debug.LogWarningFormat("Unmatched requested control ID: target={0}, result={1}", acceptableID, controlID);
                 reader.RewindByte();
@@ -48,6 +48,10 @@ public class GUIControlListReader
 
                 case GUIControlID.MenuItem:
                     controls.Add(new GUIControlMenuItemDescription(parent, reader));
+                    break;
+
+                case GUIControlID.SettingMultiValuesOption:
+                    controls.Add(new GUIControlSettingMultiValuesOptionDescription(reader));
                     break;
 
                 case GUIControlID.Picture:

@@ -71,7 +71,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 21
+  m_SortingLayer: 26
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 92bfc41318b39f34489fa606e67d85eb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -155,7 +155,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 21
+  m_SortingLayer: 26
   m_SortingOrder: 1
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -247,7 +247,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 21
+  m_SortingLayer: 26
   m_SortingOrder: 2
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &7237565360307079198
@@ -453,7 +453,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2029122689
-  m_SortingLayer: 21
+  m_SortingLayer: 26
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -520,3 +520,7 @@ MonoBehaviour:
   stingerObject: {fileID: 7237565359478978774}
   normalTextBackgroundColor: {r: 1, g: 1, b: 1, a: 1}
   fullItalicTextBackgroundColor: {r: 0.84313726, g: 0.80784315, b: 0.40784314, a: 1}
+  fullMiddleTextBackgroundColor: {r: 0, g: 0, b: 0, a: 0}
+  fullMiddleTextColor: {r: 1, g: 1, b: 1, a: 1}
+  timePerCharacterReveal: 0.015
+  timePerCharacterRevealFast: 0.005

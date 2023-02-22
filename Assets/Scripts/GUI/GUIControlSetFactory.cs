@@ -15,6 +15,9 @@ public class GUIControlSetFactory : GameBaseAssetManager<GUIControlSet>
     private GameObject guiMenuOptionPrefabObject;
 
     [SerializeField]
+    private GameObject guiSetingMultiValuesOptionPrefabObject;
+
+    [SerializeField]
     private GameObject guiAnimationPrefabObject;
 
     [SerializeField]
@@ -131,7 +134,10 @@ public class GUIControlSetFactory : GameBaseAssetManager<GUIControlSet>
                 {
                     LoadGuiMenuItem(ownSet, gameObjectOptions, optionDesc as GUIControlMenuItemDescription, ref currentPosition);
                 }
-                else
+                else if (optionDesc is GUIControlSettingMultiValuesOptionDescription)
+                {
+                    LoadGuiSettingMultiValuesOption(ownSet, gameObjectOptions, optionDesc as GUIControlSettingMultiValuesOptionDescription, ref currentPosition);
+                } else
                 {
                     Debug.LogError("Control type " + description.GetType() + " is not supported in menu option control list!");
                 }
@@ -144,35 +150,22 @@ public class GUIControlSetFactory : GameBaseAssetManager<GUIControlSet>
     private void LoadGuiMenuItem(GUIControlSet ownSet, GameObject parent, GUIControlMenuItemDescription description, ref Vector2 position)
     {
         GameObject anotherInstance = Instantiate(guiMenuOptionPrefabObject, parent.transform, false);
-        anotherInstance.transform.localPosition = GameUtils.ToUnityCoordinates(position);
+        GUIMenuItemController controller = anotherInstance.GetComponent<GUIMenuItemController>();
 
-        if (description.Id != null)
+        if (controller != null)
         {
-            anotherInstance.name = description.Id;
+            controller.Setup(ownSet, description, ref position);
         }
-        SpriteRenderer renderer = anotherInstance.GetComponent<SpriteRenderer>();
-        if (renderer != null)
+    }
+
+    private void LoadGuiSettingMultiValuesOption(GUIControlSet ownSet, GameObject parent, GUIControlSettingMultiValuesOptionDescription description, ref Vector2 position)
+    {
+        GameObject anotherInstance = Instantiate(guiSetingMultiValuesOptionPrefabObject, parent.transform, false);
+        GUISettingMultiValuesOptionController controller = anotherInstance.GetComponent<GUISettingMultiValuesOptionController>();
+
+        if (controller != null)
         {
-            renderer.sortingOrder = GameUtils.ToUnitySortingPosition(description.AbsoluteDepth);
-            renderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources, description.ImagePath);
-
-            position += renderer.sprite.textureRect.size * Vector2.up;
-            Vector2 sizeReal = renderer.sprite.textureRect.size / Constants.PixelsPerUnit;
-
-            // Adjust the rect so that text can properly render
-            RectTransform transform = anotherInstance.GetComponent<RectTransform>();
-            if (transform)
-            {
-                transform.sizeDelta = sizeReal;
-            }
-
-            var text = anotherInstance.GetComponentInChildren<TMPro.TMP_Text>();
-            text.rectTransform.sizeDelta = sizeReal;
-            text.text = ownSet.GetLanguageString(description.TextName);
-            text.font = ResourceManager.Instance.GetFontAssetForLocalization();
-
-            var meshRenderer = anotherInstance.GetComponentInChildren<MeshRenderer>();
-            meshRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(description.AbsoluteDepth);
+            controller.Setup(ownSet, description, ref position);
         }
     }
 

@@ -31,6 +31,7 @@ public class GameTextBalloonController : MonoBehaviour
     public Color fullMiddleTextBackgroundColor = Color.clear;
     public Color fullMiddleTextColor = Color.white;
     public float timePerCharacterReveal = 0.015f;
+    public float timePerCharacterRevealFast = 0.008f;
 
     private Placement textPlacement = Placement.Top;
     private Vector2 canvasSize = new Vector2(0, 0);
@@ -132,7 +133,7 @@ public class GameTextBalloonController : MonoBehaviour
 
     private IEnumerator GraduallyAppearTextCoroutine()
     {
-        var waitTime = new WaitForSeconds(timePerCharacterReveal);
+        var waitTime = new WaitForSeconds((GameSettings.TextSpeed == GameTextSpeed.Normal) ? timePerCharacterReveal : timePerCharacterRevealFast);
 
         while (ballonText.maxVisibleCharacters < ballonText.text.Length)
         {
@@ -143,7 +144,6 @@ public class GameTextBalloonController : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
 
             backgroundRenderer.size = rectTransform.sizeDelta;
-
 
             if (textPlacement != Placement.Middle)
             {
@@ -199,11 +199,17 @@ public class GameTextBalloonController : MonoBehaviour
             backgroundRenderer.color = balloonRenderer.color = normalTextBackgroundColor;
         }
 
-        ballonText.maxVisibleCharacters = 0;
+        ballonText.maxVisibleCharacters = (GameSettings.TextSpeed == GameTextSpeed.Instant) ? newText.Length : 0;
         ballonText.text = newText;
         ballonText.font = ResourceManager.Instance.GetFontAssetForLocalization();
 
         stingerObject.SetActive(false);
+
+        if (GameSettings.TextSpeed == GameTextSpeed.Instant)
+        {
+            // Rebuild immediately to calculate background size, not rely on coroutine
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+        }
 
         backgroundRenderer.size = rectTransform.sizeDelta;
 
@@ -212,8 +218,11 @@ public class GameTextBalloonController : MonoBehaviour
             balloonRenderer.transform.localPosition = rectTransform.sizeDelta * GetPivot();
         }
 
-        currentTextCoroutine = GraduallyAppearTextCoroutine();
-        StartCoroutine(currentTextCoroutine);
+        if (GameSettings.TextSpeed != GameTextSpeed.Instant)
+        {
+            currentTextCoroutine = GraduallyAppearTextCoroutine();
+            StartCoroutine(currentTextCoroutine);
+        }
     }
 
     public void SetBalloon(string balloonFilename)

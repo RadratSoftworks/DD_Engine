@@ -20,18 +20,24 @@ public class GUIMenuOptionsController : MonoBehaviour
         InputAction navigateDown = actionMap.FindAction("Navigate Down");
         InputAction navigateUp = actionMap.FindAction("Navigate Up");
         InputAction submit = actionMap.FindAction("Submit");
+        InputAction leftValue = actionMap.FindAction("Left Value Triggered");
+        InputAction rightValue = actionMap.FindAction("Right Value Triggered");
 
         if (reg)
         {
             navigateDown.performed += OnNavigateDown;
             navigateUp.performed += OnNavigateUp;
             submit.performed += OnSubmit;
+            leftValue.performed += OnLeftValueTriggered;
+            rightValue.performed += OnRightValueTriggered;
         }
         else
         {
             navigateDown.performed -= OnNavigateDown;
             navigateUp.performed -= OnNavigateUp;
             submit.performed -= OnSubmit;
+            leftValue.performed -= OnLeftValueTriggered;
+            rightValue.performed -= OnRightValueTriggered;
         }
     }
 
@@ -63,9 +69,17 @@ public class GUIMenuOptionsController : MonoBehaviour
     private void DeselectCurrentOption()
     {
         GameObject currentChild = transform.GetChild(currentChildIndex).gameObject;
-        GUIMenuOptionController controllerOld = currentChild.GetComponent<GUIMenuOptionController>();
+        GUIMenuItemController controllerOld = currentChild.GetComponent<GUIMenuItemController>();
 
-        controllerOld.OnOptionDeselected();
+        if (controllerOld == null)
+        {
+            GUISettingMultiValuesOptionController controllerOldOld = currentChild.GetComponent<GUISettingMultiValuesOptionController>();
+            controllerOldOld.OnOptionDeselected();
+        }
+        else
+        {
+            controllerOld.OnOptionDeselected();
+        }
     }
 
     public void SelectOption(int newChildIndex, bool scrolling = false)
@@ -86,9 +100,16 @@ public class GUIMenuOptionsController : MonoBehaviour
         }
 
         GameObject newChild = transform.GetChild(newChildIndex).gameObject;
-        GUIMenuOptionController controllerNew = newChild.GetComponent<GUIMenuOptionController>();
+        GUIMenuItemController controllerNew = newChild.GetComponent<GUIMenuItemController>();
+        if (controllerNew == null)
+        {
+            GUISettingMultiValuesOptionController controllerNewNew = newChild.GetComponent<GUISettingMultiValuesOptionController>();
+            controllerNewNew.OnOptionSelected();
+        } else
+        {
+            controllerNew.OnOptionSelected();
+        }
 
-        controllerNew.OnOptionSelected();
         currentChildIndex = newChildIndex;
     }
 
@@ -106,6 +127,28 @@ public class GUIMenuOptionsController : MonoBehaviour
     public void OnNavigateUp(InputAction.CallbackContext context)
     {
         OnGameOptionChoosen((currentChildIndex == 0) ? (transform.childCount - 1) : (currentChildIndex - 1));
+    }
+
+    private void OnLeftValueTriggered(InputAction.CallbackContext context)
+    {
+        GameObject currentChild = transform.GetChild(currentChildIndex).gameObject;
+        GUISettingMultiValuesOptionController controller = currentChild.GetComponent<GUISettingMultiValuesOptionController>();
+
+        if (controller != null)
+        {
+            controller.OnLeftValueTriggered();
+        }
+    }
+
+    private void OnRightValueTriggered(InputAction.CallbackContext context)
+    {
+        GameObject currentChild = transform.GetChild(currentChildIndex).gameObject;
+        GUISettingMultiValuesOptionController controller = currentChild.GetComponent<GUISettingMultiValuesOptionController>();
+
+        if (controller != null)
+        {
+            controller.OnRightValueTriggered();
+        }
     }
 
     public void OnSubmit(InputAction.CallbackContext context)

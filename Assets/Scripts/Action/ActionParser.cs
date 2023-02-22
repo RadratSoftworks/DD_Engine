@@ -24,7 +24,10 @@ public class ActionParser
         { "loadminigame", ActionOpcode.LoadMiniGame },
         { "resumesave", ActionOpcode.ResumeSave },
         { "switchngi", ActionOpcode.SwitchNgi },
-        { "timer", ActionOpcode.Timer }
+        { "timer", ActionOpcode.Timer },
+        { "deletesaves", ActionOpcode.DeleteSaves },
+        { "deletesettings", ActionOpcode.DeleteSettings },
+        { "savesettings", ActionOpcode.SaveSettings }
     };
 
     public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)

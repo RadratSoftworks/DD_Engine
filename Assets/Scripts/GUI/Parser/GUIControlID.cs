@@ -7,6 +7,7 @@
     BackgroundLabel = 7,
     Menu = 10,
     MenuItem = 11,
+    SettingMultiValuesOption = 13,
     Location = 30,
     Layer = 31,
     Active = 40,

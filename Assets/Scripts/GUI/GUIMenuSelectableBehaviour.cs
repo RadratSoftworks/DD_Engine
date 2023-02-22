@@ -1,16 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 
-public class GUIMenuOptionController : MonoBehaviour
+public class GUIMenuSelectableBehaviour : MonoBehaviour
 {
     public float distanceXSinkBack = 0.15f;
     public float sinkDuration = 0.6f;
 
     private Vector2 originalPosition;
     private AudioSource selectedAudio;
-    private Sequence selectedSequence;
+    protected Sequence selectedSequence;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +24,7 @@ public class GUIMenuOptionController : MonoBehaviour
     {
     }
 
-    public void OnOptionSelected()
+    public virtual void OnOptionSelected()
     {
         if (originalPosition == null)
         {
@@ -40,7 +38,7 @@ public class GUIMenuOptionController : MonoBehaviour
             .Append(transform.DOLocalMoveX(originalPosition.x - distanceXSinkBack, sinkDuration));
     }
 
-    public void OnOptionDeselected()
+    public virtual void OnOptionDeselected()
     {
         selectedAudio.Stop();
         selectedSequence.Kill();
