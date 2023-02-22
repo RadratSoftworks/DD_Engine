@@ -24,7 +24,9 @@ public class ActionLibrary
                 yield return interpreter.Execute(dict2[action]);
             } else
             {
+#if UNITY_EDITOR
                 Debug.LogWarning("Action \"" + action + "\" not found for id=" + id);
+#endif
                 yield break;
             }
         } else

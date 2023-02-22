@@ -4,10 +4,9 @@ using UnityEngine;
 using System.IO;
 using DG.Tweening.Plugins.Core.PathCore;
 
-public class GUIControlSetFactory : MonoBehaviour
+public class GUIControlSetFactory : GameBaseAssetManager<GUIControlSet>
 {
     public static GUIControlSetFactory Instance;
-    private Dictionary<string, GUIControlSet> controlSets;
 
     [SerializeField]
     private GameObject guiPicturePrefabObject;
@@ -51,7 +50,6 @@ public class GUIControlSetFactory : MonoBehaviour
     private void Start()
     {
         Instance = this;
-        controlSets = new Dictionary<string, GUIControlSet>(StringComparer.OrdinalIgnoreCase);
 
         GUICanvasSetup setup = container.GetComponent<GUICanvasSetup>();
         if (setup != null)
@@ -363,23 +361,34 @@ public class GUIControlSetFactory : MonoBehaviour
             }
         }
     }
+    protected override bool IsAssetSuitableForPrunge(GUIControlSet asset)
+    {
+        return !asset.GameObject.activeSelf;
+    }
 
-    public GUIControlSet LoadControlSet(Stream stream, Vector2 viewResolution, GUIControlSetInstantiateOptions options, string path = null)
+    protected override void OnRemovalFromCache(GUIControlSet asset)
+    {
+        // The control set will delete itself probably
+        GameObject.Destroy(asset.GameObject);
+    }
+
+    private GUIControlSet LoadControlSet(Stream stream, Vector2 viewResolution, GUIControlSetInstantiateOptions options, string path = null)
     {
         var controlDesc = new GUIControlDescriptionFile(stream);
         controlDesc.Filename = path;
 
         var controlSet = new GUIControlSet(container, controlDesc, viewResolution, options);
 
-        controlSets.Add(path, controlSet);
+        AddToCache(path, controlSet);
         return controlSet;
     }
 
     public GUIControlSet LoadControlSet(string path, Vector2 viewResolution, GUIControlSetInstantiateOptions options)
     {
-        if (controlSets.ContainsKey(path))
+        GUIControlSet cache = GetFromCache(path);
+        if (cache != null)
         {
-            return controlSets[path];
+            return cache;
         }
 
         ResourceFile resourcesToPick = ResourceManager.Instance.PickBestResourcePackForFile(path);

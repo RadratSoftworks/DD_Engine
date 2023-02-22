@@ -5,7 +5,7 @@ using System.IO;
 
 using UnityEngine;
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : GameBaseAssetManager<AudioClip>
 {
     // https://github.com/dpwe/dpwelib/blob/master/ulaw.c
     // Thank you!
@@ -45,13 +45,11 @@ public class SoundManager : MonoBehaviour
     };
 
     public static SoundManager Instance;
-    private Dictionary<string, AudioClip> audioClips;
 
     // Start is called before the first frame update
     void Start()
     {
         Instance = this;
-        audioClips = new Dictionary<string, AudioClip>(StringComparer.OrdinalIgnoreCase);
     }
 
     private static float[] ULawToPcm(byte[] ulawBuffer)
@@ -77,9 +75,10 @@ public class SoundManager : MonoBehaviour
             path = Path.ChangeExtension(path, ".ul");
         }
 
-        if (audioClips.ContainsKey(path))
+        AudioClip cached = GetFromCache(path);
+        if (cached != null)
         {
-            return audioClips[path];
+            return cached;
         }
 
         ResourceFile generalResources = ResourceManager.Instance.GeneralResources;
@@ -102,7 +101,7 @@ public class SoundManager : MonoBehaviour
             Constants.SoundFrequency, false);
 
         result.SetData(ULawToPcm(ulaw), 0);
-        audioClips.Add(path, result);
+        AddToCache(path, result);
 
         return result;
     }

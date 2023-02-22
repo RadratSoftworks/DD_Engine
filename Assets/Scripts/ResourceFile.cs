@@ -78,11 +78,6 @@ public class ResourceFile
 
     public byte[] ReadResourceData(ResourceInfo info)
     {
-        if (info.cachedData != null)
-        {
-            return info.cachedData;
-        }
-
         using (var fileStream = filePatcher.OpenFile(filename))
         {
             using (var fileBinaryReader = new BinaryReader2(fileStream))
@@ -97,7 +92,6 @@ public class ResourceFile
 
                 if (!info.isCompressed)
                 {
-                    info.cachedData = dataRead;
                     return dataRead;
                 }
                 else
@@ -110,7 +104,6 @@ public class ResourceFile
                             throw new InvalidDataException("The compressed resource data is corrupted!");
                         }
 
-                        info.cachedData = uncomped;
                         return uncomped;
                     }
                 }

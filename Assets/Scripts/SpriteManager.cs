@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using System.IO;
 
-public class SpriteManager: MonoBehaviour
+public class SpriteManager: GameBaseAssetManager<Sprite>
 {
-    private Dictionary<string, Sprite> spriteCache;
     public static SpriteManager Instance;
 
     void Start()
     {
-        spriteCache = new Dictionary<string, Sprite>(StringComparer.OrdinalIgnoreCase);
         Instance = this;
     }
 
@@ -145,10 +144,11 @@ public class SpriteManager: MonoBehaviour
     public Sprite Load(ResourceFile resources, string path, Vector2? origin = null, bool forScrolling = false)
     {
         string pathRaw = Path.ChangeExtension(path, null);
+        Sprite cached = GetFromCache(pathRaw);
 
-        if (spriteCache.ContainsKey(pathRaw))
+        if (cached != null)
         {
-            return spriteCache[pathRaw];
+            return cached;
         }
 
         string pathDsi = Path.ChangeExtension(pathRaw, ".dsi");
@@ -171,8 +171,8 @@ public class SpriteManager: MonoBehaviour
         // Game follows screen coordinates system. So we should put top-left as the origin!
         Sprite sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), origin ?? Vector2.up);
         sprite.name = pathRaw;
-        spriteCache.Add(pathRaw, sprite);
 
+        AddToCache(pathRaw, sprite);
         return sprite;
     }
 }

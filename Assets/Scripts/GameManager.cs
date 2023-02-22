@@ -205,6 +205,19 @@ public class GameManager : MonoBehaviour
         SaveGame();
     }
 
+    private void PruneCache()
+    {
+        // Most likely only used in a control set only, so we can clear
+        gadgetCache.Clear();
+        dialogueCache.Clear();
+
+        SpriteManager.Instance.PruneCache();
+        SoundManager.Instance.PruneCache();
+        GUIControlSetFactory.Instance.PruneCache();
+
+        GameGC.TryUnloadUnusedAssets();
+    }
+
     public void SetCurrentGUI(GUIControlSet newGUI)
     {
         if (activeGUI == newGUI)
@@ -220,6 +233,7 @@ public class GameManager : MonoBehaviour
 
         dialogueAudioController.StopAll();
         CleanAllPendingGadgets();
+        PruneCache();
 
         activeGUI = newGUI;
 

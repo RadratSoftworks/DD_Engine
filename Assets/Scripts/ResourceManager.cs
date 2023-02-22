@@ -52,15 +52,15 @@ public class ResourceManager : MonoBehaviour
             }
         }
 
-        if (!supportedGameLanguages.Contains(GameSettings.GetGameLanguage()))
+        if (!supportedGameLanguages.Contains(GameSettings.GameLanguage))
         {
-            GameSettings.SetGameLanguage(GameLanguage.English);
+            GameSettings.GameLanguage = GameLanguage.English;
         }
     }
 
     private string GetLanguageCodeForLocalization()
     {
-        return Constants.GameLanguageToResourceLanguageCodeDict[GameSettings.GetGameLanguage()];
+        return Constants.GameLanguageToResourceLanguageCodeDict[GameSettings.GameLanguage];
     }
 
     public ResourceFile PickBestResourcePackForFile(string filepath)
@@ -92,7 +92,7 @@ public class ResourceManager : MonoBehaviour
 
     public TMP_FontAsset GetFontAssetForLocalization()
     {
-        switch (GameSettings.GetGameLanguage())
+        switch (GameSettings.GameLanguage)
         {
             case GameLanguage.SimplifiedChinese:
                 return SimplifiedChineseFontAsset;

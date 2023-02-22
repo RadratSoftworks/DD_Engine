@@ -13,6 +13,4 @@ public class ResourceInfo
     public int width { get; set; }
     public int height { get; set; }
     public int offsetInDataChunk { get; set; }
-
-    public byte[] cachedData { get; set; }
 }
