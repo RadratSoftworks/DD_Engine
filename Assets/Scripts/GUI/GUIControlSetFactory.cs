@@ -372,7 +372,11 @@ public class GUIControlSetFactory : GameBaseAssetManager<GUIControlSet>
 
         var controlSet = new GUIControlSet(container, controlDesc, viewResolution, options);
 
-        AddToCache(path, controlSet);
+        if (!options.DestroyWhenDisabled)
+        {
+            AddToCache(path, controlSet);
+        }
+
         return controlSet;
     }
 

@@ -21,6 +21,7 @@ public class GUILayerController : MonoBehaviour
     private Vector2 originalPosition;
     private Vector2 size;
     private bool definePan;
+    private bool dialogueStateChangeSubscribed = false;
 
     private GUILocationController locationController;
     private GUIControlSet controlSet;
@@ -34,12 +35,38 @@ public class GUILayerController : MonoBehaviour
     private void Start()
     {
         DOTween.Init();
+        CheckAndSetDialogStateChangeSubscription(true);
+    }
+
+    private void OnEnable()
+    {
+        CheckAndSetDialogStateChangeSubscription(true);
+    }
+
+    private void OnDisable()
+    {
+        CheckAndSetDialogStateChangeSubscription(false);
     }
 
     private void Awake()
     {
         locationController = transform.parent.gameObject.GetComponent<GUILocationController>();
-        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+    }
+
+    private void CheckAndSetDialogStateChangeSubscription(bool enabled)
+    {
+        if (enabled != dialogueStateChangeSubscribed)
+        {
+            if (enabled)
+            {
+                GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+            } else
+            {
+                GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
+            }
+
+            enabled = dialogueStateChangeSubscribed;
+        }
     }
 
     public void SetProperties(GUIControlSet controlSet, Vector2 position, Vector2 scroll, Vector2 size)

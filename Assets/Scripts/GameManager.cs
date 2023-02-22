@@ -245,7 +245,7 @@ public class GameManager : MonoBehaviour
         GameGC.TryUnloadUnusedAssets();
     }
 
-    public void SetCurrentGUI(GUIControlSet newGUI)
+    public void SetCurrentGUI(GUIControlSet newGUI, bool notSave = false)
     {
         if (activeGUI == newGUI)
         {
@@ -276,7 +276,7 @@ public class GameManager : MonoBehaviour
 
             gameSave.CurrentControlSetPath = activeGUI.Name;
 
-            if (activeGadget == null)
+            if (!notSave)
             {
                 SaveGame();
             }
@@ -414,7 +414,7 @@ public class GameManager : MonoBehaviour
             GUIControlSet set = MinigameLoader.Load(dataStream, filename, Constants.CanvasSize);
             if (set != null)
             {
-                SetCurrentGUI(set);
+                SetCurrentGUI(set, true);
             }
 
             // Save when we entered a minigame

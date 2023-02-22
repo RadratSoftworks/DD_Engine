@@ -15,6 +15,7 @@ public class GUIActiveController : MonoBehaviour
     private Vector3 actionCenterViewPoint;
 
     public bool PanToCenterWhenSelect { get; set; } = true;
+    private bool dialogueChangeSubscribed = false;
 
     private void RegOrUnregAction(bool reg)
     {
@@ -40,11 +41,27 @@ public class GUIActiveController : MonoBehaviour
     {
         arrows.SetActive(false);
         RegOrUnregAction(true);
-    }
 
-    private void OnDestroy()
-    {
-        GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
+        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+        dialogueChangeSubscribed = true;
+
+        controlSet.StateChanged += enabled =>
+        {
+            if (dialogueChangeSubscribed == enabled)
+            {
+                return;
+            }
+
+            if (enabled)
+            {
+                GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+            } else
+            {
+                GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
+            }
+
+            dialogueChangeSubscribed = enabled;
+        };
     }
 
     private void OnEnable()
@@ -96,8 +113,6 @@ public class GUIActiveController : MonoBehaviour
             
             controller.Setup(positionMove[i], 0, FilePaths.ArrowAnimationsPath[i], null, origin[i]);
         }
-
-        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

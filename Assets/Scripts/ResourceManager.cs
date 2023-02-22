@@ -9,7 +9,7 @@ using TMPro;
 
 public class ResourceManager : MonoBehaviour
 {
-    public string GameDataPath = "G:\\bent\\DD_RV\\opes\\";
+    public string GameDataPath => Application.persistentDataPath;
 
     private ResourceFile generalResources;
     private ResourceFile localizationResources;

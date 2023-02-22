@@ -100,6 +100,9 @@ public class ItemSwitchSceneController : MonoBehaviour
         if (gameFinished)
         {
             GameManager.Instance.LoadGadget(gameWon ? wonScript : lostScript);
+
+            // Just prevent it from calling one more time
+            gameFinished = false;
         }
     }
 }

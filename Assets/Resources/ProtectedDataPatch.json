@@ -105,7 +105,7 @@
 					"context": "Fix chapter 5 movie set first dialogue"
 				},
 				{
-					"offset": "75A4",
+					"offset": "75A3",
 					"newBytes": "5F 72 65 70",
 					"context": "Fix chapter 5 hospital open repeat"
 				},
