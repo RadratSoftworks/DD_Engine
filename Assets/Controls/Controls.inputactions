@@ -1024,6 +1024,45 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Menu Trigger",
+            "id": "586fcac9-c3a4-4c61-8ba7-aa43c6b2f98a",
+            "actions": [
+                {
+                    "name": "Menu Triggered",
+                    "type": "Button",
+                    "id": "a13fa16a-8ffa-45e2-88d8-446eea179d43",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9f39271d-08af-4e1b-bbae-8584bc26ce5e",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu Triggered",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "800626e7-19b0-41af-bc0d-8aec9166b6b6",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Menu Triggered",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

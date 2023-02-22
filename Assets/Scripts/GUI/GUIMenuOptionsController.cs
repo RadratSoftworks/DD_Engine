@@ -43,6 +43,8 @@ public class GUIMenuOptionsController : MonoBehaviour
 
     private void Start()
     {
+        GameInputManager.Instance.SetGUIMenuTriggerActionMapState(false);
+
         DOTween.Init();
         RegOrUnregAction(true);
     }

@@ -21,6 +21,7 @@ public class GameInputManager : MonoBehaviour
     private InputActionMap itemSwitchMinigameActionMap;
     private InputActionMap flyMinigameActionMap;
     private InputActionMap pogojumpMinigameActionMap;
+    private InputActionMap menuTriggerActionMap;
 
     public InputActionMap GUILocationActionMap => guiLocationActionMap;
     public InputActionMap GUIMenuActionMap => guiMenuActionMap;
@@ -31,6 +32,7 @@ public class GameInputManager : MonoBehaviour
     public InputActionMap ItemSwitchMinigameActionMap => itemSwitchMinigameActionMap;
     public InputActionMap FlyMinigameActionMap => flyMinigameActionMap;
     public InputActionMap PogoJumpMinigameActionMap => pogojumpMinigameActionMap;
+    public InputActionMap MenuTriggerAtionMap => menuTriggerActionMap;
 
     private bool guiInputActionMapEnabled = false;
 
@@ -53,6 +55,19 @@ public class GameInputManager : MonoBehaviour
         itemSwitchMinigameActionMap = assets.FindActionMap("Item Switch Minigame");
         flyMinigameActionMap = assets.FindActionMap("Fly Minigame");
         pogojumpMinigameActionMap = assets.FindActionMap("Pogo Jump Minigame");
+        menuTriggerActionMap = assets.FindActionMap("Menu Trigger");
+    }
+
+    public void SetGUIMenuTriggerActionMapState(bool enabled)
+    {
+        if (enabled)
+        {
+            menuTriggerActionMap.Enable();
+        }
+        else
+        {
+            menuTriggerActionMap.Disable();
+        }
     }
 
     public void SetGUIInputActionMapState(bool enabled)

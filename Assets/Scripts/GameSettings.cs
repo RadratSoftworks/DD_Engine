@@ -108,6 +108,11 @@ public static class GameSettings
         AudioListener.volume = PlayerPrefs.GetFloat(GameVolumeKey, 1.0f);
     }
 
+    public static void Save()
+    {
+        PlayerPrefs.Save();
+    }
+
     public static string GetIngameSettingValue(string key)
     {
         switch (key)

@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
+
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 using Newtonsoft.Json;
 
@@ -99,6 +101,7 @@ public class GameManager : MonoBehaviour
         defaultActionInterpreter = new ActionInterpreter();
 
         Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 0;
         targetFrameFactor = 60.0f / Constants.BaseGameFps;
 
         ResourceManager.Instance.OnResourcesReady += OnResourcesReady;
@@ -111,13 +114,33 @@ public class GameManager : MonoBehaviour
 
         gameSave.ActionValues[globalVarDictKey] = ActionInterpreter.GlobalScriptValues;
         GameSettings.RestoreSettings();
+
+        SetupMenuTrigger();
+    }
+
+    private void SetupMenuTrigger()
+    {
+        // Hook with menu trigger
+        InputAction action = GameInputManager.Instance.MenuTriggerAtionMap.FindAction("Menu Triggered");
+        if (action != null)
+        {
+            action.performed += OnMenuTriggered; 
+        }
+    }
+
+    private void OnMenuTriggered(InputAction.CallbackContext context)
+    {
+        allowSave = false;
+        LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
     private void HideGadgetRelatedObjects()
     {
         textBalloonBottomController.HideText();
         textBalloonTopController.HideText();
+        textBalloonMiddleController.HideText();
         dialogueChoicesController.Close();
+        continueConfirmator.SetActive(false);
         backgroundRenderer.color = Color.clear;
     }
 
@@ -148,6 +171,8 @@ public class GameManager : MonoBehaviour
             gameSave.CurrentControlSetPath = null;
             SaveGame();
 
+            // Enable menu trigger. An actual menu widget will disable it if there is one
+            GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
             return;
         }
 
@@ -198,6 +223,7 @@ public class GameManager : MonoBehaviour
         activeGadget = null;
 
         DialogueStateChanged?.Invoke(false);
+        StopAllCoroutines();
 
         // Clear gadget path
         gameSave.CurrentGadgetPath = null;
@@ -238,12 +264,16 @@ public class GameManager : MonoBehaviour
 
         activeGUI = newGUI;
 
+        // Enable menu trigger. An actual menu widget will disable it if there is one
+        GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
+
         if (activeGUI != null)
         {
             activeGUI.Enable();
             activeGUI.EnableRecommendedTouchControl();
 
             GameInputManager.Instance.SetGUIInputActionMapState(true);
+
             gameSave.CurrentControlSetPath = activeGUI.Name;
 
             if (activeGadget == null)
@@ -561,7 +591,7 @@ public class GameManager : MonoBehaviour
 
                 if ((activeGUI != null) && (activeGUI.Location != null))
                 {
-                    activeGUI.Location.Scroll(gameSave.CurrentLocationOffset);
+                    activeGUI.Location.ScrollFromOrigin(gameSave.CurrentLocationOffset);
                 }
             }
         } else
@@ -634,5 +664,11 @@ public class GameManager : MonoBehaviour
 
             serializer.Serialize(file, gameSave);
         }
+    }
+
+    public void ClearSave()
+    {
+        File.Delete(SavePath);
+        defaultActionInterpreter.SetGlobalVariable(Constants.SaveExistsVarName, "null");
     }
 }

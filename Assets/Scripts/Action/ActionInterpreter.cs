@@ -122,6 +122,14 @@ public class ActionInterpreter
                     RunTimer(command);
                     break;
 
+                case ActionOpcode.SaveSettings:
+                    RunSaveSettings();
+                    break;
+
+                case ActionOpcode.DeleteSaves:
+                    RunDeleteSaves();
+                    break;
+
                 default:
                     Debug.LogWarning("Unhandled gadget opcode: " + command.Opcode);
                     break;
@@ -217,17 +225,7 @@ public class ActionInterpreter
         string varName = command.Arguments[0] as string;
         string value = command.Arguments[1] as string;
 
-        if (!globalScriptValues.ContainsKey(varName))
-        {
-            globalScriptValues.Add(varName, value);
-        } else
-        {
-            globalScriptValues[varName] = value;
-        }
-
-        Debug.Log(varName + " " + value);
-
-        variableChangedReportList.Add(varName);
+        SetGlobalVariable(varName, value);
     }
 
     private void LoadDialogue(ScriptCommand<ActionOpcode> command)
@@ -331,6 +329,16 @@ public class ActionInterpreter
         }
     }
 
+    public void RunSaveSettings()
+    {
+        GameSettings.Save();
+    }
+
+    public void RunDeleteSaves()
+    {
+        GameManager.Instance.ClearSave();
+    }
+
     public string GetValue(string variableName, out bool isGlobal)
     {
         isGlobal = false;
@@ -342,5 +350,23 @@ public class ActionInterpreter
         }
 
         return "null";
+    }
+
+    public void SetGlobalVariable(string varName, string value)
+    {
+        if (!globalScriptValues.ContainsKey(varName))
+        {
+            globalScriptValues.Add(varName, value);
+        }
+        else
+        {
+            globalScriptValues[varName] = value;
+        }
+
+#if UNITY_EDITOR
+        Debug.Log(varName + " " + value);
+#endif
+
+        variableChangedReportList.Add(varName);
     }
 }

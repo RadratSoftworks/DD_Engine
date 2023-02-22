@@ -13,9 +13,6 @@ public class GUIMenuSelectableBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        selectedAudio = GetComponent<AudioSource>();
-        selectedAudio.clip = SoundManager.Instance.GetAudioClip(FilePaths.MenuOptionSwitchSFXFileName);
-
         DOTween.Init();
     }
 
@@ -31,6 +28,13 @@ public class GUIMenuSelectableBehaviour : MonoBehaviour
             originalPosition = transform.position;
         }
 
+        if (selectedAudio == null)
+        {
+            selectedAudio = GetComponent<AudioSource>();
+            selectedAudio.clip = SoundManager.Instance.GetAudioClip(FilePaths.MenuOptionSwitchSFXFileName);
+        }
+
+        // We can play later
         selectedAudio.Play();
 
         selectedSequence = DOTween.Sequence();
