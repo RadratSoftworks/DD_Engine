@@ -274,11 +274,14 @@ public class GameManager : MonoBehaviour
 
             GameInputManager.Instance.SetGUIInputActionMapState(true);
 
-            gameSave.CurrentControlSetPath = activeGUI.Name;
-
-            if (!notSave)
+            if (activeGUI.Saveable)
             {
-                SaveGame();
+                gameSave.CurrentControlSetPath = activeGUI.Name;
+
+                if (!notSave)
+                {
+                    SaveGame();
+                }
             }
         }
     }

@@ -27,7 +27,8 @@ public class ActionParser
         { "timer", ActionOpcode.Timer },
         { "deletesaves", ActionOpcode.DeleteSaves },
         { "deletesettings", ActionOpcode.DeleteSettings },
-        { "savesettings", ActionOpcode.SaveSettings }
+        { "savesettings", ActionOpcode.SaveSettings },
+        { "quit", ActionOpcode.Quit }
     };
 
     public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)

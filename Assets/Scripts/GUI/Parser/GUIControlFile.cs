@@ -7,6 +7,7 @@ public class GUIControlDescriptionFile
 
     public List<GUIControlDescription> Controls => controlSetRoot.Controls;
     public string Filename { get; set; }
+    public bool Saveable { get; set; }
 
     public GUIControlDescriptionFile(string filename)
     {
@@ -38,8 +39,9 @@ public class GUIControlDescriptionFile
                 throw new InvalidDataException("Invalid GUI control file header!");
             }
 
-            fileStream.Seek(14, SeekOrigin.Begin);
-        
+            fileStream.Seek(13, SeekOrigin.Begin);
+            Saveable = (fileStream.ReadByte() != 0);
+
             controlSetRoot = new GUIControlSetDescription(null, fileBinaryReader);
             GUIDescriptionDepthNormalizer.Normalize(controlSetRoot);
         }

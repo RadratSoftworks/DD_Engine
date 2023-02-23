@@ -19,5 +19,6 @@ public enum ActionOpcode
     Timer,
     DeleteSaves,
     SaveSettings,
-    DeleteSettings
+    DeleteSettings,
+    Quit
 };

@@ -45,5 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   durationPerUnit: 0.45
-  maxScrollDuration: 0.6
-  moveAmount: 0.015
+  maxScrollDuration: 0.8
+  moveAmount: 0.02
+  activeCooldown: 0.5

@@ -14,12 +14,20 @@ public class GUILocationController : MonoBehaviour
     [SerializeField]
     private float moveAmount = 0.02f;
 
+    [SerializeField]
+    private float activeCooldownFromCloseDialogue = 0.1f;
+
     private GUIControlSet controlSet;
 
     private GUILayerController panLayerController;
+    private GUIActiveController currentActiveController;
     private List<GUILayerController> layerControllers = new List<GUILayerController>();
+    private List<GUIActiveController> pendingClaimActiveControllers = new List<GUIActiveController>();
 
     private int scrollInProgressCount = 0;
+    private float previousDialogueDisabledTimestamp = -1;
+    private bool dialogueChangeSubscribed = false;
+
     public float MoveAmount => moveAmount;
 
     public bool ScrollAnimationDone => (scrollInProgressCount == 0);
@@ -33,6 +41,7 @@ public class GUILocationController : MonoBehaviour
         InputAction moveUp = actionMap.FindAction("Move Up");
         InputAction moveDown = actionMap.FindAction("Move Down");
         InputAction moveJoystick = actionMap.FindAction("Move Joystick");
+        InputAction activeConfirmed = actionMap.FindAction("Active Confirmed");
 
         if (reg)
         {
@@ -41,6 +50,7 @@ public class GUILocationController : MonoBehaviour
             moveUp.performed += OnMoveUp;
             moveDown.performed += OnMoveDown;
             moveJoystick.performed += OnMoveJoystick;
+            activeConfirmed.performed += OnActiveConfirmed;
         } else
         {
             moveLeft.performed -= OnMoveLeft;
@@ -48,6 +58,7 @@ public class GUILocationController : MonoBehaviour
             moveUp.performed -= OnMoveUp;
             moveDown.performed -= OnMoveDown;
             moveJoystick.performed -= OnMoveJoystick;
+            activeConfirmed.performed -= OnActiveConfirmed;
         }
     }
 
@@ -79,6 +90,28 @@ public class GUILocationController : MonoBehaviour
         controlSet.OffsetChanged += OnControlSetOffsetChanged;
         controlSet.PanRequested += OnPanRequested;
         controlSet.LocationScrollSpeedSetRequested += OnScrollSpeedsSet;
+
+        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+        dialogueChangeSubscribed = true;
+
+        controlSet.StateChanged += state =>
+        {
+            if (dialogueChangeSubscribed == enabled)
+            {
+                return;
+            }
+
+            if (enabled)
+            {
+                GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+            }
+            else
+            {
+                GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
+            }
+
+            dialogueChangeSubscribed = enabled;
+        };
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -147,7 +180,7 @@ public class GUILocationController : MonoBehaviour
 
         foreach (var controller in layerControllers)
         {
-            controller.ForceScroll(targetPanAmount, duration, ease);
+            controller.ForceScroll(targetPanAmount, duration, ease, forFrameScroll);
         }
 
         if (hasDuration && busyWhileAnimating)
@@ -186,6 +219,35 @@ public class GUILocationController : MonoBehaviour
         ScrollFromOrigin(GameUtils.ToUnityCoordinates(offset), false);
     }
 
+    private void OnDialogueStateChanged(bool state)
+    {
+        if (!state)
+        {
+            previousDialogueDisabledTimestamp = Time.time;
+        }
+    }
+
+    private void OnActiveConfirmed(InputAction.CallbackContext context)
+    {
+        if (currentActiveController == null)
+        {
+            return;
+        }
+        
+        bool passed = true;
+
+        // The input sometimes trigger too fast
+        if (previousDialogueDisabledTimestamp >= 0.0f)
+        {
+            passed = (Time.time - previousDialogueDisabledTimestamp) >= activeCooldownFromCloseDialogue;
+        }
+
+        if (context.ReadValueAsButton() && passed)
+        {
+            currentActiveController.OnConfirmed();
+        }
+    }
+
     private void OnPanRequested(Vector2 amount)
     {
         // Temporary disable inputs
@@ -205,5 +267,49 @@ public class GUILocationController : MonoBehaviour
                 layerController.scroll = speeds[index++];
             }
         }
+    }
+
+    public bool ClaimActive(GUIActiveController controller)
+    {
+        if (currentActiveController != null)
+        {
+            if (!pendingClaimActiveControllers.Contains(controller))
+            {
+                pendingClaimActiveControllers.Add(controller);
+            }
+
+            return false;
+        }
+
+        currentActiveController = controller;
+        currentActiveController.OnClaimSuccess();
+
+        return true;
+    }
+
+    public bool ReleaseActive(GUIActiveController controller)
+    {
+        if (currentActiveController == controller)
+        {
+            if (pendingClaimActiveControllers.Count != 0)
+            {
+                currentActiveController = pendingClaimActiveControllers[0];
+                pendingClaimActiveControllers.RemoveAt(0);
+
+                currentActiveController.OnClaimSuccess();
+            } else
+            {
+                currentActiveController = null;
+            }
+
+            return true;
+        }
+
+        if (pendingClaimActiveControllers.Contains(controller))
+        {
+            pendingClaimActiveControllers.Remove(controller);
+        }
+
+        return false;
     }
 }

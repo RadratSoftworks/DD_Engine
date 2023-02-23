@@ -22,6 +22,7 @@ public class GUIControlSet
     public string Name { get; set; }
     public bool PreferredDpad { get; set; } = false;
     public GUILocationController Location { get; set; } = null;
+    public bool Saveable => saveable;
 
     public delegate void OnStateChanged(bool enabled);
     public event OnStateChanged StateChanged;
@@ -37,6 +38,7 @@ public class GUIControlSet
 
     private int performingBusyAnimationCount = 0;
     private bool destroyOnDisable;
+    private bool saveable;
 
     public Vector2 ViewSize => viewSize;
     private Vector2 viewSize;
@@ -55,6 +57,7 @@ public class GUIControlSet
     public GUIControlSet(GameObject parentContainer, GUIControlDescriptionFile description, Vector2 viewSize, GUIControlSetInstantiateOptions options)
     {
         langStrings = LocalizerHelper.GetStrings(description.Filename);
+        saveable = description.Saveable;
 
         try
         {

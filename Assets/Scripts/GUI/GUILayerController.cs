@@ -16,6 +16,10 @@ public class GUILayerController : MonoBehaviour
 
     [Tooltip("Number divided with the scroll amount to get the amount of movement to scroll the layer")]
     public float layerScrollFactor = 100.0f;
+
+    [Tooltip("How much distance can the layer scroll beyond its boundary")]
+    private float extraScrollDelta = 0.01f;
+
     public Vector2 scroll;
 
     private Vector2 originalPosition;
@@ -31,6 +35,7 @@ public class GUILayerController : MonoBehaviour
     public event OnLayerScrollAnimationFinished ScrollAnimationFinished;
 
     public Vector2 Size => size;
+    public GUILocationController Location => locationController;
 
     private void Start()
     {
@@ -150,9 +155,10 @@ public class GUILayerController : MonoBehaviour
         locationController.Scroll(amountRaw, hasDuration: true);
     }
 
-    public void ForceScroll(Vector2 scrollAmount, float duration, EaseType ease = EaseType.Normal)
+    public void ForceScroll(Vector2 scrollAmount, float duration, EaseType ease = EaseType.Normal, bool forFrameScroll = false)
     {
-        Vector3 dest = CalculateDestinationScroll(transform.localPosition, scrollAmount, false);
+        Vector3 dest = CalculateDestinationScroll(transform.localPosition, scrollAmount, forFrameScroll);
+
         if (duration == 0.0f)
         {
             transform.localPosition = dest;
@@ -186,8 +192,8 @@ public class GUILayerController : MonoBehaviour
     public Vector3 CalculateScrollAmountForLimitedPanFromPos(Vector3 basePoint, Vector2 scrollAmount, bool perFrameScroll = false, bool accountingScrollFactor = true)
     {
         Vector3 destPoint = accountingScrollFactor ? CalculateDestinationScroll(basePoint, scrollAmount, perFrameScroll) : basePoint + new Vector3(scrollAmount.x, scrollAmount.y);
-        destPoint.x = Mathf.Clamp(destPoint.x, controlSet.ViewSize.x - size.x, 0.0f);
-        destPoint.y = Mathf.Clamp(destPoint.y, 0.0f, size.y - controlSet.ViewSize.y);
+        destPoint.x = Mathf.Clamp(destPoint.x, controlSet.ViewSize.x - size.x - extraScrollDelta, extraScrollDelta);
+        destPoint.y = Mathf.Clamp(destPoint.y, -extraScrollDelta, size.y - controlSet.ViewSize.y + extraScrollDelta);
 
         Vector3 actualMoveAmount = (destPoint - basePoint) * (perFrameScroll ? GameManager.Instance.FrameScale : 1.0f);
 

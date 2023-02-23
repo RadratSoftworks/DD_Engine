@@ -130,6 +130,10 @@ public class ActionInterpreter
                     RunDeleteSaves();
                     break;
 
+                case ActionOpcode.Quit:
+                    RunQuit();
+                    break;
+
                 default:
                     Debug.LogWarning("Unhandled gadget opcode: " + command.Opcode);
                     break;
@@ -337,6 +341,11 @@ public class ActionInterpreter
     public void RunDeleteSaves()
     {
         GameManager.Instance.ClearSave();
+    }
+
+    public void RunQuit()
+    {
+        Application.Quit();
     }
 
     public string GetValue(string variableName, out bool isGlobal)
