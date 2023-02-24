@@ -20,7 +20,7 @@ class FilePaths
     };
 
     // GUI
-    //public static readonly string MainChapterGUIControlFileName = "ch2/locations/office.fwd";
+    //public static readonly string MainChapterGUIControlFileName = "ch2/locations/Corridor.fwd";
     public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
     
     // Sound

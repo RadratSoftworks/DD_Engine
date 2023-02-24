@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: GameInstaller_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 27b40379c0d7a1e4e97814f3180a7179, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 8498583327662145538
+  m_TableData:
+  - m_Id: 8428883968
+    m_Localized: To play the game, you must install the game data. Please click the
+      button below and choose the game's .n-gage file in the pop-up window to begin
+      the installation process.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1458320084992
+    m_Localized: Install
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1519368179712
+    m_Localized: Installing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1910780628992
+    m_Localized: 'The installation has completed. Press the button below to proceed
+      to the game! '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3522878148608
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89311193788416
+    m_Localized: 'An unexpected exception has occured.<br>The exception message:
+      {message}.'
+    m_Metadata:
+      m_Items:
+      - rid: 8498583327662145538
+  - m_Id: 101361345294336
+    m_Localized: 'Error: Can''t open the installation file!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101867253854208
+    m_Localized: 'Error: Installation failed due to unknown reason!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102108816404480
+    m_Localized: 'Error: The installation file is corrupted!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102235694100480
+    m_Localized: 'Error: The installation file is too large! Please check if you
+      are choosing the correct file.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102563906777088
+    m_Localized: Press the "Continue" button below to go back to the install screen.
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 8498583327662145538
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 00f0fa613a510000

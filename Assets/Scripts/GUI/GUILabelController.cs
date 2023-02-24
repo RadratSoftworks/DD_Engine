@@ -6,16 +6,25 @@ public class GUILabelController : MonoBehaviour
 {
     private TMPro.TMP_Text labelText;
     private MeshRenderer labelTextRenderer;
+    private string textId;
 
-    public void Setup(Vector2 position, string text, int depth)
+    private void UpdateText(GUIControlSet ownSet)
     {
-        transform.localPosition = GameUtils.ToUnityCoordinates(position);
-
         labelText = GetComponent<TMPro.TMP_Text>();
         labelText.font = ResourceManager.Instance.GetFontAssetForLocalization();
-        labelText.text = text;
+        labelText.text = ownSet.GetLanguageString(textId);
+    }
+
+    public void Setup(GUIControlSet ownSet, Vector2 position, string text, int depth)
+    {
+        this.textId = text;
+
+        transform.localPosition = GameUtils.ToUnityCoordinates(position);
 
         labelTextRenderer = GetComponentInChildren<MeshRenderer>();
         labelTextRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(depth);
+
+        UpdateText(ownSet);
+        ownSet.LocalizationChanged += UpdateText;
     }
 }

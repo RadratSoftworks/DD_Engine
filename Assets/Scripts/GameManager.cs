@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 public class GameManager : MonoBehaviour
 {
@@ -63,6 +64,8 @@ public class GameManager : MonoBehaviour
     public float FrameScale => targetFrameFactor;
 
     private string SavePath => Path.Join(Application.persistentDataPath, "save.json");
+    private bool SaveAvailable => File.Exists(SavePath);
+
     private const string globalVarDictKey = "global";
 
     // When there's no more dialogue display, the dialogue state will be disabled
@@ -107,7 +110,7 @@ public class GameManager : MonoBehaviour
         ResourceManager.Instance.OnResourcesReady += OnResourcesReady;
 
         // Add save exists variable to global values
-        if (File.Exists(SavePath))
+        if (SaveAvailable)
         {
             ActionInterpreter.GlobalScriptValues.Add(Constants.SaveExistsVarName, "true");
         }
@@ -130,7 +133,11 @@ public class GameManager : MonoBehaviour
 
     private void OnMenuTriggered(InputAction.CallbackContext context)
     {
+        SaveGame();
+
         allowSave = false;
+        persistentAudioController.StopAll();
+
         LoadControlSet(FilePaths.MainChapterGUIControlFileName);
     }
 
@@ -272,6 +279,8 @@ public class GameManager : MonoBehaviour
             activeGUI.Enable();
             activeGUI.EnableRecommendedTouchControl();
 
+            DialogueStateChanged?.Invoke(false);
+
             GameInputManager.Instance.SetGUIInputActionMapState(true);
 
             if (activeGUI.Saveable)
@@ -288,8 +297,15 @@ public class GameManager : MonoBehaviour
 
     public void OnResourcesReady()
     {
-        //LoadMinigame("ch2/minigames/moviesetFight.mini");
-        LoadControlSet(FilePaths.MainChapterGUIControlFileName);
+        if ((GameSettings.StartLocation == GameStartLocation.Menu) || !SaveAvailable)
+        {
+            LoadControlSet(FilePaths.MainChapterGUIControlFileName);
+        } else
+        {
+		    // Enable menu trigger. An actual menu widget will disable it if there is one
+			GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
+            LoadGame();
+        }
     }
 
     private void LoadGadgetScriptBlock(Dialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock, int scriptId = -1, bool savable = true)

@@ -47,4 +47,4 @@ MonoBehaviour:
   durationPerUnit: 0.45
   maxScrollDuration: 0.8
   moveAmount: 0.02
-  activeCooldown: 0.5
+  activeCooldownFromCloseDialogue: 0.1

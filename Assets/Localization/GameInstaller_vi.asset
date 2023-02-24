@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: GameInstaller_vi
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: vi
+  m_SharedData: {fileID: 11400000, guid: 27b40379c0d7a1e4e97814f3180a7179, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 8498583327662145539
+  m_TableData:
+  - m_Id: 8428883968
+    m_Localized: "\u0110\u1EC3 c\xF3 th\u1EC3 b\u1EAFt \u0111\u1EA7u ch\u01A1i, b\u1EA1n
+      c\u1EA7n ph\u1EA3i c\xE0i \u0111\u1EB7t d\u1EEF li\u1EC7u tr\xF2 ch\u01A1i.
+      Vui l\xF2ng nh\u1EA5n v\xE0o n\xFAt b\xEAn d\u01B0\u1EDBi, v\xE0 ch\u1ECDn
+      t\u1EC7p tin .n-gage c\u1EE7a tr\xF2 ch\u01A1i trong c\u1EEDa s\u1ED5 t\u1EC7p
+      tin \u0111\u01B0\u1EE3c hi\u1EC7n l\xEAn \u0111\u1EC3 b\u1EAFt \u0111\u1EA7u
+      qu\xE1 tr\xECnh c\xE0i \u0111\u1EB7t."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1458320084992
+    m_Localized: "C\xE0i \u0111\u1EB7t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1519368179712
+    m_Localized: "\u0110ang c\xE0i \u0111\u1EB7t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1910780628992
+    m_Localized: "Qu\xE1 tr\xECnh c\xE0i \u0111\u1EB7t \u0111\xE3 ho\xE0n th\xE0nh.
+      Vui l\xF2ng nh\u1EA5n v\xE0o n\xFAt b\xEAn d\u01B0\u1EDBi \u0111\u1EC3 b\u1EAFt
+      \u0111\u1EA7u tr\xF2 ch\u01A1i!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3522878148608
+    m_Localized: "Ti\u1EBFp t\u1EE5c"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89311193788416
+    m_Localized: "M\u1ED9t l\u1ED7i kh\xF4ng l\u01B0\u1EDDng tr\u01B0\u1EDBc \u0111\xE3
+      x\u1EA3y ra.<br>Th\xF4ng tin l\u1ED7i: {message}."
+    m_Metadata:
+      m_Items:
+      - rid: 8498583327662145539
+  - m_Id: 101361345294336
+    m_Localized: "L\u1ED7i: Kh\xF4ng th\u1EC3 m\u1EDF t\u1EC7p c\xE0i \u0111\u1EB7t!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101867253854208
+    m_Localized: "L\u1ED7i: Qu\xE1 tr\xECnh c\xE0i \u0111\u1EB7t \u0111\xE3 th\u1EA5t
+      b\u1EA1i v\xEC m\u1ED9t l\xFD do ch\u01B0a x\xE1c \u0111\u1ECBnh r\xF5!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102108816404480
+    m_Localized: "L\u1ED7i: T\u1EC7p c\xE0i \u0111\u1EB7t b\u1ECB h\u1ECFng!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102235694100480
+    m_Localized: "L\u1ED7i: T\u1EC7p c\xE0i \u0111\u1EB7t c\xF3 dung l\u01B0\u1EE3ng
+      qu\xE1 l\u1EDBn! Xin h\xE3y ki\u1EC3m tra l\u1EA1i n\u1EBFu b\u1EA1n \u0111\xE3
+      ch\u1ECDn \u0111\xFAng t\u1EC7p tin hay ch\u01B0a."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 102563906777088
+    m_Localized: "Vui l\xF2ng nh\u1EA5n n\xFAt \"Ti\u1EBFp t\u1EE5c\" \u1EDF ph\xEDa
+      d\u01B0\u1EDBi \u0111\u1EC3 quay tr\u1EDF l\u1EA1i m\xE0n h\xECnh c\xE0i \u0111\u1EB7t."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 8498583327662145539
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 00f0fa613a510000

@@ -1086,6 +1086,17 @@
             "bindings": [
                 {
                     "name": "",
+                    "id": "fb1d53c5-dd1d-41c7-973c-89826c930a3b",
+                    "path": "*/{Back}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Default Scheme",
+                    "action": "Menu Triggered",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "9f39271d-08af-4e1b-bbae-8584bc26ce5e",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
@@ -1103,6 +1114,34 @@
                     "processors": "",
                     "groups": "",
                     "action": "Menu Triggered",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Intro Sequence",
+            "id": "dfb2c734-849c-49af-a42e-3ddd258aa862",
+            "actions": [
+                {
+                    "name": "Continue Pressed",
+                    "type": "Button",
+                    "id": "b1ddfba1-ff0a-464d-bd63-d825a9c42e6a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e8d8a49f-ba3b-4a87-8462-0252abf0a956",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Continue Pressed",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

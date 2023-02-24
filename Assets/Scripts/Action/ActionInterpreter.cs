@@ -134,6 +134,10 @@ public class ActionInterpreter
                     RunQuit();
                     break;
 
+                case ActionOpcode.DeleteSettings:
+                    RunDeleteSettings();
+                    break;
+
                 default:
                     Debug.LogWarning("Unhandled gadget opcode: " + command.Opcode);
                     break;
@@ -215,7 +219,13 @@ public class ActionInterpreter
 
     private void ClearGlobals(ScriptCommand<ActionOpcode> command)
     {
+        bool exists = globalScriptValues.TryGetValue(Constants.SaveExistsVarName, out var saveExistsVar);
         globalScriptValues.Clear();
+
+        if (exists)
+        {
+            globalScriptValues[Constants.SaveExistsVarName] = saveExistsVar;
+        }
     }
 
     private void SetGlobal(ScriptCommand<ActionOpcode> command)
@@ -336,6 +346,13 @@ public class ActionInterpreter
     public void RunSaveSettings()
     {
         GameSettings.Save();
+        ResourceManager.Instance.UpdateLanguagePack();
+    }
+
+    public void RunDeleteSettings()
+    {
+        GameSettings.Reset();
+        ResourceManager.Instance.UpdateLanguagePack();
     }
 
     public void RunDeleteSaves()
