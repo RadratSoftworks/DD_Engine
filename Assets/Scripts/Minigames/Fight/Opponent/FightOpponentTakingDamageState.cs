@@ -83,6 +83,11 @@ public class FightOpponentTakingDamageState : IState
 
             ToggleAnimation(true);
         }
+        else if (data is FightDamage)
+        {
+            // If the player keep spamming and hit this state, just report a miss
+            sender.GiveData(FightAttackResult.Miss);
+        }
     }
 
     public void Update()

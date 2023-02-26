@@ -33,7 +33,7 @@ public class ConstructionSiteMinigameLoader : MonoBehaviour
         ConstructionSiteSceneController constructionSiteSceneController = constructionSiteControlSet.GameObject.GetComponent<ConstructionSiteSceneController>();
         if (constructionSiteSceneController != null)
         {
-            constructionSiteSceneController.Setup(info);
+            constructionSiteSceneController.Setup(constructionSiteControlSet, info);
         }
 
         return constructionSiteControlSet;

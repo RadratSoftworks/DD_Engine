@@ -30,6 +30,7 @@ public class FightOpponentKnockedOutState : IState
             return;
         }
 
+        GameManager.Instance.SetCurrentGUI(null);
         GameManager.Instance.LoadGadget(scriptToRun);
     }
 

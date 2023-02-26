@@ -144,10 +144,20 @@ public class SpriteManager: GameBaseAssetManager<Sprite>
     public Sprite Load(ResourceFile resources, string path, Vector2? origin = null, bool forScrolling = false)
     {
         string pathRaw = Path.ChangeExtension(path, null);
+        Vector2 finalOrigin = origin ?? Vector2.up;
+
         Sprite cached = GetFromCache(pathRaw);
 
         if (cached != null)
         {
+            // We probably don't need to cache this, but it's good if we do
+            // Just that looking up the original sprite if we cache by combination of path and origin
+            // may seems dreadful
+            if (cached.pivot != finalOrigin)
+            {
+                return Sprite.Create(cached.texture, cached.rect, finalOrigin);
+            }
+
             return cached;
         }
 
@@ -169,7 +179,7 @@ public class SpriteManager: GameBaseAssetManager<Sprite>
         tex.Apply();
 
         // Game follows screen coordinates system. So we should put top-left as the origin!
-        Sprite sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), origin ?? Vector2.up);
+        Sprite sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), finalOrigin);
         sprite.name = pathRaw;
 
         AddToCache(pathRaw, sprite);

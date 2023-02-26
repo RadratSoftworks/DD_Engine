@@ -40,7 +40,19 @@ public class ConstructionSiteSceneController : MonoBehaviour
     [SerializeField]
     private CompositeCollider2D cameraBounds;
 
-    public void Setup(ConstructionSiteMinigameInfo info)
+    private void EnableViewStyleOnControlSetStatus(bool enabled)
+    {
+        if (enabled)
+        {
+            // Switch to full view
+            GameViewController.Instance.SetFullViewWithFocus(harryController.transform, cameraBounds);
+        } else
+        {
+            GameViewController.Instance.SetNormalView();
+        }
+    }
+
+    public void Setup(GUIControlSet ownSet, ConstructionSiteMinigameInfo info)
     {
         backgroundRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
             info.BackgroundImage);
@@ -60,7 +72,6 @@ public class ConstructionSiteSceneController : MonoBehaviour
 
         harryController.Setup(info.FlyPosition);
 
-        // Switch to full view
-        GameViewController.Instance.SetFullViewWithFocus(harryController.transform, cameraBounds);
+        ownSet.StateChanged += EnableViewStyleOnControlSetStatus;
     }
 }

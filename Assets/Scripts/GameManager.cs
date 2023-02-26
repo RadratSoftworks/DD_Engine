@@ -292,6 +292,9 @@ public class GameManager : MonoBehaviour
                     SaveGame();
                 }
             }
+        } else
+        {
+            gameSave.CurrentControlSetPath = null;
         }
     }
 

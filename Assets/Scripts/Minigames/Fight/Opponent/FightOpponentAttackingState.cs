@@ -63,8 +63,6 @@ public class FightOpponentAttackingState : IState
             FightAttackResult attackResult = (FightAttackResult)data;
             soundMakerController.PlayBasedOnAttackResult(attackResult, FightPunchType.Punch);
 
-            Debug.Log(attackResult);
-
             if (attackResult == FightAttackResult.Miss)
             {
                 punchFxAnim.Enable();
@@ -79,6 +77,11 @@ public class FightOpponentAttackingState : IState
                     stateMachine.Transition(FighterState.Idle);
                 }
             }
+        } else if (data is FightDamage)
+        {
+            // Other players are attacking while an attack animation is performed
+            // Make this a miss
+            sender.GiveData(FightAttackResult.Miss);
         }
     }
 

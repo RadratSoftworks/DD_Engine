@@ -38,6 +38,8 @@ public class SpriteAnimatorController : MonoBehaviour
     public int TotalFrame => frameInfos.Count;
     public int CurrentFrame => currentFrame;
 
+    public bool Enabled => gameObject.activeSelf;
+
     public void Setup(Vector2 position, float sortOrder, string animationFilename, string layerName = null, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false)
     {
         spriteRenderer = GetComponent<SpriteRenderer>();

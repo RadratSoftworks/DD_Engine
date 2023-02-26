@@ -45,6 +45,11 @@ public class ConstructionSiteHostileController : MonoBehaviour
 
     public void OnFlyStatusChangedInDangerRegion(GameObject victim, bool entered)
     {
+        if (deathAnimation.Enabled)
+        {
+            return;
+        }
+
         // It would have been more complicated, but luckily we died when we enter the death region
         // Else would have to make an idle region trigger around the danger too! (what I think, but someone more smart maybe know more..)
         idleAnimation.SetEnableState(!entered);
@@ -67,7 +72,7 @@ public class ConstructionSiteHostileController : MonoBehaviour
 
             deathAnimation.Done += controller =>
             {
-                GameViewController.Instance.SetNormalView();
+                GameManager.Instance.SetCurrentGUI(null);
                 GameManager.Instance.LoadGadget(deathScriptPath);
             };
 
