@@ -1,27 +1,29 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GUISoundController : MonoBehaviour
+namespace DDEngine.GUI
 {
-    private string filename;
-    private string type;
-
-    public void Setup(string filename, int playTypeNum)
+    public class GUISoundController : MonoBehaviour
     {
-        this.filename = filename;
-        this.type = (playTypeNum == 0) ? "ambient" : "normal";
-    }
+        private string filename;
+        private string type;
 
-    private void Start()
-    {
-        GameManager.Instance.PlayAudioPersistent(filename, type);
-    }
+        public void Setup(string filename, int playTypeNum)
+        {
+            this.filename = filename;
+            this.type = (playTypeNum == 0) ? "ambient" : "normal";
+        }
 
-    private void OnEnable()
-    {
-        if (filename != null)
+        private void Start()
         {
             GameManager.Instance.PlayAudioPersistent(filename, type);
+        }
+
+        private void OnEnable()
+        {
+            if (filename != null)
+            {
+                GameManager.Instance.PlayAudioPersistent(filename, type);
+            }
         }
     }
 }

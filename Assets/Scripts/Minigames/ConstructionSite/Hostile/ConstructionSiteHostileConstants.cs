@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-public static class ConstructionSiteHostileConstants
+﻿namespace DDEngine.Minigame.ConstructionSite
 {
-    public const int DangerRegionLayer = 13;
-    public const int DeathRegionLayer = 14;
-    public const int FlyLayer = 15;
+    public static class ConstructionSiteHostileConstants
+    {
+        public const int DangerRegionLayer = 13;
+        public const int DeathRegionLayer = 14;
+        public const int FlyLayer = 15;
+    }
 }

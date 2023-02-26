@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-public class GUIControlDescription
+﻿namespace DDEngine.GUI.Parser
 {
-    public int Depth { get; set; } = int.MinValue;
-    public int AbsoluteDepth { get; set; } = 0;
+    public class GUIControlDescription
+    {
+        public int Depth { get; set; } = int.MinValue;
+        public int AbsoluteDepth { get; set; } = 0;
+    }
 }

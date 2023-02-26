@@ -1,7 +1,10 @@
-﻿public enum FightAttackResult
+﻿namespace DDEngine.Minigame.Fight
 {
-    None,
-    Miss,
-    DealtDamage,
-    KnockedOut
+    public enum FightAttackResult
+    {
+        None,
+        Miss,
+        DealtDamage,
+        KnockedOut
+    }
 }

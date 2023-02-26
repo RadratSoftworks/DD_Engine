@@ -2,48 +2,51 @@
 using System.Collections;
 using UnityEngine;
 
-public class ItemSwitchTimerController : MonoBehaviour
+namespace DDEngine.Minigame.ItemSwitch
 {
-    private SpriteAnimatorController animController;
-    private ItemSwitchTimerInfo timerInfo;
-
-    public event Action CountdownFinished;
-    public event Action ReadyFinished;
-
-    private void Awake()
+    public class ItemSwitchTimerController : MonoBehaviour
     {
-        animController = GetComponent<SpriteAnimatorController>();
-    }
+        private SpriteAnimatorController animController;
+        private ItemSwitchTimerInfo timerInfo;
 
-    private void OnCountdownAnimationDone(SpriteAnimatorController controller)
-    {
-        animController.Done -= OnCountdownAnimationDone;
-        CountdownFinished?.Invoke();
-    }
+        public event System.Action CountdownFinished;
+        public event System.Action ReadyFinished;
 
-    private IEnumerator KickOffIndicatorCoroutine()
-    {
-        yield return new WaitForSeconds(3);
-        ReadyFinished?.Invoke();
-    }
+        private void Awake()
+        {
+            animController = GetComponent<SpriteAnimatorController>();
+        }
 
-    public void Setup(ItemSwitchStressMachineController stressMachine, ItemSwitchTimerInfo timerInfo)
-    {
-        this.timerInfo = timerInfo;
+        private void OnCountdownAnimationDone(SpriteAnimatorController controller)
+        {
+            animController.Done -= OnCountdownAnimationDone;
+            CountdownFinished?.Invoke();
+        }
 
-        animController.Setup(timerInfo.Position, SpriteAnimatorController.SortOrderNotSet, timerInfo.ReadyAnimationPath, allowLoop: false);
-        StartCoroutine(KickOffIndicatorCoroutine());
-    }
+        private IEnumerator KickOffIndicatorCoroutine()
+        {
+            yield return new WaitForSeconds(3);
+            ReadyFinished?.Invoke();
+        }
 
-    public void StartCountdown()
-    {
-        animController.Done += OnCountdownAnimationDone;
-        animController.Reload(timerInfo.Position, timerInfo.CountdownAnimationPath, allowLoop: false);
-    }
+        public void Setup(ItemSwitchStressMachineController stressMachine, ItemSwitchTimerInfo timerInfo)
+        {
+            this.timerInfo = timerInfo;
 
-    public void SetGameStatus(bool won)
-    {
-        animController.StopAnimating();
-        animController.Reload(timerInfo.Position, won ? timerInfo.WonAnimationPath : timerInfo.LostAnimationPath, allowLoop: false);
+            animController.Setup(timerInfo.Position, SpriteAnimatorController.SortOrderNotSet, timerInfo.ReadyAnimationPath, allowLoop: false);
+            StartCoroutine(KickOffIndicatorCoroutine());
+        }
+
+        public void StartCountdown()
+        {
+            animController.Done += OnCountdownAnimationDone;
+            animController.Reload(timerInfo.Position, timerInfo.CountdownAnimationPath, allowLoop: false);
+        }
+
+        public void SetGameStatus(bool won)
+        {
+            animController.StopAnimating();
+            animController.Reload(timerInfo.Position, won ? timerInfo.WonAnimationPath : timerInfo.LostAnimationPath, allowLoop: false);
+        }
     }
 }

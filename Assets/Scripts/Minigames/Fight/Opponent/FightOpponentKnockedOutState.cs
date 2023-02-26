@@ -1,40 +1,43 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.Utils.FSM;
 
-public class FightOpponentKnockedOutState : IState
+namespace DDEngine.Minigame.Fight
 {
-    private SpriteAnimatorController knockedOutAnim;
-    private string scriptToRun;
-
-    public FightOpponentKnockedOutState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo, string scriptToRun)
+    public class FightOpponentKnockedOutState : IState
     {
-        knockedOutAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
-            opponentInfo.KnockedOutAnimPath, Vector2.zero, FightOpponentConstants.OpponentFullSpriteDepth);
+        private SpriteAnimatorController knockedOutAnim;
+        private string scriptToRun;
 
-        this.scriptToRun = scriptToRun;
-    }
-
-    public void Enter()
-    {
-        knockedOutAnim.Enable();
-    }
-
-    public void Leave()
-    {
-    }
-
-    public void ReceiveData(IStateMachine sender, object data)
-    {
-        if (!(data is FightEndIntent))
+        public FightOpponentKnockedOutState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo, string scriptToRun)
         {
-            return;
+            knockedOutAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
+                opponentInfo.KnockedOutAnimPath, Vector2.zero, FightOpponentConstants.OpponentFullSpriteDepth);
+
+            this.scriptToRun = scriptToRun;
         }
 
-        GameManager.Instance.SetCurrentGUI(null);
-        GameManager.Instance.LoadGadget(scriptToRun);
-    }
+        public void Enter()
+        {
+            knockedOutAnim.Enable();
+        }
 
-    public void Update()
-    {
+        public void Leave()
+        {
+        }
+
+        public void ReceiveData(IStateMachine sender, object data)
+        {
+            if (!(data is FightEndIntent))
+            {
+                return;
+            }
+
+            GameManager.Instance.SetCurrentGUI(null);
+            GameManager.Instance.LoadGadget(scriptToRun);
+        }
+
+        public void Update()
+        {
+        }
     }
 }

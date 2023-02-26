@@ -1,20 +1,24 @@
 using UnityEngine;
+using DDEngine.Utils;
 
-public class GUICanvasSetup : MonoBehaviour
+namespace DDEngine.GUI
 {
-    public GameObject activeCollideGameObject;
-    private BoxCollider2D activeCollider;
-
-    void Awake()
+    public class GUICanvasSetup : MonoBehaviour
     {
-        activeCollider = activeCollideGameObject.GetComponent<BoxCollider2D>();
-        activeCollider.enabled = false;
-    }
+        public GameObject activeCollideGameObject;
+        private BoxCollider2D activeCollider;
 
-    public void SetCanvasSize(int width, int height)
-    {
-        activeCollider.size = GameUtils.ToUnitySize(new Vector2(1, 1));
-        activeCollider.transform.localPosition = GameUtils.ToUnityCoordinates(new Vector2(width / 2, height / 2));
-        activeCollider.enabled = true;
+        void Awake()
+        {
+            activeCollider = activeCollideGameObject.GetComponent<BoxCollider2D>();
+            activeCollider.enabled = false;
+        }
+
+        public void SetCanvasSize(int width, int height)
+        {
+            activeCollider.size = GameUtils.ToUnitySize(new Vector2(1, 1));
+            activeCollider.transform.localPosition = GameUtils.ToUnityCoordinates(new Vector2(width / 2, height / 2));
+            activeCollider.enabled = true;
+        }
     }
 }

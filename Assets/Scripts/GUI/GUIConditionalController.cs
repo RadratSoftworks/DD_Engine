@@ -1,50 +1,54 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
+using DDEngine.Action;
 
-public class GUIConditionalController : MonoBehaviour
+namespace DDEngine.GUI
 {
-    private string[] variableNames;
-    private string[] activeValues;
-
-    private ActionInterpreter actionInterpreter;
-
-    private void OnDestroy()
+    public class GUIConditionalController : MonoBehaviour
     {
-        actionInterpreter.VariableChanged -= OnVariableChanged;
-    }
+        private string[] variableNames;
+        private string[] activeValues;
 
-    private void OnVariableChanged(List<string> variableChangeList)
-    {
-        if (variableChangeList.Any(changedVarName => variableNames.Any(varName => varName == changedVarName))) {
-            CheckAndChangeGameObjectStateIfPossible();
-        }
-    }
+        private ActionInterpreter actionInterpreter;
 
-    private void CheckAndChangeGameObjectStateIfPossible()
-    {
-        gameObject.SetActive(actionInterpreter.GUIConditionResult(variableNames, activeValues));
-    }
-
-    private void OnControlSetStateChanged(bool enabled)
-    {
-        if (enabled)
+        private void OnDestroy()
         {
-            CheckAndChangeGameObjectStateIfPossible();
+            actionInterpreter.VariableChanged -= OnVariableChanged;
         }
-    }
 
-    public void Setup(GUIControlSet controlSet, string variable, string value)
-    {
-        this.variableNames = GUIConditionHelper.GetParticipateVariablesInCondition(variable);
-        this.activeValues = GUIConditionHelper.GetRequiredValues(value);
+        private void OnVariableChanged(List<string> variableChangeList)
+        {
+            if (variableChangeList.Any(changedVarName => variableNames.Any(varName => varName == changedVarName)))
+            {
+                CheckAndChangeGameObjectStateIfPossible();
+            }
+        }
 
-        actionInterpreter = controlSet.ActionInterpreter;
-        gameObject.SetActive(actionInterpreter.GetValue(variable, out _) == value);
+        private void CheckAndChangeGameObjectStateIfPossible()
+        {
+            gameObject.SetActive(actionInterpreter.GUIConditionResult(variableNames, activeValues));
+        }
 
-        actionInterpreter.VariableChanged += OnVariableChanged;
-        controlSet.StateChanged += OnControlSetStateChanged;
+        private void OnControlSetStateChanged(bool enabled)
+        {
+            if (enabled)
+            {
+                CheckAndChangeGameObjectStateIfPossible();
+            }
+        }
+
+        public void Setup(GUIControlSet controlSet, string variable, string value)
+        {
+            this.variableNames = GUIConditionHelper.GetParticipateVariablesInCondition(variable);
+            this.activeValues = GUIConditionHelper.GetRequiredValues(value);
+
+            actionInterpreter = controlSet.ActionInterpreter;
+            gameObject.SetActive(actionInterpreter.GetValue(variable, out _) == value);
+
+            actionInterpreter.VariableChanged += OnVariableChanged;
+            controlSet.StateChanged += OnControlSetStateChanged;
+        }
     }
 }

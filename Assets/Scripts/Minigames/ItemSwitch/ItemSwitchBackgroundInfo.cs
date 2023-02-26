@@ -1,9 +1,11 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ItemSwitchBackgroundInfo
+namespace DDEngine.Minigame.ItemSwitch
 {
-    public string ImagePath;
-    public string EffectAnimationPath;
-    public Vector2 EffectPosition;
+    public class ItemSwitchBackgroundInfo
+    {
+        public string ImagePath;
+        public string EffectAnimationPath;
+        public Vector2 EffectPosition;
+    }
 }

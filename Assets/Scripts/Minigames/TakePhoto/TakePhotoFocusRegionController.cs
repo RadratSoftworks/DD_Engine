@@ -1,70 +1,76 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using DDEngine.Utils;
+using DDEngine.GUI;
+
 using DG.Tweening;
 
-public class TakePhotoFocusRegionController : MonoBehaviour
+namespace DDEngine.Minigame.TakePhoto
 {
-    private List<SpriteRenderer> sharpImagesRenderer = new List<SpriteRenderer>();
-    private GUILayerController layerController;
-
-    private BoxCollider2D boxCollider;
-
-    [SerializeField]
-    private float sharpFadeDuration = 0.3f;
-
-    private void Awake()
+    public class TakePhotoFocusRegionController : MonoBehaviour
     {
-        DOTween.Init();
-    }
+        private List<SpriteRenderer> sharpImagesRenderer = new List<SpriteRenderer>();
+        private GUILayerController layerController;
 
-    public void Setup(GUILayerController layerController, List<TakePhotoImageDisplayInfo> displayInfos, Vector2 positionInUnit, float depthOfFocusInUnits)
-    {
-        this.layerController = layerController;
-        this.transform.localPosition = positionInUnit;
-        
-        boxCollider = GetComponent<BoxCollider2D>();
-        if (boxCollider != null)
+        private BoxCollider2D boxCollider;
+
+        [SerializeField]
+        private float sharpFadeDuration = 0.3f;
+
+        private void Awake()
         {
-            boxCollider.size = new Vector2(depthOfFocusInUnits * 2, depthOfFocusInUnits * 2);
+            DOTween.Init();
         }
 
-        GameObject layerObject = layerController.gameObject;
-
-        foreach (TakePhotoImageDisplayInfo info in displayInfos)
+        public void Setup(GUILayerController layerController, List<TakePhotoImageDisplayInfo> displayInfos, Vector2 positionInUnit, float depthOfFocusInUnits)
         {
-            Transform sharpImageTransform = layerObject.transform.Find(GameUtils.ToUnityName(info.SharpImagePath));
+            this.layerController = layerController;
+            this.transform.localPosition = positionInUnit;
 
-            if (sharpImageTransform == null)
+            boxCollider = GetComponent<BoxCollider2D>();
+            if (boxCollider != null)
             {
-                Debug.LogError(string.Format("Sharp image (path={0}) is missing for take photo focus!", info.SharpImagePath));
-            } else
+                boxCollider.size = new Vector2(depthOfFocusInUnits * 2, depthOfFocusInUnits * 2);
+            }
+
+            GameObject layerObject = layerController.gameObject;
+
+            foreach (TakePhotoImageDisplayInfo info in displayInfos)
             {
-                SpriteRenderer renderer = sharpImageTransform.gameObject.GetComponent<SpriteRenderer>(); ;
-                if (renderer != null)
+                Transform sharpImageTransform = layerObject.transform.Find(GameUtils.ToUnityName(info.SharpImagePath));
+
+                if (sharpImageTransform == null)
                 {
-                    sharpImagesRenderer.Add(renderer);
+                    Debug.LogError(string.Format("Sharp image (path={0}) is missing for take photo focus!", info.SharpImagePath));
+                }
+                else
+                {
+                    SpriteRenderer renderer = sharpImageTransform.gameObject.GetComponent<SpriteRenderer>(); ;
+                    if (renderer != null)
+                    {
+                        sharpImagesRenderer.Add(renderer);
+                    }
                 }
             }
         }
-    }
 
-    private void SetFocusState(bool focused)
-    {
-        foreach (SpriteRenderer sharpImageRenderer in sharpImagesRenderer)
+        private void SetFocusState(bool focused)
         {
-            sharpImageRenderer.DOFade(focused ? 1.0f : 0.0f, sharpFadeDuration);
+            foreach (SpriteRenderer sharpImageRenderer in sharpImagesRenderer)
+            {
+                sharpImageRenderer.DOFade(focused ? 1.0f : 0.0f, sharpFadeDuration);
+            }
         }
-    }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        SetFocusState(true);
-    }
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            SetFocusState(true);
+        }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        SetFocusState(false);
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            SetFocusState(false);
+        }
     }
 }

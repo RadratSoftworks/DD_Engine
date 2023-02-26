@@ -1,47 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.GUI;
 
-public class FightSceneController : MonoBehaviour
+namespace DDEngine.Minigame.Fight
 {
-    [SerializeField]
-    private FightPlayerController playerController;
-
-    [SerializeField]
-    private FightOpponentController opponentController;
-
-    [SerializeField]
-    private FightSoundMakerController playerSoundMakerController;
-
-    [SerializeField]
-    private FightSoundMakerController opponentSoundMakerController;
-
-    [SerializeField]
-    private SpriteRenderer backgroundSpriteRenderer;
-
-    [SerializeField]
-    private GUISoundController backgroundSoundController;
-
-    [SerializeField]
-    private FightHealthBarController playerHealthBar;
-
-    [SerializeField]
-    private FightHealthBarController enemyHealthBarController;
-
-    public void Setup(FightMinigameInfo fightInfo)
+    public class FightSceneController : MonoBehaviour
     {
-        playerController.Setup(fightInfo.PlayerInfo, fightInfo.FileLoseScript);
-        playerSoundMakerController.Setup(fightInfo.PlayerInfo.SoundInfo);
+        [SerializeField]
+        private FightPlayerController playerController;
 
-        opponentController.Setup(fightInfo.OpponentInfo, fightInfo.FileWonScript);
-        opponentSoundMakerController.Setup(fightInfo.OpponentInfo.SoundInfo);
+        [SerializeField]
+        private FightOpponentController opponentController;
 
-        backgroundSpriteRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
-            fightInfo.BackgroundPicture);
+        [SerializeField]
+        private FightSoundMakerController playerSoundMakerController;
 
-        backgroundSoundController.Setup(fightInfo.BackgroundSoundPath, 0);
+        [SerializeField]
+        private FightSoundMakerController opponentSoundMakerController;
 
-        playerHealthBar.Setup(playerController.GetComponent<FighterHealthController>(), false);
-        enemyHealthBarController.Setup(opponentController.GetComponent<FighterHealthController>(), true);
+        [SerializeField]
+        private SpriteRenderer backgroundSpriteRenderer;
+
+        [SerializeField]
+        private GUISoundController backgroundSoundController;
+
+        [SerializeField]
+        private FightHealthBarController playerHealthBar;
+
+        [SerializeField]
+        private FightHealthBarController enemyHealthBarController;
+
+        public void Setup(FightMinigameInfo fightInfo)
+        {
+            playerController.Setup(fightInfo.PlayerInfo, fightInfo.FileLoseScript);
+            playerSoundMakerController.Setup(fightInfo.PlayerInfo.SoundInfo);
+
+            opponentController.Setup(fightInfo.OpponentInfo, fightInfo.FileWonScript);
+            opponentSoundMakerController.Setup(fightInfo.OpponentInfo.SoundInfo);
+
+            backgroundSpriteRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
+                fightInfo.BackgroundPicture);
+
+            backgroundSoundController.Setup(fightInfo.BackgroundSoundPath, 0);
+
+            playerHealthBar.Setup(playerController.GetComponent<FighterHealthController>(), false);
+            enemyHealthBarController.Setup(opponentController.GetComponent<FighterHealthController>(), true);
+        }
     }
 }

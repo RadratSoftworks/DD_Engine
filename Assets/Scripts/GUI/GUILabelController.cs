@@ -1,30 +1,32 @@
-﻿using System;
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.Utils;
 
-public class GUILabelController : MonoBehaviour
+namespace DDEngine.GUI
 {
-    private TMPro.TMP_Text labelText;
-    private MeshRenderer labelTextRenderer;
-    private string textId;
-
-    private void UpdateText(GUIControlSet ownSet)
+    public class GUILabelController : MonoBehaviour
     {
-        labelText = GetComponent<TMPro.TMP_Text>();
-        labelText.font = ResourceManager.Instance.GetFontAssetForLocalization();
-        labelText.text = ownSet.GetLanguageString(textId);
-    }
+        private TMPro.TMP_Text labelText;
+        private MeshRenderer labelTextRenderer;
+        private string textId;
 
-    public void Setup(GUIControlSet ownSet, Vector2 position, string text, int depth)
-    {
-        this.textId = text;
+        private void UpdateText(GUIControlSet ownSet)
+        {
+            labelText = GetComponent<TMPro.TMP_Text>();
+            labelText.font = ResourceManager.Instance.GetFontAssetForLocalization();
+            labelText.text = ownSet.GetLanguageString(textId);
+        }
 
-        transform.localPosition = GameUtils.ToUnityCoordinates(position);
+        public void Setup(GUIControlSet ownSet, Vector2 position, string text, int depth)
+        {
+            this.textId = text;
 
-        labelTextRenderer = GetComponentInChildren<MeshRenderer>();
-        labelTextRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(depth);
+            transform.localPosition = GameUtils.ToUnityCoordinates(position);
 
-        UpdateText(ownSet);
-        ownSet.LocalizationChanged += UpdateText;
+            labelTextRenderer = GetComponentInChildren<MeshRenderer>();
+            labelTextRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(depth);
+
+            UpdateText(ownSet);
+            ownSet.LocalizationChanged += UpdateText;
+        }
     }
 }

@@ -1,38 +1,43 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using DDEngine.BaseScript;
 
-public class ActionLibrary
+namespace DDEngine.Action
 {
-    private Dictionary<string, Dictionary<string, ScriptBlock<ActionOpcode>>> actionHandlers;
-
-    public ActionLibrary(Dictionary<string, Dictionary<string, ScriptBlock<ActionOpcode>>> actionHandlers)
+    public class ActionLibrary
     {
-        this.actionHandlers = actionHandlers;
-    }
+        private Dictionary<string, Dictionary<string, ScriptBlock<ActionOpcode>>> actionHandlers;
 
-    public IEnumerator HandleAction(ActionInterpreter interpreter, string id, string action)
-    {
-        // Find script to execute
-        if (actionHandlers.ContainsKey(id))
+        public ActionLibrary(Dictionary<string, Dictionary<string, ScriptBlock<ActionOpcode>>> actionHandlers)
         {
-            var dict2 = actionHandlers[id];
-            if (dict2.ContainsKey(action))
+            this.actionHandlers = actionHandlers;
+        }
+
+        public IEnumerator HandleAction(ActionInterpreter interpreter, string id, string action)
+        {
+            // Find script to execute
+            if (actionHandlers.ContainsKey(id))
             {
-                yield return interpreter.Execute(dict2[action]);
-            } else
-            {
+                var dict2 = actionHandlers[id];
+                if (dict2.ContainsKey(action))
+                {
+                    yield return interpreter.Execute(dict2[action]);
+                }
+                else
+                {
 #if UNITY_EDITOR
-                Debug.LogWarning("Action \"" + action + "\" not found for id=" + id);
+                    Debug.LogWarning("Action \"" + action + "\" not found for id=" + id);
 #endif
+                    yield break;
+                }
+            }
+            else
+            {
+                Debug.LogError("No action found for id=" + id);
                 yield break;
             }
-        } else
-        {
-            Debug.LogError("No action found for id=" + id);
-            yield break;
         }
     }
 }

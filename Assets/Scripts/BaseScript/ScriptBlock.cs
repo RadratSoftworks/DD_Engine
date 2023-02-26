@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-public class ScriptBlock<T>
+namespace DDEngine.BaseScript
 {
-    public List<ScriptCommand<T>> Commands { get; set; }
-
-    /// <summary>
-    /// If we are either allowed to save the game during the duration of this script.
-    /// </summary>
-    public bool Saveable { get; set; } = true;
-
-    public ScriptBlock()
+    public class ScriptBlock<T>
     {
-        Commands = new List<ScriptCommand<T>>();
+        public List<ScriptCommand<T>> Commands { get; set; }
+
+        /// <summary>
+        /// If we are either allowed to save the game during the duration of this script.
+        /// </summary>
+        public bool Saveable { get; set; } = true;
+
+        public ScriptBlock()
+        {
+            Commands = new List<ScriptCommand<T>>();
+        }
     }
 }

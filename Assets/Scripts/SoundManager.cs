@@ -1,15 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 
 using UnityEngine;
 
-public class SoundManager : GameBaseAssetManager<AudioClip>
+namespace DDEngine
 {
-    // https://github.com/dpwe/dpwelib/blob/master/ulaw.c
-    // Thank you!
-    private static readonly short[] ULawDecodeTable = {
+    public class SoundManager : GameBaseAssetManager<AudioClip>
+    {
+        // https://github.com/dpwe/dpwelib/blob/master/ulaw.c
+        // Thank you!
+        private static readonly short[] ULawDecodeTable = {
         -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956,
         -23932, -22908, -21884, -20860, -19836, -18812, -17788, -16764,
         -15996, -15484, -14972, -14460, -13948, -13436, -12924, -12412,
@@ -44,65 +44,66 @@ public class SoundManager : GameBaseAssetManager<AudioClip>
         56,     48,     40,     32,     24,     16,      8,      0
     };
 
-    public static SoundManager Instance;
+        public static SoundManager Instance;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Instance = this;
-    }
-
-    private static float[] ULawToPcm(byte[] ulawBuffer)
-    {
-        float[] pcmBuffer = new float[ulawBuffer.Length];
-        for (int i = 0; i < ulawBuffer.Length; i++)
+        // Start is called before the first frame update
+        void Start()
         {
-            short value = ULawDecodeTable[ulawBuffer[i]];
-            pcmBuffer[i] = (value >= 0) ? (value / 32767.0f) : (value / 32768.0f);
-        }
-        return pcmBuffer;
-    }
-
-    public AudioClip GetAudioClip(string path)
-    {
-        if (path == null)
-        {
-            return null;
-        }
-        string extension = Path.GetExtension(path);
-        if ((extension == "") || (extension.Equals(".wav", StringComparison.OrdinalIgnoreCase)))
-        {
-            path = Path.ChangeExtension(path, ".ul");
+            Instance = this;
         }
 
-        AudioClip cached = GetFromCache(path);
-        if (cached != null)
+        private static float[] ULawToPcm(byte[] ulawBuffer)
         {
-            return cached;
+            float[] pcmBuffer = new float[ulawBuffer.Length];
+            for (int i = 0; i < ulawBuffer.Length; i++)
+            {
+                short value = ULawDecodeTable[ulawBuffer[i]];
+                pcmBuffer[i] = (value >= 0) ? (value / 32767.0f) : (value / 32768.0f);
+            }
+            return pcmBuffer;
         }
 
-        ResourceFile generalResources = ResourceManager.Instance.GeneralResources;
-        if (!generalResources.Exists(path))
+        public AudioClip GetAudioClip(string path)
         {
-            Debug.LogError("Sound file: " + path + " does not exist!");
-            return null;
+            if (path == null)
+            {
+                return null;
+            }
+            string extension = Path.GetExtension(path);
+            if ((extension == "") || (extension.Equals(".wav", StringComparison.OrdinalIgnoreCase)))
+            {
+                path = Path.ChangeExtension(path, ".ul");
+            }
+
+            AudioClip cached = GetFromCache(path);
+            if (cached != null)
+            {
+                return cached;
+            }
+
+            ResourceFile generalResources = ResourceManager.Instance.GeneralResources;
+            if (!generalResources.Exists(path))
+            {
+                Debug.LogError("Sound file: " + path + " does not exist!");
+                return null;
+            }
+
+            ResourceInfo soundResourceInfo = generalResources.Resources[path];
+            byte[] ulaw = generalResources.ReadResourceData(soundResourceInfo);
+
+            if (ulaw == null)
+            {
+                Debug.LogError("Can't read sound file: " + path);
+                return null;
+            }
+
+            AudioClip result = AudioClip.Create(path, ulaw.Length, Constants.SoundChannelCount,
+                Constants.SoundFrequency, false);
+
+            result.SetData(ULawToPcm(ulaw), 0);
+            AddToCache(path, result);
+
+            return result;
         }
-
-        ResourceInfo soundResourceInfo = generalResources.Resources[path];
-        byte[] ulaw = generalResources.ReadResourceData(soundResourceInfo);
-
-        if (ulaw == null)
-        {
-            Debug.LogError("Can't read sound file: " + path);
-            return null;
-        }
-
-        AudioClip result = AudioClip.Create(path, ulaw.Length, Constants.SoundChannelCount,
-            Constants.SoundFrequency, false);
-
-        result.SetData(ULawToPcm(ulaw), 0);
-        AddToCache(path, result);
-
-        return result;
     }
 }

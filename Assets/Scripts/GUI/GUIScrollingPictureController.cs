@@ -1,40 +1,42 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using UnityEngine;
+using DDEngine.Utils;
 
-public class GUIScrollingPictureController : MonoBehaviour
+namespace DDEngine.GUI
 {
-    private static readonly string ScrollSpeedShaderVarName = "_ScrollSpeed";
-    private static readonly string MoveAmountShaderVarName = "_MoveAmount";
-
-    private SpriteRenderer spriteRenderer;
-    private Vector2 scroll;
-
-    [SerializeField]
-    private float scrollFactor = 100.0f;
-
-    [SerializeField]
-    private float moveAmountInPixels = 20.0f;
-
-    private void Awake()
+    public class GUIScrollingPictureController : MonoBehaviour
     {
-    }
+        private static readonly string ScrollSpeedShaderVarName = "_ScrollSpeed";
+        private static readonly string MoveAmountShaderVarName = "_MoveAmount";
 
-    private void Update()
-    {
-        // It's time based in the shader at the moment
-        // I prefer it that way. But we might need to change to frame-based?
-        spriteRenderer.material.SetVector(ScrollSpeedShaderVarName, scroll / scrollFactor);
-        spriteRenderer.material.SetFloat(MoveAmountShaderVarName, moveAmountInPixels);
-    }
+        private SpriteRenderer spriteRenderer;
+        private Vector2 scroll;
 
-    public void Setup(Sprite picture, Vector2 position, Vector2 scroll, int depth)
-    {
-        this.scroll = scroll;
-        this.transform.localPosition = GameUtils.ToUnityCoordinates(position);
+        [SerializeField]
+        private float scrollFactor = 100.0f;
 
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = picture;
-        spriteRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(depth);
+        [SerializeField]
+        private float moveAmountInPixels = 20.0f;
+
+        private void Awake()
+        {
+        }
+
+        private void Update()
+        {
+            // It's time based in the shader at the moment
+            // I prefer it that way. But we might need to change to frame-based?
+            spriteRenderer.material.SetVector(ScrollSpeedShaderVarName, scroll / scrollFactor);
+            spriteRenderer.material.SetFloat(MoveAmountShaderVarName, moveAmountInPixels);
+        }
+
+        public void Setup(Sprite picture, Vector2 position, Vector2 scroll, int depth)
+        {
+            this.scroll = scroll;
+            this.transform.localPosition = GameUtils.ToUnityCoordinates(position);
+
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            spriteRenderer.sprite = picture;
+            spriteRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(depth);
+        }
     }
 }

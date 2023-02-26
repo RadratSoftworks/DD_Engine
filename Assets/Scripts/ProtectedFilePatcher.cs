@@ -8,75 +8,78 @@ using UnityEngine;
 // Unity JSON
 using Newtonsoft.Json;
 
-public class ProtectedFilePatcher
+namespace DDEngine
 {
-    private List<ProtectedFilePatches> filePatches = new List<ProtectedFilePatches>();
-
-    private class ProtectedFilePatchesList
+    public class ProtectedFilePatcher
     {
-        public List<ProtectedFilePatches> files = new List<ProtectedFilePatches>();
-    };
+        private List<ProtectedFilePatches> filePatches = new List<ProtectedFilePatches>();
 
-    private Dictionary<string, byte[]> patchedFileData = new Dictionary<string, byte[]>();
-
-    // Use Scriptable Object here does not feel right to me, especially since we want to retain
-    // some of the hex form as integer for better debugging! Probably will consider more in the future.
-    private static readonly string PatchFileName = "ProtectedDataPatch";
-    private static readonly long MaxProtectedFileSizeAllowed = 2 * 1024 * 1024;
-
-    public ProtectedFilePatcher()
-    {
-        TextAsset targetJson = Resources.Load<TextAsset>(PatchFileName);
-        if (targetJson == null)
+        private class ProtectedFilePatchesList
         {
-            throw new FileNotFoundException("Unable to find data patch file!");
-        }
-        
-        var filePatchesClass = JsonConvert.DeserializeObject<ProtectedFilePatchesList>(targetJson.text);
-        filePatches = filePatchesClass.files;
-    }
+            public List<ProtectedFilePatches> files = new List<ProtectedFilePatches>();
+        };
 
-    public Stream OpenFile(string path)
-    {
-        // This is fine I think. Not too many resource pack file to be using Dictionary
-        var filenameOnly = Path.GetFileName(path);
-        var filePatch = filePatches.Find(file => file.FileName.Equals(filenameOnly, StringComparison.OrdinalIgnoreCase));
-        if (filePatch == null)
-        {
-            return File.OpenRead(path);
-        }
+        private Dictionary<string, byte[]> patchedFileData = new Dictionary<string, byte[]>();
 
-        if (patchedFileData.TryGetValue(filePatch.FileName, out byte[] rawData))
-        {
-            return new MemoryStream(rawData);
-        }
+        // Use Scriptable Object here does not feel right to me, especially since we want to retain
+        // some of the hex form as integer for better debugging! Probably will consider more in the future.
+        private static readonly string PatchFileName = "ProtectedDataPatch";
+        private static readonly long MaxProtectedFileSizeAllowed = 2 * 1024 * 1024;
 
-        using (FileStream stream = File.OpenRead(path))
+        public ProtectedFilePatcher()
         {
-            if (stream.Length > MaxProtectedFileSizeAllowed)
+            TextAsset targetJson = Resources.Load<TextAsset>(PatchFileName);
+            if (targetJson == null)
             {
-                throw new FileLoadException(string.Format("File too big to be patched! (filename = {0})", path));
+                throw new FileNotFoundException("Unable to find data patch file!");
             }
 
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                stream.CopyTo(memoryStream);
-                byte[] rawBytes = memoryStream.ToArray();
+            var filePatchesClass = JsonConvert.DeserializeObject<ProtectedFilePatchesList>(targetJson.text);
+            filePatches = filePatchesClass.files;
+        }
 
-                foreach (ProtectedFilePatch patchInfo in filePatch.Patches)
+        public Stream OpenFile(string path)
+        {
+            // This is fine I think. Not too many resource pack file to be using Dictionary
+            var filenameOnly = Path.GetFileName(path);
+            var filePatch = filePatches.Find(file => file.FileName.Equals(filenameOnly, StringComparison.OrdinalIgnoreCase));
+            if (filePatch == null)
+            {
+                return File.OpenRead(path);
+            }
+
+            if (patchedFileData.TryGetValue(filePatch.FileName, out byte[] rawData))
+            {
+                return new MemoryStream(rawData);
+            }
+
+            using (FileStream stream = File.OpenRead(path))
+            {
+                if (stream.Length > MaxProtectedFileSizeAllowed)
                 {
-                    byte[] patchBytes = patchInfo.BytesInHex.Split(' ')
-                        .Select(hexString => byte.Parse(hexString, NumberStyles.HexNumber))
-                        .ToArray();
-                
-                    if (patchBytes.Length > 0)
-                    {
-                        Buffer.BlockCopy(patchBytes, 0, rawBytes, int.Parse(patchInfo.Offset, NumberStyles.HexNumber), patchBytes.Length);
-                    }
+                    throw new FileLoadException(string.Format("File too big to be patched! (filename = {0})", path));
                 }
 
-                patchedFileData.Add(filePatch.FileName, rawBytes);
-                return new MemoryStream(rawBytes);
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    stream.CopyTo(memoryStream);
+                    byte[] rawBytes = memoryStream.ToArray();
+
+                    foreach (ProtectedFilePatch patchInfo in filePatch.Patches)
+                    {
+                        byte[] patchBytes = patchInfo.BytesInHex.Split(' ')
+                            .Select(hexString => byte.Parse(hexString, NumberStyles.HexNumber))
+                            .ToArray();
+
+                        if (patchBytes.Length > 0)
+                        {
+                            Buffer.BlockCopy(patchBytes, 0, rawBytes, int.Parse(patchInfo.Offset, NumberStyles.HexNumber), patchBytes.Length);
+                        }
+                    }
+
+                    patchedFileData.Add(filePatch.FileName, rawBytes);
+                    return new MemoryStream(rawBytes);
+                }
             }
         }
     }

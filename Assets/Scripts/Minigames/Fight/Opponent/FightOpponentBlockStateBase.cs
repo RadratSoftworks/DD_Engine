@@ -1,98 +1,102 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
-public class FightOpponentBlockStateBase : IState
+using DDEngine.Utils.FSM;
+
+namespace DDEngine.Minigame.Fight
 {
-    protected FightOpponentController stateMachine;
-
-    private SpriteAnimatorController leftHandBlockAnim;
-    private SpriteAnimatorController rightHandBlockAnim;
-
-    private FightDirection direction;
-    private FighterState targetState;
-
-    private FightAttackIntent lastestFightIntent;
-    private IEnumerator blockDoneCoroutine;
-
-    public FightOpponentBlockStateBase(FightOpponentController stateMachine, FightOpponentInfo opponentInfo, FighterState targetState)
+    public class FightOpponentBlockStateBase : IState
     {
-        this.stateMachine = stateMachine;
-        this.targetState = targetState;
+        protected FightOpponentController stateMachine;
 
-        leftHandBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.movingHands.transform,
-            opponentInfo.LeftHandBlockAnimPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth, true);
+        private SpriteAnimatorController leftHandBlockAnim;
+        private SpriteAnimatorController rightHandBlockAnim;
 
-        rightHandBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.movingHands.transform,
-            opponentInfo.RightHandAnimBlockPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth, true);
-    }
+        private FightDirection direction;
+        private FighterState targetState;
 
-    private IEnumerator BlockDoneCoroutine()
-    {
-        var waitForState = new WaitForSeconds(stateMachine.blockAttackStateDuration);
-        yield return waitForState;
+        private FightAttackIntent lastestFightIntent;
+        private IEnumerator blockDoneCoroutine;
 
-        stateMachine.Transition(targetState, lastestFightIntent);
-    }
-
-    public virtual void Enter()
-    {
-        stateMachine.headAnim.Enable();
-    }
-
-    public virtual void Leave()
-    {
-        stateMachine.headAnim.Disable();
-
-        stateMachine.StopCoroutine(blockDoneCoroutine);
-        UpdateFightBlockAnimation(false);
-    }
-
-    protected virtual void UpdateFightBlockAnimation(bool blocking)
-    {
-        if (direction == FightDirection.Left)
+        public FightOpponentBlockStateBase(FightOpponentController stateMachine, FightOpponentInfo opponentInfo, FighterState targetState)
         {
-            stateMachine.normalRightHand.SetEnableState(blocking);
-            stateMachine.normalLeftHand.SetEnableState(!blocking);
-            leftHandBlockAnim.SetEnableState(blocking);
+            this.stateMachine = stateMachine;
+            this.targetState = targetState;
+
+            leftHandBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.movingHands.transform,
+                opponentInfo.LeftHandBlockAnimPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth, true);
+
+            rightHandBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.movingHands.transform,
+                opponentInfo.RightHandAnimBlockPath, Vector2.zero, FightOpponentConstants.OpponentHandDepth, true);
         }
-        else
+
+        private IEnumerator BlockDoneCoroutine()
         {
-            stateMachine.normalLeftHand.SetEnableState(blocking);
-            stateMachine.normalRightHand.SetEnableState(!blocking);
-            rightHandBlockAnim.SetEnableState(blocking);
+            var waitForState = new WaitForSeconds(stateMachine.blockAttackStateDuration);
+            yield return waitForState;
+
+            stateMachine.Transition(targetState, lastestFightIntent);
         }
-    }
 
-    public void ReceiveData(IStateMachine sender, object data)
-    {
-        if (data is FightDirection)
+        public virtual void Enter()
         {
-            direction = (FightDirection)data;
-
-            UpdateFightBlockAnimation(true);
-
-            blockDoneCoroutine = BlockDoneCoroutine();
-            stateMachine.StartCoroutine(blockDoneCoroutine);
+            stateMachine.headAnim.Enable();
         }
-        else if (data is FightAttackIntent)
+
+        public virtual void Leave()
         {
+            stateMachine.headAnim.Disable();
+
+            stateMachine.StopCoroutine(blockDoneCoroutine);
             UpdateFightBlockAnimation(false);
-
-            lastestFightIntent = data as FightAttackIntent;
-            direction = lastestFightIntent.Direction;
-
-            sender.GiveData(FightAttackResult.Miss);
-
-            UpdateFightBlockAnimation(true);
         }
-        else if (data is FightDamage)
+
+        protected virtual void UpdateFightBlockAnimation(bool blocking)
         {
-            lastestFightIntent = null;
+            if (direction == FightDirection.Left)
+            {
+                stateMachine.normalRightHand.SetEnableState(blocking);
+                stateMachine.normalLeftHand.SetEnableState(!blocking);
+                leftHandBlockAnim.SetEnableState(blocking);
+            }
+            else
+            {
+                stateMachine.normalLeftHand.SetEnableState(blocking);
+                stateMachine.normalRightHand.SetEnableState(!blocking);
+                rightHandBlockAnim.SetEnableState(blocking);
+            }
         }
-    }
 
-    public void Update()
-    {
+        public void ReceiveData(IStateMachine sender, object data)
+        {
+            if (data is FightDirection)
+            {
+                direction = (FightDirection)data;
+
+                UpdateFightBlockAnimation(true);
+
+                blockDoneCoroutine = BlockDoneCoroutine();
+                stateMachine.StartCoroutine(blockDoneCoroutine);
+            }
+            else if (data is FightAttackIntent)
+            {
+                UpdateFightBlockAnimation(false);
+
+                lastestFightIntent = data as FightAttackIntent;
+                direction = lastestFightIntent.Direction;
+
+                sender.GiveData(FightAttackResult.Miss);
+
+                UpdateFightBlockAnimation(true);
+            }
+            else if (data is FightDamage)
+            {
+                lastestFightIntent = null;
+            }
+        }
+
+        public void Update()
+        {
+        }
     }
 }

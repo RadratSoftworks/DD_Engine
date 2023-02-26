@@ -1,7 +1,10 @@
-﻿public enum GameTextSpeed
+﻿namespace DDEngine
 {
-    Undefined,
-    Normal,
-    Fast,
-    Instant
-};
+    public enum GameTextSpeed
+    {
+        Undefined,
+        Normal,
+        Fast,
+        Instant
+    };
+}

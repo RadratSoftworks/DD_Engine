@@ -4,38 +4,41 @@ using HttpMultipartParser;
 using UnityEngine;
 using System;
 
-public class GameDataInstallStreamSearch
+namespace DDEngine.Installer
 {
-    private const string ContentIdStringName = "Content-ID";
-
-    public static async Task<Tuple<string, UInt64>> GetToFile(Stream baseStream, string basePath = null)
+    public class GameDataInstallStreamSearch
     {
-        FileStream stream = null;
-        string filePath = Path.Join(basePath ?? Application.persistentDataPath, "tempGameData.sis");
+        private const string ContentIdStringName = "Content-ID";
 
-        StreamingMultipartFormDataParser binData = new StreamingMultipartFormDataParser(baseStream, boundary: "KBoundary", encoding: System.Text.Encoding.UTF8);
-        binData.FileHandler += (name, fileName, type, disposition, buffer, bytes, partNumber, additionalProperties) =>
+        public static async Task<Tuple<string, UInt64>> GetToFile(Stream baseStream, string basePath = null)
         {
-            if (additionalProperties.TryGetValue(ContentIdStringName, out string contentId) && contentId.Equals("<Game>"))
+            FileStream stream = null;
+            string filePath = Path.Join(basePath ?? Application.persistentDataPath, "tempGameData.sis");
+
+            StreamingMultipartFormDataParser binData = new StreamingMultipartFormDataParser(baseStream, boundary: "KBoundary", encoding: System.Text.Encoding.UTF8);
+            binData.FileHandler += (name, fileName, type, disposition, buffer, bytes, partNumber, additionalProperties) =>
             {
-                if (stream == null)
+                if (additionalProperties.TryGetValue(ContentIdStringName, out string contentId) && contentId.Equals("<Game>"))
                 {
-                    stream = new FileStream(filePath, FileMode.OpenOrCreate);
+                    if (stream == null)
+                    {
+                        stream = new FileStream(filePath, FileMode.OpenOrCreate);
+                    }
+
+                    stream.Write(buffer, 0, bytes);
                 }
+            };
 
-                stream.Write(buffer, 0, bytes);
+            await binData.RunAsync();
+            if (stream != null)
+            {
+                var returnResult = new Tuple<string, UInt64>(filePath, (UInt64)stream.Length);
+                stream.Dispose();
+
+                return returnResult;
             }
-        };
 
-        await binData.RunAsync();
-        if (stream != null)
-        {
-            var returnResult = new Tuple<string, UInt64>(filePath, (UInt64)stream.Length);
-            stream.Dispose();
-
-            return returnResult;
+            return null;
         }
-
-        return null;
     }
 }

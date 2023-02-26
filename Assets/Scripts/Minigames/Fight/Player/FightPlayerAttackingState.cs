@@ -1,184 +1,186 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.InputSystem.XR;
+﻿using UnityEngine;
+using DDEngine.Utils.FSM;
 
-public class FightPlayerAttackingState : IState
+namespace DDEngine.Minigame.Fight
 {
-    private SpriteAnimatorController jabAnim;
-    private SpriteAnimatorController punchAnim;
-    private SpriteAnimatorController strongPunchAnim;
-
-    private int jabDamageCount;
-    private int punchDamageCount;
-    private int strongPunchDamageCount;
-
-    private SpriteAnimatorController currentAnim;
-    private int currentDamageCount;
-
-    private FightPunchType punchType;
-    private FightAttackResult attackResult;
-
-    private FightPlayerController stateMachine;
-
-    private int framesCountTriggerDamage = -1;
-    private int frameTriggerDamage;
-    private int frameTriggerIntent;
-
-    private int frameTriggerJabDamage;
-    private int frameTriggerPunchDamage;
-    private int frameTriggerStrongPunchDamage;
-    private bool animationDone = false;
-
-    private FightSoundMakerController soundMakerController;
-
-    public FightPlayerAttackingState(FightPlayerController playerController, FightPlayerInfo playerInfo)
+    public class FightPlayerAttackingState : IState
     {
-        this.stateMachine = playerController;
+        private SpriteAnimatorController jabAnim;
+        private SpriteAnimatorController punchAnim;
+        private SpriteAnimatorController strongPunchAnim;
 
-        soundMakerController = playerController.GetComponent<FightSoundMakerController>();
+        private int jabDamageCount;
+        private int punchDamageCount;
+        private int strongPunchDamageCount;
 
-        jabAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
-            stateMachine.transform, playerInfo.Jab.AnimationPath, Vector2.zero,
-            FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
+        private SpriteAnimatorController currentAnim;
+        private int currentDamageCount;
 
-        punchAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
-            stateMachine.transform, playerInfo.Punch.AnimationPath, Vector2.zero,
-            FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
+        private FightPunchType punchType;
+        private FightAttackResult attackResult;
 
-        strongPunchAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
-            stateMachine.transform, playerInfo.StrongPunch.AnimationPath, Vector2.zero,
-            FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
+        private FightPlayerController stateMachine;
 
-        jabAnim.Done += OnAttackAnimationDone;
-        punchAnim.Done += OnAttackAnimationDone;
-        strongPunchAnim.Done += OnAttackAnimationDone;
+        private int framesCountTriggerDamage = -1;
+        private int frameTriggerDamage;
+        private int frameTriggerIntent;
 
-        jabDamageCount = playerInfo.Jab.HitPower;
-        punchDamageCount = playerInfo.Punch.HitPower;
-        strongPunchDamageCount = playerInfo.StrongPunch.HitPower;
+        private int frameTriggerJabDamage;
+        private int frameTriggerPunchDamage;
+        private int frameTriggerStrongPunchDamage;
+        private bool animationDone = false;
 
-        frameTriggerJabDamage = playerInfo.Jab.HitTimes;
-        frameTriggerPunchDamage = playerInfo.Punch.HitTimes;
-        frameTriggerStrongPunchDamage = playerInfo.StrongPunch.HitTimes;
-    }
+        private FightSoundMakerController soundMakerController;
 
-    private FightDirection AttackDirection => (currentAnim == jabAnim) ? FightDirection.Right : FightDirection.Left;
-
-    private void UpdateActivePunchType()
-    {
-        switch (punchType)
+        public FightPlayerAttackingState(FightPlayerController playerController, FightPlayerInfo playerInfo)
         {
-            case FightPunchType.Jab:
-                currentAnim = jabAnim;
-                currentDamageCount = jabDamageCount;
-                frameTriggerDamage = frameTriggerJabDamage;
+            this.stateMachine = playerController;
 
-                break;
+            soundMakerController = playerController.GetComponent<FightSoundMakerController>();
 
-            case FightPunchType.Punch:
-                currentAnim = punchAnim;
-                currentDamageCount = punchDamageCount;
-                frameTriggerDamage = frameTriggerPunchDamage;
+            jabAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
+                stateMachine.transform, playerInfo.Jab.AnimationPath, Vector2.zero,
+                FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
 
-                break;
+            punchAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
+                stateMachine.transform, playerInfo.Punch.AnimationPath, Vector2.zero,
+                FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
 
-            case FightPunchType.StrongPunch:
-                currentAnim = strongPunchAnim;
-                currentDamageCount = strongPunchDamageCount;
-                frameTriggerDamage = frameTriggerStrongPunchDamage;
+            strongPunchAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
+                stateMachine.transform, playerInfo.StrongPunch.AnimationPath, Vector2.zero,
+                FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
 
-                break;
+            jabAnim.Done += OnAttackAnimationDone;
+            punchAnim.Done += OnAttackAnimationDone;
+            strongPunchAnim.Done += OnAttackAnimationDone;
 
-            default:
-                break;
+            jabDamageCount = playerInfo.Jab.HitPower;
+            punchDamageCount = playerInfo.Punch.HitPower;
+            strongPunchDamageCount = playerInfo.StrongPunch.HitPower;
+
+            frameTriggerJabDamage = playerInfo.Jab.HitTimes;
+            frameTriggerPunchDamage = playerInfo.Punch.HitTimes;
+            frameTriggerStrongPunchDamage = playerInfo.StrongPunch.HitTimes;
         }
 
-        frameTriggerDamage = GameManager.Instance.GetRealFrames(frameTriggerDamage);
-        frameTriggerIntent = GameManager.Instance.GetRealFrames(stateMachine.frameTriggerIntent);
+        private FightDirection AttackDirection => (currentAnim == jabAnim) ? FightDirection.Right : FightDirection.Left;
 
-        currentAnim.Enable();
-    }
-
-    private void OnAttackAnimationDone(SpriteAnimatorController controller)
-    {
-        animationDone = true;
-    }
-
-    public void Enter()
-    {
-        punchType = FightPunchType.None;
-        attackResult = FightAttackResult.None;
-        framesCountTriggerDamage = 0;
-        animationDone = false;
-    }
-
-    public void Leave()
-    {
-        if (currentAnim != null)
+        private void UpdateActivePunchType()
         {
-            currentAnim.Disable();
-        }
-    }
-
-    public void ReceiveData(IStateMachine sender, object data)
-    {
-        if (data is FightPunchType)
-        {
-            if (punchType == FightPunchType.None)
+            switch (punchType)
             {
-                punchType = (FightPunchType)data;
-                UpdateActivePunchType();
+                case FightPunchType.Jab:
+                    currentAnim = jabAnim;
+                    currentDamageCount = jabDamageCount;
+                    frameTriggerDamage = frameTriggerJabDamage;
+
+                    break;
+
+                case FightPunchType.Punch:
+                    currentAnim = punchAnim;
+                    currentDamageCount = punchDamageCount;
+                    frameTriggerDamage = frameTriggerPunchDamage;
+
+                    break;
+
+                case FightPunchType.StrongPunch:
+                    currentAnim = strongPunchAnim;
+                    currentDamageCount = strongPunchDamageCount;
+                    frameTriggerDamage = frameTriggerStrongPunchDamage;
+
+                    break;
+
+                default:
+                    break;
+            }
+
+            frameTriggerDamage = GameManager.Instance.GetRealFrames(frameTriggerDamage);
+            frameTriggerIntent = GameManager.Instance.GetRealFrames(stateMachine.frameTriggerIntent);
+
+            currentAnim.Enable();
+        }
+
+        private void OnAttackAnimationDone(SpriteAnimatorController controller)
+        {
+            animationDone = true;
+        }
+
+        public void Enter()
+        {
+            punchType = FightPunchType.None;
+            attackResult = FightAttackResult.None;
+            framesCountTriggerDamage = 0;
+            animationDone = false;
+        }
+
+        public void Leave()
+        {
+            if (currentAnim != null)
+            {
+                currentAnim.Disable();
             }
         }
-        else if (data is FightDamage)
-        {
-            stateMachine.Transition(FighterState.TakingDamage, (data as FightDamage).DamagePoint, sender);
-        }
-        else if (data is FightAttackResult)
-        {
-            attackResult = (FightAttackResult)data;
-            soundMakerController.PlayBasedOnAttackResult(attackResult, punchType);
-        }
-    }
 
-    public void Update()
-    {
-        if (framesCountTriggerDamage < 0)
+        public void ReceiveData(IStateMachine sender, object data)
         {
-            if (animationDone && (attackResult != FightAttackResult.None))
+            if (data is FightPunchType)
             {
-                if (attackResult == FightAttackResult.KnockedOut)
+                if (punchType == FightPunchType.None)
                 {
-                    stateMachine.Transition(FighterState.Idle, new FighterStopAttackingIntent(FighterStopAttackingReason.OpponentKnockedOut));
-                } else
-                {
-                    stateMachine.Transition(FighterState.Idle);
+                    punchType = (FightPunchType)data;
+                    UpdateActivePunchType();
                 }
             }
-
-            return;
+            else if (data is FightDamage)
+            {
+                stateMachine.Transition(FighterState.TakingDamage, (data as FightDamage).DamagePoint, sender);
+            }
+            else if (data is FightAttackResult)
+            {
+                attackResult = (FightAttackResult)data;
+                soundMakerController.PlayBasedOnAttackResult(attackResult, punchType);
+            }
         }
 
-        framesCountTriggerDamage++;
-
-        if (framesCountTriggerDamage == frameTriggerIntent)
+        public void Update()
         {
-            stateMachine.directOpponent.GiveDataFrom(stateMachine, new FightAttackIntent()
+            if (framesCountTriggerDamage < 0)
             {
-                Direction = AttackDirection
-            });
-        }
+                if (animationDone && (attackResult != FightAttackResult.None))
+                {
+                    if (attackResult == FightAttackResult.KnockedOut)
+                    {
+                        stateMachine.Transition(FighterState.Idle, new FighterStopAttackingIntent(FighterStopAttackingReason.OpponentKnockedOut));
+                    }
+                    else
+                    {
+                        stateMachine.Transition(FighterState.Idle);
+                    }
+                }
 
-        if (framesCountTriggerDamage == frameTriggerDamage)
-        {
-            stateMachine.directOpponent.GiveDataFrom(stateMachine, new FightDamage()
+                return;
+            }
+
+            framesCountTriggerDamage++;
+
+            if (framesCountTriggerDamage == frameTriggerIntent)
             {
-                Direction = AttackDirection,
-                DamagePoint = currentDamageCount
-            });
+                stateMachine.directOpponent.GiveDataFrom(stateMachine, new FightAttackIntent()
+                {
+                    Direction = AttackDirection
+                });
+            }
 
-            framesCountTriggerDamage = -1;
+            if (framesCountTriggerDamage == frameTriggerDamage)
+            {
+                stateMachine.directOpponent.GiveDataFrom(stateMachine, new FightDamage()
+                {
+                    Direction = AttackDirection,
+                    DamagePoint = currentDamageCount
+                });
+
+                framesCountTriggerDamage = -1;
+            }
         }
     }
 }

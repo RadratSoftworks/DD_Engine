@@ -2,80 +2,84 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateMachine<T> : MonoBehaviour, IStateMachine where T : IConvertible
+namespace DDEngine.Utils.FSM
 {
-    private Dictionary<T, IState> stateDictionary = new Dictionary<T, IState>();
-    private IState currentState;
-    private T currentStateIdentifier;
-
-    public T CurrentState => currentStateIdentifier;
-
-    private void Start()
+    public class StateMachine<T> : MonoBehaviour, IStateMachine where T : IConvertible
     {
-        currentStateIdentifier = GetInitialState();
-        currentState = stateDictionary[currentStateIdentifier];
-        if (currentState != null)
+        private Dictionary<T, IState> stateDictionary = new Dictionary<T, IState>();
+        private IState currentState;
+        private T currentStateIdentifier;
+
+        public T CurrentState => currentStateIdentifier;
+
+        private void Start()
         {
-            currentState.Enter();
-        }
-    }
-
-    private void Update()
-    {
-        if (currentState != null)
-        {
-            currentState.Update();
-        }
-    }
-
-    public void Transition(T stateValue, object sendValue = null, IStateMachine sendFrom = null)
-    {
-        if (!stateDictionary.TryGetValue(stateValue, out IState stateToTransitionTo)) {
-            return;
-        }
-
-        if (currentState != null)
-        {
-            currentState.Leave();
-        }
-
-        currentState = stateToTransitionTo;
-        currentStateIdentifier = stateValue;
-
-        if (currentState != null)
-        {
-            currentState.Enter();
-
-            if (sendValue != null)
+            currentStateIdentifier = GetInitialState();
+            currentState = stateDictionary[currentStateIdentifier];
+            if (currentState != null)
             {
-                currentState.ReceiveData(sendFrom ?? this, sendValue);
+                currentState.Enter();
             }
         }
-    }
 
-    public void GiveData(object data)
-    {
-        if (currentState != null)
+        private void Update()
         {
-            currentState.ReceiveData(this, data);
+            if (currentState != null)
+            {
+                currentState.Update();
+            }
         }
-    }
 
-    public void GiveDataFrom(IStateMachine otherMachine, object data)
-    {
-        if (currentState != null)
+        public void Transition(T stateValue, object sendValue = null, IStateMachine sendFrom = null)
         {
-            currentState.ReceiveData(otherMachine, data);
+            if (!stateDictionary.TryGetValue(stateValue, out IState stateToTransitionTo))
+            {
+                return;
+            }
+
+            if (currentState != null)
+            {
+                currentState.Leave();
+            }
+
+            currentState = stateToTransitionTo;
+            currentStateIdentifier = stateValue;
+
+            if (currentState != null)
+            {
+                currentState.Enter();
+
+                if (sendValue != null)
+                {
+                    currentState.ReceiveData(sendFrom ?? this, sendValue);
+                }
+            }
         }
-    }
 
-    protected void AddState(T stateIdentifier, IState state)
-    {
-        stateDictionary.Add(stateIdentifier, state);
-    }
+        public void GiveData(object data)
+        {
+            if (currentState != null)
+            {
+                currentState.ReceiveData(this, data);
+            }
+        }
 
-    protected virtual T GetInitialState()
-    {
-        return default(T);
+        public void GiveDataFrom(IStateMachine otherMachine, object data)
+        {
+            if (currentState != null)
+            {
+                currentState.ReceiveData(otherMachine, data);
+            }
+        }
+
+        protected void AddState(T stateIdentifier, IState state)
+        {
+            stateDictionary.Add(stateIdentifier, state);
+        }
+
+        protected virtual T GetInitialState()
+        {
+            return default(T);
+        }
     }
 }

@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DDEngine.Utils;
 
-public class GUIControlSoundDescription : GUIControlDescription
+namespace DDEngine.GUI.Parser
 {
-    public int Type { get; set; }
-    public string Path { get; set; }
-
-    public GUIControlSoundDescription(BinaryReader2 reader)
+    public class GUIControlSoundDescription : GUIControlDescription
     {
-        Internalize(reader);
-    }
+        public int Type { get; set; }
+        public string Path { get; set; }
 
-    private void Internalize(BinaryReader2 reader)
-    {
-        Type = reader.ReadByte();
-        Path = reader.ReadWordLengthString();
+        public GUIControlSoundDescription(BinaryReader2 reader)
+        {
+            Internalize(reader);
+        }
+
+        private void Internalize(BinaryReader2 reader)
+        {
+            Type = reader.ReadByte();
+            Path = reader.ReadWordLengthString();
+        }
     }
 }

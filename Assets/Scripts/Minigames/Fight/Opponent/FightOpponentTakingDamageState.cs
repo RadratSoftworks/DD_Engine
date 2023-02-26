@@ -1,96 +1,102 @@
 ﻿using UnityEngine;
+using DDEngine.Utils.FSM;
 
-public class FightOpponentTakingDamageState : IState
+namespace DDEngine.Minigame.Fight
 {
-    private SpriteAnimatorController gettingHitAnim;
-    private SpriteAnimatorController deadAnim;
-
-    private FightOpponentController stateMachine;
-    private FighterHealthController healthController;
-
-    public FightOpponentTakingDamageState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo)
+    public class FightOpponentTakingDamageState : IState
     {
-        this.stateMachine = stateMachine;
-        this.healthController = stateMachine.GetComponent<FighterHealthController>();
+        private SpriteAnimatorController gettingHitAnim;
+        private SpriteAnimatorController deadAnim;
 
-        gettingHitAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
-            opponentInfo.GettingHitAnimPath, Vector2.zero, FightOpponentConstants.OpponentFullSpriteDepth, allowLoop: false);
+        private FightOpponentController stateMachine;
+        private FighterHealthController healthController;
 
-        deadAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
-            opponentInfo.GameOverAnimPath, Vector2.zero, FightOpponentConstants.OpponentFullSpriteDepth, allowLoop: false);
-
-        if (gettingHitAnim != null)
+        public FightOpponentTakingDamageState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo)
         {
-            gettingHitAnim.Done += OnAnimationDone;
-        }
+            this.stateMachine = stateMachine;
+            this.healthController = stateMachine.GetComponent<FighterHealthController>();
 
-        if (deadAnim != null)
-        {
-            deadAnim.Done += OnAnimationDone;
-        }
-    }
+            gettingHitAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
+                opponentInfo.GettingHitAnimPath, Vector2.zero, FightOpponentConstants.OpponentFullSpriteDepth, allowLoop: false);
 
-    private void OnAnimationDone(SpriteAnimatorController controller)
-    {
-        if (healthController.IsDead)
-        {
-            stateMachine.Transition(FighterState.KnockedOut);
-        } else
-        {
-            stateMachine.Transition(FighterState.Idle);
-        }
-    }
+            deadAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
+                opponentInfo.GameOverAnimPath, Vector2.zero, FightOpponentConstants.OpponentFullSpriteDepth, allowLoop: false);
 
-    public void Enter()
-    {
-    }
-
-    public void Leave()
-    {
-        deadAnim.Disable();
-        gettingHitAnim.Disable();
-    }
-
-    private void ToggleAnimation(bool enable)
-    {
-        bool dead = healthController.IsDead;
-
-        if (enable)
-        {
-            deadAnim.SetEnableState(dead);
-            gettingHitAnim.SetEnableState(!dead);
-        }
-        else
-        {
-            deadAnim.SetEnableState(!dead);
-            gettingHitAnim.SetEnableState(dead);
-        }
-    }
-
-    public void ReceiveData(IStateMachine sender, object data)
-    {
-        if (data is int)
-        {
-            healthController.TakeDamage((int)data);
-
-            if (healthController.IsDead)
+            if (gettingHitAnim != null)
             {
-                sender.GiveData(FightAttackResult.KnockedOut);
-            } else
-            {
-                sender.GiveData(FightAttackResult.DealtDamage);
+                gettingHitAnim.Done += OnAnimationDone;
             }
 
-            ToggleAnimation(true);
+            if (deadAnim != null)
+            {
+                deadAnim.Done += OnAnimationDone;
+            }
         }
-        else if (data is FightDamage)
-        {
-            // If the player keep spamming and hit this state, just report a miss
-            sender.GiveData(FightAttackResult.Miss);
-        }
-    }
 
-    public void Update()
-    {
+        private void OnAnimationDone(SpriteAnimatorController controller)
+        {
+            if (healthController.IsDead)
+            {
+                stateMachine.Transition(FighterState.KnockedOut);
+            }
+            else
+            {
+                stateMachine.Transition(FighterState.Idle);
+            }
+        }
+
+        public void Enter()
+        {
+        }
+
+        public void Leave()
+        {
+            deadAnim.Disable();
+            gettingHitAnim.Disable();
+        }
+
+        private void ToggleAnimation(bool enable)
+        {
+            bool dead = healthController.IsDead;
+
+            if (enable)
+            {
+                deadAnim.SetEnableState(dead);
+                gettingHitAnim.SetEnableState(!dead);
+            }
+            else
+            {
+                deadAnim.SetEnableState(!dead);
+                gettingHitAnim.SetEnableState(dead);
+            }
+        }
+
+        public void ReceiveData(IStateMachine sender, object data)
+        {
+            if (data is int)
+            {
+                healthController.TakeDamage((int)data);
+
+                if (healthController.IsDead)
+                {
+                    sender.GiveData(FightAttackResult.KnockedOut);
+                }
+                else
+                {
+                    sender.GiveData(FightAttackResult.DealtDamage);
+                }
+
+                ToggleAnimation(true);
+            }
+            else if (data is FightDamage)
+            {
+                // If the player keep spamming and hit this state, just report a miss
+                sender.GiveData(FightAttackResult.Miss);
+            }
+        }
+
+        public void Update()
+        {
+        }
     }
 }

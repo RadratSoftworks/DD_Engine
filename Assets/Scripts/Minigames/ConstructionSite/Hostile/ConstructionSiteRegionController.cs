@@ -1,32 +1,35 @@
 ﻿using System;
 using UnityEngine;
 
-public class ConstructionSiteRegionController : MonoBehaviour
+namespace DDEngine.Minigame.ConstructionSite
 {
-    public event Action<GameObject, bool> FlyStatusChanged;
-
-    /// <summary>
-    /// Setup the construction site region.
-    /// </summary>
-    /// <param name="bounds">The trigger box for the region, in raw screen coordinates.</param>
-    public void Setup(Rect bounds)
+    public class ConstructionSiteRegionController : MonoBehaviour
     {
-        MinigameConstructUtils.SetupBoundsObject(gameObject, bounds);
-    }
+        public event Action<GameObject, bool> FlyStatusChanged;
 
-    public void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.layer == ConstructionSiteHostileConstants.FlyLayer)
+        /// <summary>
+        /// Setup the construction site region.
+        /// </summary>
+        /// <param name="bounds">The trigger box for the region, in raw screen coordinates.</param>
+        public void Setup(Rect bounds)
         {
-            FlyStatusChanged(collision.gameObject, true);
+            MinigameConstructUtils.SetupBoundsObject(gameObject, bounds);
         }
-    }
 
-    public void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.layer == ConstructionSiteHostileConstants.FlyLayer)
+        public void OnTriggerEnter2D(Collider2D collision)
         {
-            FlyStatusChanged(collision.gameObject, false);
+            if (collision.gameObject.layer == ConstructionSiteHostileConstants.FlyLayer)
+            {
+                FlyStatusChanged(collision.gameObject, true);
+            }
+        }
+
+        public void OnTriggerExit2D(Collider2D collision)
+        {
+            if (collision.gameObject.layer == ConstructionSiteHostileConstants.FlyLayer)
+            {
+                FlyStatusChanged(collision.gameObject, false);
+            }
         }
     }
 }

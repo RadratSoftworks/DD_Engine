@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 
-public class PogoJumpImageInfo
+namespace DDEngine.Minigame.PogoJump
 {
-    public string Path;
-    public Vector2 Position;
+    public class PogoJumpImageInfo
+    {
+        public string Path;
+        public Vector2 Position;
+    }
 }

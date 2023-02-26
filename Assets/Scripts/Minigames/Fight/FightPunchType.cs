@@ -1,8 +1,11 @@
-﻿public enum FightPunchType
+﻿namespace DDEngine.Minigame.Fight
 {
-    None,
-    Jab,
-    Punch,
-    StrongPunch,
-    Dodging
+    public enum FightPunchType
+    {
+        None,
+        Jab,
+        Punch,
+        StrongPunch,
+        Dodging
+    }
 }

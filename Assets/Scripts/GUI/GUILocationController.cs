@@ -2,314 +2,321 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static GUILayerController;
 
-public class GUILocationController : MonoBehaviour
+using DDEngine.Utils;
+
+namespace DDEngine.GUI
 {
-    public float durationPerUnit = 0.5f;
-
-    [SerializeField]
-    private float maxScrollDuration = 0.6f;
-
-    [SerializeField]
-    private float moveAmount = 0.02f;
-
-    [SerializeField]
-    private float activeCooldownFromCloseDialogue = 0.1f;
-
-    private GUIControlSet controlSet;
-
-    private GUILayerController panLayerController;
-    private GUIActiveController currentActiveController;
-    private List<GUILayerController> layerControllers = new List<GUILayerController>();
-    private List<GUIActiveController> pendingClaimActiveControllers = new List<GUIActiveController>();
-
-    private int scrollInProgressCount = 0;
-    private float previousDialogueDisabledTimestamp = -1;
-    private bool dialogueChangeSubscribed = false;
-
-    public float MoveAmount => moveAmount;
-
-    public bool ScrollAnimationDone => (scrollInProgressCount == 0);
-
-    private void RegOrUnregAction(bool reg)
+    public class GUILocationController : MonoBehaviour
     {
-        var actionMap = GameInputManager.Instance.GUILocationActionMap;
+        public float durationPerUnit = 0.5f;
 
-        InputAction moveLeft = actionMap.FindAction("Move Left");
-        InputAction moveRight = actionMap.FindAction("Move Right");
-        InputAction moveUp = actionMap.FindAction("Move Up");
-        InputAction moveDown = actionMap.FindAction("Move Down");
-        InputAction moveJoystick = actionMap.FindAction("Move Joystick");
-        InputAction activeConfirmed = actionMap.FindAction("Active Confirmed");
+        [SerializeField]
+        private float maxScrollDuration = 0.6f;
 
-        if (reg)
+        [SerializeField]
+        private float moveAmount = 0.02f;
+
+        [SerializeField]
+        private float activeCooldownFromCloseDialogue = 0.1f;
+
+        private GUIControlSet controlSet;
+
+        private GUILayerController panLayerController;
+        private GUIActiveController currentActiveController;
+        private List<GUILayerController> layerControllers = new List<GUILayerController>();
+        private List<GUIActiveController> pendingClaimActiveControllers = new List<GUIActiveController>();
+
+        private int scrollInProgressCount = 0;
+        private float previousDialogueDisabledTimestamp = -1;
+        private bool dialogueChangeSubscribed = false;
+
+        public float MoveAmount => moveAmount;
+
+        public bool ScrollAnimationDone => (scrollInProgressCount == 0);
+
+        private void RegOrUnregAction(bool reg)
         {
-            moveLeft.performed += OnMoveLeft;
-            moveRight.performed += OnMoveRight;
-            moveUp.performed += OnMoveUp;
-            moveDown.performed += OnMoveDown;
-            moveJoystick.performed += OnMoveJoystick;
-            activeConfirmed.performed += OnActiveConfirmed;
-        } else
-        {
-            moveLeft.performed -= OnMoveLeft;
-            moveRight.performed -= OnMoveRight;
-            moveUp.performed -= OnMoveUp;
-            moveDown.performed -= OnMoveDown;
-            moveJoystick.performed -= OnMoveJoystick;
-            activeConfirmed.performed -= OnActiveConfirmed;
+            var actionMap = GameInputManager.Instance.GUILocationActionMap;
+
+            InputAction moveLeft = actionMap.FindAction("Move Left");
+            InputAction moveRight = actionMap.FindAction("Move Right");
+            InputAction moveUp = actionMap.FindAction("Move Up");
+            InputAction moveDown = actionMap.FindAction("Move Down");
+            InputAction moveJoystick = actionMap.FindAction("Move Joystick");
+            InputAction activeConfirmed = actionMap.FindAction("Active Confirmed");
+
+            if (reg)
+            {
+                moveLeft.performed += OnMoveLeft;
+                moveRight.performed += OnMoveRight;
+                moveUp.performed += OnMoveUp;
+                moveDown.performed += OnMoveDown;
+                moveJoystick.performed += OnMoveJoystick;
+                activeConfirmed.performed += OnActiveConfirmed;
+            }
+            else
+            {
+                moveLeft.performed -= OnMoveLeft;
+                moveRight.performed -= OnMoveRight;
+                moveUp.performed -= OnMoveUp;
+                moveDown.performed -= OnMoveDown;
+                moveJoystick.performed -= OnMoveJoystick;
+                activeConfirmed.performed -= OnActiveConfirmed;
+            }
         }
-    }
 
-    private void Start()
-    {
-        RegOrUnregAction(true);
-    }
-
-    private void OnEnable()
-    {
-        RegOrUnregAction(true);
-    }
-
-    private void OnDestroy()
-    {
-        RegOrUnregAction(false);
-    }
-
-    private void OnLayerScrollAnimationDone(GUILayerController layerController)
-    {
-        scrollInProgressCount--;
-    }
-
-    public void Setup(GUIControlSet controlSet, GameObject panLayer)
-    {
-        this.controlSet = controlSet;
-        this.panLayerController = panLayer.GetComponent<GUILayerController>();
-
-        controlSet.OffsetChanged += OnControlSetOffsetChanged;
-        controlSet.PanRequested += OnPanRequested;
-        controlSet.LocationScrollSpeedSetRequested += OnScrollSpeedsSet;
-
-        GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
-        dialogueChangeSubscribed = true;
-
-        controlSet.StateChanged += state =>
+        private void Start()
         {
-            if (dialogueChangeSubscribed == enabled)
+            RegOrUnregAction(true);
+        }
+
+        private void OnEnable()
+        {
+            RegOrUnregAction(true);
+        }
+
+        private void OnDestroy()
+        {
+            RegOrUnregAction(false);
+        }
+
+        private void OnLayerScrollAnimationDone(GUILayerController layerController)
+        {
+            scrollInProgressCount--;
+        }
+
+        public void Setup(GUIControlSet controlSet, GameObject panLayer)
+        {
+            this.controlSet = controlSet;
+            this.panLayerController = panLayer.GetComponent<GUILayerController>();
+
+            controlSet.OffsetChanged += OnControlSetOffsetChanged;
+            controlSet.PanRequested += OnPanRequested;
+            controlSet.LocationScrollSpeedSetRequested += OnScrollSpeedsSet;
+
+            GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+            dialogueChangeSubscribed = true;
+
+            controlSet.StateChanged += state =>
+            {
+                if (dialogueChangeSubscribed == enabled)
+                {
+                    return;
+                }
+
+                if (enabled)
+                {
+                    GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+                }
+                else
+                {
+                    GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
+                }
+
+                dialogueChangeSubscribed = enabled;
+            };
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                GameObject child = transform.GetChild(i).gameObject;
+                GUILayerController controller = child.GetComponent<GUILayerController>();
+
+                if (controller != null)
+                {
+                    controller.ScrollAnimationFinished += OnLayerScrollAnimationDone;
+                    layerControllers.Add(controller);
+                }
+            }
+        }
+
+        public Vector2 GetCurrentScrollOffset()
+        {
+            return panLayerController.GetCurrentScrollOffset();
+        }
+
+        public void ScrollFromOrigin(Vector2 offset, bool enablePanAnimation = false)
+        {
+            Vector3 targetOffset = panLayerController.CalculateScrollAmountForLimitedPanFromOrigin(offset, false, true);
+
+            if (targetOffset == Vector3.zero)
             {
                 return;
             }
 
-            if (enabled)
-            {
-                GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
-            }
-            else
-            {
-                GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
-            }
+            float duration = Mathf.Min(Mathf.Max(Mathf.Abs(targetOffset.x), Mathf.Abs(targetOffset.y)) * durationPerUnit, maxScrollDuration);
 
-            dialogueChangeSubscribed = enabled;
-        };
-
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            GameObject child = transform.GetChild(i).gameObject;
-            GUILayerController controller = child.GetComponent<GUILayerController>();
-
-            if (controller != null)
+            foreach (var controller in layerControllers)
             {
-                controller.ScrollAnimationFinished += OnLayerScrollAnimationDone;
-                layerControllers.Add(controller);
+                controller.ScrollFromOrigin(targetOffset, duration, enablePanAnimation);
             }
         }
-    }
 
-    public Vector2 GetCurrentScrollOffset()
-    {
-        return panLayerController.GetCurrentScrollOffset();
-    }
-
-    public void ScrollFromOrigin(Vector2 offset, bool enablePanAnimation = false)
-    {
-        Vector3 targetOffset = panLayerController.CalculateScrollAmountForLimitedPanFromOrigin(offset, false, true);
-
-        if (targetOffset == Vector3.zero)
+        private IEnumerator ScrollDoneCoroutine(bool reportNotBusyAnymore)
         {
-            return;
-        }
-
-        float duration = Mathf.Min(Mathf.Max(Mathf.Abs(targetOffset.x), Mathf.Abs(targetOffset.y)) * durationPerUnit, maxScrollDuration);
-
-        foreach (var controller in layerControllers)
-        {
-            controller.ScrollFromOrigin(targetOffset, duration, enablePanAnimation);
-        }
-    }
-
-    private IEnumerator ScrollDoneCoroutine(bool reportNotBusyAnymore)
-    {
-        yield return new WaitUntil(() => ScrollAnimationDone);
-        if (reportNotBusyAnymore)
-        {
-            controlSet.UnregisterPerformingBusyAnimation();
-        }
-        yield break;
-    }
-
-    public void Scroll(Vector2 amount, bool hasDuration = false, bool busyWhileAnimating = true, bool accountingScrollFactor = true, bool forFrameScroll = false, EaseType ease = EaseType.Normal)
-    {
-        Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, forFrameScroll, accountingScrollFactor);
-        if (targetPanAmount == Vector3.zero)
-        {
-            return;
-        }
-
-        float duration = 0.0f;
-
-        if (hasDuration) {
-            if (busyWhileAnimating)
+            yield return new WaitUntil(() => ScrollAnimationDone);
+            if (reportNotBusyAnymore)
             {
-                controlSet.RegisterPerformingBusyAnimation();
+                controlSet.UnregisterPerformingBusyAnimation();
+            }
+            yield break;
+        }
+
+        public void Scroll(Vector2 amount, bool hasDuration = false, bool busyWhileAnimating = true, bool accountingScrollFactor = true, bool forFrameScroll = false, GUILayerController.EaseType ease = GUILayerController.EaseType.Normal)
+        {
+            Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, forFrameScroll, accountingScrollFactor);
+            if (targetPanAmount == Vector3.zero)
+            {
+                return;
             }
 
-            scrollInProgressCount = layerControllers.Count;
-            duration = Mathf.Max(Mathf.Abs(targetPanAmount.x), Mathf.Abs(targetPanAmount.y)) * durationPerUnit;
-        }
+            float duration = 0.0f;
 
-        foreach (var controller in layerControllers)
-        {
-            controller.ForceScroll(targetPanAmount, duration, ease, forFrameScroll);
-        }
-
-        if (hasDuration && busyWhileAnimating)
-        {
-            StartCoroutine(ScrollDoneCoroutine(busyWhileAnimating));
-        }
-    }
-
-    public void OnMoveLeft(InputAction.CallbackContext context)
-    {
-        Scroll(Vector3.right * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
-    }
-
-    public void OnMoveRight(InputAction.CallbackContext context)
-    {
-        Scroll(Vector3.left * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
-    }
-
-    public void OnMoveUp(InputAction.CallbackContext context)
-    {
-        Scroll(Vector3.down * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
-    }
-
-    public void OnMoveDown(InputAction.CallbackContext context)
-    {
-        Scroll(Vector3.up * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
-    }
-
-    public void OnMoveJoystick(InputAction.CallbackContext context)
-    {
-        Scroll(context.ReadValue<Vector2>() * -moveAmount, forFrameScroll: true);
-    }
-
-    private void OnControlSetOffsetChanged(Vector2 offset)
-    {
-        ScrollFromOrigin(GameUtils.ToUnityCoordinates(offset), false);
-    }
-
-    private void OnDialogueStateChanged(bool state)
-    {
-        if (!state)
-        {
-            previousDialogueDisabledTimestamp = Time.time;
-        }
-    }
-
-    private void OnActiveConfirmed(InputAction.CallbackContext context)
-    {
-        if (currentActiveController == null)
-        {
-            return;
-        }
-        
-        bool passed = true;
-
-        // The input sometimes trigger too fast
-        if (previousDialogueDisabledTimestamp >= 0.0f)
-        {
-            passed = (Time.time - previousDialogueDisabledTimestamp) >= activeCooldownFromCloseDialogue;
-        }
-
-        if (context.ReadValueAsButton() && passed)
-        {
-            currentActiveController.OnConfirmed();
-        }
-    }
-
-    private void OnPanRequested(Vector2 amount)
-    {
-        // Temporary disable inputs
-        GameInputManager.Instance.SetGUIInputActionMapState(false);
-        ScrollFromOrigin(GameUtils.ToUnityCoordinates(amount), true);
-        GameInputManager.Instance.SetGUIInputActionMapState(true);
-    }
-
-    private void OnScrollSpeedsSet(Vector2[] speeds)
-    {
-        int index = 0;
-
-        foreach (var layerController in layerControllers)
-        {
-            if (layerController.scroll == Vector2.zero)
+            if (hasDuration)
             {
-                layerController.scroll = speeds[index++];
-            }
-        }
-    }
+                if (busyWhileAnimating)
+                {
+                    controlSet.RegisterPerformingBusyAnimation();
+                }
 
-    public bool ClaimActive(GUIActiveController controller)
-    {
-        if (currentActiveController != null)
-        {
-            if (!pendingClaimActiveControllers.Contains(controller))
-            {
-                pendingClaimActiveControllers.Add(controller);
+                scrollInProgressCount = layerControllers.Count;
+                duration = Mathf.Max(Mathf.Abs(targetPanAmount.x), Mathf.Abs(targetPanAmount.y)) * durationPerUnit;
             }
 
-            return false;
+            foreach (var controller in layerControllers)
+            {
+                controller.ForceScroll(targetPanAmount, duration, ease, forFrameScroll);
+            }
+
+            if (hasDuration && busyWhileAnimating)
+            {
+                StartCoroutine(ScrollDoneCoroutine(busyWhileAnimating));
+            }
         }
 
-        currentActiveController = controller;
-        currentActiveController.OnClaimSuccess();
-
-        return true;
-    }
-
-    public bool ReleaseActive(GUIActiveController controller)
-    {
-        if (currentActiveController == controller)
+        public void OnMoveLeft(InputAction.CallbackContext context)
         {
-            if (pendingClaimActiveControllers.Count != 0)
-            {
-                currentActiveController = pendingClaimActiveControllers[0];
-                pendingClaimActiveControllers.RemoveAt(0);
+            Scroll(Vector3.right * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
+        }
 
-                currentActiveController.OnClaimSuccess();
-            } else
+        public void OnMoveRight(InputAction.CallbackContext context)
+        {
+            Scroll(Vector3.left * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
+        }
+
+        public void OnMoveUp(InputAction.CallbackContext context)
+        {
+            Scroll(Vector3.down * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
+        }
+
+        public void OnMoveDown(InputAction.CallbackContext context)
+        {
+            Scroll(Vector3.up * moveAmount * context.ReadValue<float>(), forFrameScroll: true);
+        }
+
+        public void OnMoveJoystick(InputAction.CallbackContext context)
+        {
+            Scroll(context.ReadValue<Vector2>() * -moveAmount, forFrameScroll: true);
+        }
+
+        private void OnControlSetOffsetChanged(Vector2 offset)
+        {
+            ScrollFromOrigin(GameUtils.ToUnityCoordinates(offset), false);
+        }
+
+        private void OnDialogueStateChanged(bool state)
+        {
+            if (!state)
             {
-                currentActiveController = null;
+                previousDialogueDisabledTimestamp = Time.time;
             }
+        }
+
+        private void OnActiveConfirmed(InputAction.CallbackContext context)
+        {
+            if (currentActiveController == null)
+            {
+                return;
+            }
+
+            bool passed = true;
+
+            // The input sometimes trigger too fast
+            if (previousDialogueDisabledTimestamp >= 0.0f)
+            {
+                passed = (Time.time - previousDialogueDisabledTimestamp) >= activeCooldownFromCloseDialogue;
+            }
+
+            if (context.ReadValueAsButton() && passed)
+            {
+                currentActiveController.OnConfirmed();
+            }
+        }
+
+        private void OnPanRequested(Vector2 amount)
+        {
+            // Temporary disable inputs
+            GameInputManager.Instance.SetGUIInputActionMapState(false);
+            ScrollFromOrigin(GameUtils.ToUnityCoordinates(amount), true);
+            GameInputManager.Instance.SetGUIInputActionMapState(true);
+        }
+
+        private void OnScrollSpeedsSet(Vector2[] speeds)
+        {
+            int index = 0;
+
+            foreach (var layerController in layerControllers)
+            {
+                if (layerController.scroll == Vector2.zero)
+                {
+                    layerController.scroll = speeds[index++];
+                }
+            }
+        }
+
+        public bool ClaimActive(GUIActiveController controller)
+        {
+            if (currentActiveController != null)
+            {
+                if (!pendingClaimActiveControllers.Contains(controller))
+                {
+                    pendingClaimActiveControllers.Add(controller);
+                }
+
+                return false;
+            }
+
+            currentActiveController = controller;
+            currentActiveController.OnClaimSuccess();
 
             return true;
         }
 
-        if (pendingClaimActiveControllers.Contains(controller))
+        public bool ReleaseActive(GUIActiveController controller)
         {
-            pendingClaimActiveControllers.Remove(controller);
-        }
+            if (currentActiveController == controller)
+            {
+                if (pendingClaimActiveControllers.Count != 0)
+                {
+                    currentActiveController = pendingClaimActiveControllers[0];
+                    pendingClaimActiveControllers.RemoveAt(0);
 
-        return false;
+                    currentActiveController.OnClaimSuccess();
+                }
+                else
+                {
+                    currentActiveController = null;
+                }
+
+                return true;
+            }
+
+            if (pendingClaimActiveControllers.Contains(controller))
+            {
+                pendingClaimActiveControllers.Remove(controller);
+            }
+
+            return false;
+        }
     }
 }

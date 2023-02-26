@@ -1,14 +1,16 @@
-﻿using System;
+﻿using DDEngine.BaseScript;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ActionParser
+namespace DDEngine.Action
 {
-    private static Dictionary<string, ActionOpcode> stringToActionOps = new Dictionary<string, ActionOpcode>(StringComparer.OrdinalIgnoreCase)
+    public class ActionParser
+    {
+        private static Dictionary<string, ActionOpcode> stringToActionOps = new Dictionary<string, ActionOpcode>(StringComparer.OrdinalIgnoreCase)
     {
         { "loadlocation", ActionOpcode.LoadLocation },
         { "return", ActionOpcode.Return },
@@ -31,120 +33,122 @@ public class ActionParser
         { "quit", ActionOpcode.Quit }
     };
 
-    public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)
-    {
-        ScriptBlock<ActionOpcode> blocks = new ScriptBlock<ActionOpcode>();
-
-        using (StreamReader reader = new StreamReader(stream))
+        public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)
         {
-            do
+            ScriptBlock<ActionOpcode> blocks = new ScriptBlock<ActionOpcode>();
+
+            using (StreamReader reader = new StreamReader(stream))
             {
-                string commandLine = reader.ReadLine();
-                if (commandLine == null)
+                do
                 {
-                    break;
-                }
-                commandLine = commandLine.Trim();
-                if (commandLine.StartsWith('#') || (commandLine == ""))
-                {
-                    continue;
-                }
-                var commands = commandLine.Split(' ');
-
-                if (!stringToActionOps.ContainsKey(commands[0]))
-                {
-                    Debug.LogError("Unrecognised action opcode: " + commands[0]);
-                }
-                else
-                {
-                    ScriptCommand<ActionOpcode> command = new ScriptCommand<ActionOpcode>();
-                    command.Opcode = stringToActionOps[commands[0]];
-
-                    if (commands.Length > 1)
+                    string commandLine = reader.ReadLine();
+                    if (commandLine == null)
                     {
-                        command.Arguments.AddRange(commands.Skip(1));
+                        break;
                     }
+                    commandLine = commandLine.Trim();
+                    if (commandLine.StartsWith('#') || (commandLine == ""))
+                    {
+                        continue;
+                    }
+                    var commands = commandLine.Split(' ');
 
-                    blocks.Commands.Add(command);
-                }
-            } while (!reader.EndOfStream);
+                    if (!stringToActionOps.ContainsKey(commands[0]))
+                    {
+                        Debug.LogError("Unrecognised action opcode: " + commands[0]);
+                    }
+                    else
+                    {
+                        ScriptCommand<ActionOpcode> command = new ScriptCommand<ActionOpcode>();
+                        command.Opcode = stringToActionOps[commands[0]];
+
+                        if (commands.Length > 1)
+                        {
+                            command.Arguments.AddRange(commands.Skip(1));
+                        }
+
+                        blocks.Commands.Add(command);
+                    }
+                } while (!reader.EndOfStream);
+            }
+
+            return blocks;
         }
 
-        return blocks;
-    }
-
-    public static ActionLibrary Parse(Stream input)
-    {
-        Dictionary<string, Dictionary<string, ScriptBlock<ActionOpcode>>> actionHandlers = new
-            Dictionary<string, Dictionary<string, ScriptBlock<ActionOpcode>>>();
-
-        using (StreamReader reader = new StreamReader(input))
+        public static ActionLibrary Parse(Stream input)
         {
-            string handlerSpecs = null;
-            string actionScriptCurrent = null;
+            Dictionary<string, Dictionary<string, ScriptBlock<ActionOpcode>>> actionHandlers = new
+                Dictionary<string, Dictionary<string, ScriptBlock<ActionOpcode>>>();
 
-            while (true)
+            using (StreamReader reader = new StreamReader(input))
             {
-                string line = reader.ReadLine();
-                bool isHandlerLine = false;
+                string handlerSpecs = null;
+                string actionScriptCurrent = null;
 
-                if (line != null) {
-                    line = line.Trim();
-                    if ((line.StartsWith('#')) || (line == ""))
-                    {
-                        continue;
-                    }
-
-                    isHandlerLine = (line.StartsWith("@"));
-
-                    if ((handlerSpecs == null) && !isHandlerLine)
-                    {
-                        continue;
-                    }
-                }
-
-                if (isHandlerLine || (line == null))
+                while (true)
                 {
-                    if ((actionScriptCurrent != null) && (actionScriptCurrent.Length > 0))
+                    string line = reader.ReadLine();
+                    bool isHandlerLine = false;
+
+                    if (line != null)
                     {
-                        var comps = handlerSpecs.Substring(1).Split('.');
-                        if (comps.Length < 2)
+                        line = line.Trim();
+                        if ((line.StartsWith('#')) || (line == ""))
                         {
-                            Debug.LogError("Invalid event register line: " + handlerSpecs + ". Skipping this block!");
+                            continue;
                         }
-                        else
+
+                        isHandlerLine = (line.StartsWith("@"));
+
+                        if ((handlerSpecs == null) && !isHandlerLine)
                         {
-                            ScriptBlock<ActionOpcode> block = ParseEmbedded(new MemoryStream(Encoding.UTF8.GetBytes(actionScriptCurrent)));
-                            if (!actionHandlers.ContainsKey(comps[0]))
+                            continue;
+                        }
+                    }
+
+                    if (isHandlerLine || (line == null))
+                    {
+                        if ((actionScriptCurrent != null) && (actionScriptCurrent.Length > 0))
+                        {
+                            var comps = handlerSpecs.Substring(1).Split('.');
+                            if (comps.Length < 2)
                             {
-                                actionHandlers.Add(comps[0], new Dictionary<string, ScriptBlock<ActionOpcode>>());
-                            }
-                            if (actionHandlers[comps[0]].ContainsKey(comps[1]))
-                            {
-                                actionHandlers[comps[0]][comps[1]] = block;
+                                Debug.LogError("Invalid event register line: " + handlerSpecs + ". Skipping this block!");
                             }
                             else
                             {
-                                actionHandlers[comps[0]].Add(comps[1], block);
+                                ScriptBlock<ActionOpcode> block = ParseEmbedded(new MemoryStream(Encoding.UTF8.GetBytes(actionScriptCurrent)));
+                                if (!actionHandlers.ContainsKey(comps[0]))
+                                {
+                                    actionHandlers.Add(comps[0], new Dictionary<string, ScriptBlock<ActionOpcode>>());
+                                }
+                                if (actionHandlers[comps[0]].ContainsKey(comps[1]))
+                                {
+                                    actionHandlers[comps[0]][comps[1]] = block;
+                                }
+                                else
+                                {
+                                    actionHandlers[comps[0]].Add(comps[1], block);
+                                }
                             }
                         }
+
+                        handlerSpecs = line;
+                        actionScriptCurrent = null;
+                    }
+                    else
+                    {
+                        actionScriptCurrent += line + '\n';
                     }
 
-                    handlerSpecs = line;
-                    actionScriptCurrent = null;
-                }
-                else
-                {
-                    actionScriptCurrent += line + '\n';
-                }
-
-                if (line == null)
-                {
-                    break;
+                    if (line == null)
+                    {
+                        break;
+                    }
                 }
             }
-        }
 
-        return new ActionLibrary(actionHandlers);
+            return new ActionLibrary(actionHandlers);
+        }
     }
 }

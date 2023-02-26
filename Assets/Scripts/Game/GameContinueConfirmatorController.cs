@@ -1,53 +1,55 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class GameContinueConfirmatorController : MonoBehaviour
+namespace DDEngine.Game
 {
-    public bool Confirmed { get; set; } = false;
-    private bool hearing = false;
-    private InputAction inputAction = null;
-
-    private void OnDisable()
+    public class GameContinueConfirmatorController : MonoBehaviour
     {
-        if (hearing)
+        public bool Confirmed { get; set; } = false;
+        private bool hearing = false;
+        private InputAction inputAction = null;
+
+        private void OnDisable()
         {
+            if (hearing)
+            {
+                GameInputManager.Instance.ContinueGameActionMap.Disable();
+            }
+        }
+
+        private void OnEnable()
+        {
+            GameInputManager.Instance.SetGUIInputActionMapState(false);
+
+            if (hearing)
+            {
+                GameInputManager.Instance.ContinueGameActionMap.Enable();
+            }
+        }
+
+        public void StartHearing()
+        {
+            var continueActionMap = GameInputManager.Instance.ContinueGameActionMap;
+            continueActionMap.Enable();
+
+            InputAction continueAction = continueActionMap.FindAction("Continue Confirmed");
+            continueAction.performed += OnContinueConfirmed;
+
+            hearing = true;
+            Confirmed = false;
+        }
+
+        public void OnContinueConfirmed(InputAction.CallbackContext context)
+        {
+            Confirmed = true;
+            hearing = false;
+
+            if (inputAction != null)
+            {
+                inputAction.performed -= OnContinueConfirmed;
+            }
+
             GameInputManager.Instance.ContinueGameActionMap.Disable();
         }
-    }
-
-    private void OnEnable()
-    {
-        GameInputManager.Instance.SetGUIInputActionMapState(false);
-
-        if (hearing)
-        {
-            GameInputManager.Instance.ContinueGameActionMap.Enable();
-        }
-    }
-
-    public void StartHearing()
-    {
-        var continueActionMap = GameInputManager.Instance.ContinueGameActionMap;
-        continueActionMap.Enable();
-
-        InputAction continueAction = continueActionMap.FindAction("Continue Confirmed");
-        continueAction.performed += OnContinueConfirmed;
-
-        hearing = true;
-        Confirmed = false;
-    }
-
-    public void OnContinueConfirmed(InputAction.CallbackContext context)
-    {
-        Confirmed = true;
-        hearing = false;
-
-        if (inputAction != null)
-        {
-            inputAction.performed -= OnContinueConfirmed;
-        }
-
-        GameInputManager.Instance.ContinueGameActionMap.Disable();
     }
 }

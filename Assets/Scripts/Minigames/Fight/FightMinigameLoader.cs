@@ -1,42 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.GUI;
 
-public class FightMinigameLoader : MonoBehaviour
+namespace DDEngine.Minigame.Fight
 {
-    public static FightMinigameLoader Instance;
-
-    [SerializeField]
-    private GameObject fightScenePrefabObject;
-
-    private void Awake()
+    public class FightMinigameLoader : MonoBehaviour
     {
-        Instance = this;
-    }
+        public static FightMinigameLoader Instance;
 
-    public GUIControlSet Load(FightMinigameInfo fightInfo, string filename, Vector2 viewSize)
-    {
-        GUIControlSet fightSceneControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
-            fightScenePrefabObject, filename, viewSize, new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: true));
+        [SerializeField]
+        private GameObject fightScenePrefabObject;
 
-        fightSceneControlSet.StateChanged += enabled =>
+        private void Awake()
         {
-            if (enabled)
-            {
-                GameInputManager.Instance.FightMinigameActionMap.Enable();
-            }
-            else
-            {
-                GameInputManager.Instance.FightMinigameActionMap.Disable();
-            }
-        };
-
-        FightSceneController fightSceneController = fightSceneControlSet.GameObject.GetComponent<FightSceneController>();
-        if (fightSceneController != null)
-        {
-            fightSceneController.Setup(fightInfo);
+            Instance = this;
         }
 
-        return fightSceneControlSet;
+        public GUIControlSet Load(FightMinigameInfo fightInfo, string filename, Vector2 viewSize)
+        {
+            GUIControlSet fightSceneControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
+                fightScenePrefabObject, filename, viewSize, new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: true));
+
+            fightSceneControlSet.StateChanged += enabled =>
+            {
+                if (enabled)
+                {
+                    GameInputManager.Instance.FightMinigameActionMap.Enable();
+                }
+                else
+                {
+                    GameInputManager.Instance.FightMinigameActionMap.Disable();
+                }
+            };
+
+            FightSceneController fightSceneController = fightSceneControlSet.GameObject.GetComponent<FightSceneController>();
+            if (fightSceneController != null)
+            {
+                fightSceneController.Setup(fightInfo);
+            }
+
+            return fightSceneControlSet;
+        }
     }
 }

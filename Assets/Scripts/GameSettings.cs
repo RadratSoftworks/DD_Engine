@@ -2,282 +2,289 @@
 using System.Linq;
 using UnityEngine;
 
-public static class GameSettings
+namespace DDEngine
 {
-    private const string LanguageSettingKey = "GameLanguage";
-    private const string CacheThresholdKey = "CacheThreshold";
-    private const string CachedChangeDeltaKey = "CachedChangeDelta";
-    private const string GameVolumeKey = "GameVolume";
-    private const string TextSpeedKey = "TextSpeed";
-    private const string GameStartLocationKey = "GameStartLocation";
-    private const int defaultCachedChangeDelta = 10;
-    private const int defaultCacheThreshold = 5;
-
-    private static GameLanguage cachedLanguage = GameLanguage.Undefined;
-    private static GameTextSpeed textSpeed = GameTextSpeed.Undefined;
-    private static GameLanguage stagingLanguage = GameLanguage.Undefined;
-    private static GameStartLocation startLocation = GameStartLocation.Undefined;
-    private static int cachedChangeDelta = -1;
-    private static int cachedThreshold = -1;
-
-    private static GameLanguage GetDefaultSystemLanguage()
+    public static class GameSettings
     {
-        SystemLanguage lang = Application.systemLanguage;
-        switch (lang)
+        private const string LanguageSettingKey = "GameLanguage";
+        private const string CacheThresholdKey = "CacheThreshold";
+        private const string CachedChangeDeltaKey = "CachedChangeDelta";
+        private const string GameVolumeKey = "GameVolume";
+        private const string TextSpeedKey = "TextSpeed";
+        private const string GameStartLocationKey = "GameStartLocation";
+        private const int defaultCachedChangeDelta = 10;
+        private const int defaultCacheThreshold = 5;
+
+        private static GameLanguage cachedLanguage = GameLanguage.Undefined;
+        private static GameTextSpeed textSpeed = GameTextSpeed.Undefined;
+        private static GameLanguage stagingLanguage = GameLanguage.Undefined;
+        private static GameStartLocation startLocation = GameStartLocation.Undefined;
+        private static int cachedChangeDelta = -1;
+        private static int cachedThreshold = -1;
+
+        private static GameLanguage GetDefaultSystemLanguage()
         {
-            case SystemLanguage.English:
-                return GameLanguage.English;
-
-            case SystemLanguage.French:
-                return GameLanguage.French;
-
-            case SystemLanguage.Spanish:
-                return GameLanguage.Spanish;
-
-            case SystemLanguage.ChineseSimplified:
-                return GameLanguage.SimplifiedChinese;
-
-            case SystemLanguage.ChineseTraditional:
-                return GameLanguage.TraditionalChinese;
-
-            case SystemLanguage.German:
-                return GameLanguage.Deutsch;
-
-            case SystemLanguage.Italian:
-                return GameLanguage.Italian;
-
-            default:
-                return GameLanguage.English;
-        }
-    }
-
-    public static GameLanguage GameLanguage
-    {
-        get {
-            if (cachedLanguage != GameLanguage.Undefined)
+            SystemLanguage lang = Application.systemLanguage;
+            switch (lang)
             {
+                case SystemLanguage.English:
+                    return GameLanguage.English;
+
+                case SystemLanguage.French:
+                    return GameLanguage.French;
+
+                case SystemLanguage.Spanish:
+                    return GameLanguage.Spanish;
+
+                case SystemLanguage.ChineseSimplified:
+                    return GameLanguage.SimplifiedChinese;
+
+                case SystemLanguage.ChineseTraditional:
+                    return GameLanguage.TraditionalChinese;
+
+                case SystemLanguage.German:
+                    return GameLanguage.Deutsch;
+
+                case SystemLanguage.Italian:
+                    return GameLanguage.Italian;
+
+                default:
+                    return GameLanguage.English;
+            }
+        }
+
+        public static GameLanguage GameLanguage
+        {
+            get
+            {
+                if (cachedLanguage != GameLanguage.Undefined)
+                {
+                    return cachedLanguage;
+                }
+
+                string result = PlayerPrefs.GetString(LanguageSettingKey);
+                if ((result == null) || !Enum.TryParse(result, out cachedLanguage))
+                {
+                    cachedLanguage = GetDefaultSystemLanguage();
+                    PlayerPrefs.SetString(LanguageSettingKey, cachedLanguage.ToString());
+                }
+
                 return cachedLanguage;
             }
-
-            string result = PlayerPrefs.GetString(LanguageSettingKey);
-            if ((result == null) || !Enum.TryParse(result, out cachedLanguage))
+            set
             {
-                cachedLanguage = GetDefaultSystemLanguage();
-                PlayerPrefs.SetString(LanguageSettingKey, cachedLanguage.ToString());
+                PlayerPrefs.SetString(LanguageSettingKey, value.ToString());
+                cachedLanguage = value;
             }
-
-            return cachedLanguage;
         }
-        set
+
+        public static GameLanguage StagingGameLanguage
         {
-            PlayerPrefs.SetString(LanguageSettingKey, value.ToString());
-            cachedLanguage = value;
+            get { return stagingLanguage; }
+            set { stagingLanguage = value; }
         }
-    }
 
-    public static GameLanguage StagingGameLanguage
-    {
-        get { return stagingLanguage; } set { stagingLanguage = value; }
-    }
-
-    public static int CacheThreshold
-    {
-        get
+        public static int CacheThreshold
         {
-            if (cachedThreshold <= 0)
+            get
             {
-                cachedThreshold = PlayerPrefs.GetInt(CacheThresholdKey, defaultCacheThreshold);
-            }
-            return cachedThreshold;
-        }
-        set
-        {
-            PlayerPrefs.SetInt(CacheThresholdKey, value);
-            cachedThreshold = value;
-        }
-    }
-
-    public static int CacheThresholdInSeconds => CacheThreshold * 60;
-
-    public static int CachedChangeDelta
-    {
-        get
-        {
-            if (cachedChangeDelta <= 0)
-            {
-                cachedChangeDelta = PlayerPrefs.GetInt(CachedChangeDeltaKey, defaultCachedChangeDelta);
-            }
-
-            return cachedChangeDelta;
-        }
-        set
-        {
-            PlayerPrefs.SetInt(CachedChangeDeltaKey, value);
-            cachedChangeDelta = value;
-        }
-    }
-
-    public static GameTextSpeed TextSpeed
-    {
-        get
-        {
-            if (textSpeed == GameTextSpeed.Undefined)
-            {
-                string result = PlayerPrefs.GetString(TextSpeedKey);
-                if ((result == null) || !Enum.TryParse(result, true, out textSpeed))
+                if (cachedThreshold <= 0)
                 {
-                    textSpeed = GameTextSpeed.Normal;
-                    PlayerPrefs.SetString(TextSpeedKey, textSpeed.ToString());
+                    cachedThreshold = PlayerPrefs.GetInt(CacheThresholdKey, defaultCacheThreshold);
+                }
+                return cachedThreshold;
+            }
+            set
+            {
+                PlayerPrefs.SetInt(CacheThresholdKey, value);
+                cachedThreshold = value;
+            }
+        }
+
+        public static int CacheThresholdInSeconds => CacheThreshold * 60;
+
+        public static int CachedChangeDelta
+        {
+            get
+            {
+                if (cachedChangeDelta <= 0)
+                {
+                    cachedChangeDelta = PlayerPrefs.GetInt(CachedChangeDeltaKey, defaultCachedChangeDelta);
+                }
+
+                return cachedChangeDelta;
+            }
+            set
+            {
+                PlayerPrefs.SetInt(CachedChangeDeltaKey, value);
+                cachedChangeDelta = value;
+            }
+        }
+
+        public static GameTextSpeed TextSpeed
+        {
+            get
+            {
+                if (textSpeed == GameTextSpeed.Undefined)
+                {
+                    string result = PlayerPrefs.GetString(TextSpeedKey);
+                    if ((result == null) || !Enum.TryParse(result, true, out textSpeed))
+                    {
+                        textSpeed = GameTextSpeed.Normal;
+                        PlayerPrefs.SetString(TextSpeedKey, textSpeed.ToString());
+                    }
+
+                    return textSpeed;
                 }
 
                 return textSpeed;
             }
-
-            return textSpeed;
-        }
-        set
-        {
-            PlayerPrefs.SetString(TextSpeedKey, value.ToString());
-            textSpeed = value;
-        }
-    }
-
-    public static GameStartLocation StartLocation
-    {
-        get
-        {
-            if (startLocation == GameStartLocation.Undefined)
+            set
             {
-                string result = PlayerPrefs.GetString(GameStartLocationKey);
-                if ((result == null) || !Enum.TryParse(result, true, out startLocation))
+                PlayerPrefs.SetString(TextSpeedKey, value.ToString());
+                textSpeed = value;
+            }
+        }
+
+        public static GameStartLocation StartLocation
+        {
+            get
+            {
+                if (startLocation == GameStartLocation.Undefined)
                 {
-                    startLocation = GameStartLocation.Menu;
-                    PlayerPrefs.SetString(GameStartLocationKey, startLocation.ToString());
+                    string result = PlayerPrefs.GetString(GameStartLocationKey);
+                    if ((result == null) || !Enum.TryParse(result, true, out startLocation))
+                    {
+                        startLocation = GameStartLocation.Menu;
+                        PlayerPrefs.SetString(GameStartLocationKey, startLocation.ToString());
+                    }
+
+                    return startLocation;
                 }
 
                 return startLocation;
             }
-
-            return startLocation;
+            set
+            {
+                PlayerPrefs.SetString(GameStartLocationKey, value.ToString());
+                startLocation = value;
+            }
         }
-        set
+
+        public static void RestoreSettings()
         {
-            PlayerPrefs.SetString(GameStartLocationKey, value.ToString());
-            startLocation = value;
+            AudioListener.volume = PlayerPrefs.GetFloat(GameVolumeKey, 1.0f);
         }
-    }
 
-    public static void RestoreSettings()
-    {
-        AudioListener.volume = PlayerPrefs.GetFloat(GameVolumeKey, 1.0f);
-    }
-
-    public static void Reset()
-    {
-        cachedLanguage = GameLanguage.Undefined;
-        stagingLanguage = GameLanguage.Undefined;
-        textSpeed = GameTextSpeed.Normal;
-        AudioListener.volume = 1.0f;
-
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
-    }
-
-    public static void Save()
-    {
-        if (stagingLanguage != GameLanguage.Undefined)
+        public static void Reset()
         {
-            GameLanguage = stagingLanguage;
+            cachedLanguage = GameLanguage.Undefined;
             stagingLanguage = GameLanguage.Undefined;
+            textSpeed = GameTextSpeed.Normal;
+            AudioListener.volume = 1.0f;
+
+            PlayerPrefs.DeleteAll();
+            PlayerPrefs.Save();
         }
 
-        PlayerPrefs.Save();
-    }
-
-    public static string GetIngameSettingValue(string key)
-    {
-        switch (key)
+        public static void Save()
         {
-            case "audio":
-                {
-                    int val = Mathf.Clamp((int)(AudioListener.volume * 10), 0, 10);
-                    if (val == 0)
-                    {
-                        return "off";
-                    } else
-                    {
-                        return val.ToString();
-                    }
-                }
+            if (stagingLanguage != GameLanguage.Undefined)
+            {
+                GameLanguage = stagingLanguage;
+                stagingLanguage = GameLanguage.Undefined;
+            }
 
-            case "language":
-                return Constants.GameLanguageToResourceLanguageCodeDict[
-                    (stagingLanguage != GameLanguage.Undefined) ? stagingLanguage : GameLanguage];
-
-            case "textspeed":
-                // Same value but just all lowercased
-                return TextSpeed.ToString().ToLower();
-
-            case "gamestart":
-                // Same value but just all lowercased
-                return StartLocation.ToString().ToLower();
-
-            default:
-                return PlayerPrefs.GetString(key);
+            PlayerPrefs.Save();
         }
-    }
 
-    public static void SetIngameSettingValue(string key, string value)
-    {
-        switch (key)
+        public static string GetIngameSettingValue(string key)
         {
-            case "audio":
-                {
-                    if (value == "off")
+            switch (key)
+            {
+                case "audio":
                     {
-                        AudioListener.volume = 0;
-                    } else
-                    {
-                        AudioListener.volume = Mathf.Clamp(int.Parse(value) / 10.0f, 0.0f, 1.0f);
+                        int val = Mathf.Clamp((int)(AudioListener.volume * 10), 0, 10);
+                        if (val == 0)
+                        {
+                            return "off";
+                        }
+                        else
+                        {
+                            return val.ToString();
+                        }
                     }
 
-                    PlayerPrefs.SetFloat(GameVolumeKey, AudioListener.volume);
-                    break;
-                }
+                case "language":
+                    return Constants.GameLanguageToResourceLanguageCodeDict[
+                        (stagingLanguage != GameLanguage.Undefined) ? stagingLanguage : GameLanguage];
 
-            case "language":
-                {
-                    GameLanguage langCode = Constants.GameLanguageToResourceLanguageCodeDict.FirstOrDefault(x => x.Value == value).Key;
-                    if (langCode != GameLanguage.Undefined)
+                case "textspeed":
+                    // Same value but just all lowercased
+                    return TextSpeed.ToString().ToLower();
+
+                case "gamestart":
+                    // Same value but just all lowercased
+                    return StartLocation.ToString().ToLower();
+
+                default:
+                    return PlayerPrefs.GetString(key);
+            }
+        }
+
+        public static void SetIngameSettingValue(string key, string value)
+        {
+            switch (key)
+            {
+                case "audio":
                     {
-                        stagingLanguage = langCode;
-                    }
-                    break;
-                }
+                        if (value == "off")
+                        {
+                            AudioListener.volume = 0;
+                        }
+                        else
+                        {
+                            AudioListener.volume = Mathf.Clamp(int.Parse(value) / 10.0f, 0.0f, 1.0f);
+                        }
 
-            case "textspeed":
-                {
-                    if (Enum.TryParse(value, true, out GameTextSpeed speed))
+                        PlayerPrefs.SetFloat(GameVolumeKey, AudioListener.volume);
+                        break;
+                    }
+
+                case "language":
                     {
-                        TextSpeed = speed;
+                        GameLanguage langCode = Constants.GameLanguageToResourceLanguageCodeDict.FirstOrDefault(x => x.Value == value).Key;
+                        if (langCode != GameLanguage.Undefined)
+                        {
+                            stagingLanguage = langCode;
+                        }
+                        break;
                     }
 
-                    break;
-                }
-
-            case "gamestart":
-                {
-                    if (Enum.TryParse(value, true, out GameStartLocation location))
+                case "textspeed":
                     {
-                        StartLocation = location;
+                        if (Enum.TryParse(value, true, out GameTextSpeed speed))
+                        {
+                            TextSpeed = speed;
+                        }
+
+                        break;
                     }
 
-                    break;
-                }
+                case "gamestart":
+                    {
+                        if (Enum.TryParse(value, true, out GameStartLocation location))
+                        {
+                            StartLocation = location;
+                        }
 
-            default:
-                PlayerPrefs.SetString(key, value);
-                break;
+                        break;
+                    }
+
+                default:
+                    PlayerPrefs.SetString(key, value);
+                    break;
+            }
         }
     }
-} 
+}

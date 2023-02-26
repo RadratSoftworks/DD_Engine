@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public static class UnityUtils
+namespace DDEngine.Utils
 {
-    public static T InstantiateAndGetComponent<T>(GameObject prefab, Transform parent, string name = null)
+    public static class UnityUtils
     {
-        GameObject obj = GameObject.Instantiate(prefab, parent, false);
-        obj.transform.localPosition = Vector3.zero;
-        obj.SetActive(false);
-
-        if (name != null)
+        public static T InstantiateAndGetComponent<T>(GameObject prefab, Transform parent, string name = null)
         {
-            obj.name = GameUtils.ToUnityName(name);
-        }
+            GameObject obj = GameObject.Instantiate(prefab, parent, false);
+            obj.transform.localPosition = Vector3.zero;
+            obj.SetActive(false);
 
-        return obj.GetComponent<T>();
+            if (name != null)
+            {
+                obj.name = GameUtils.ToUnityName(name);
+            }
+
+            return obj.GetComponent<T>();
+        }
     }
 }

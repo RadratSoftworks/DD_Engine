@@ -1,51 +1,56 @@
 ﻿using UnityEngine;
+using DDEngine.Utils;
+using DDEngine.GUI.Parser;
 
-public class GUIMenuItemController : GUIMenuSelectableBehaviour
+namespace DDEngine.GUI
 {
-    private TMPro.TMP_Text text;
-    private string textId;
-
-    private void UpdateText(GUIControlSet ownSet)
+    public class GUIMenuItemController : GUIMenuSelectableBehaviour
     {
-        text.text = ownSet.GetLanguageString(textId);
-        text.font = ResourceManager.Instance.GetFontAssetForLocalization();
-    }
+        private TMPro.TMP_Text text;
+        private string textId;
 
-    public void Setup(GUIControlSet ownSet, GUIControlMenuItemDescription description, ref Vector2 positonBase)
-    {
-        this.textId = description.TextName;
-        this.text = GetComponentInChildren<TMPro.TMP_Text>();
-
-        if (description.Id != null)
+        private void UpdateText(GUIControlSet ownSet)
         {
-            this.name = description.Id;
+            text.text = ownSet.GetLanguageString(textId);
+            text.font = ResourceManager.Instance.GetFontAssetForLocalization();
         }
 
-        transform.localPosition = GameUtils.ToUnityCoordinates(description.Position) + positonBase;
-
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-        if (renderer != null)
+        public void Setup(GUIControlSet ownSet, GUIControlMenuItemDescription description, ref Vector2 positonBase)
         {
-            renderer.sortingOrder = GameUtils.ToUnitySortingPosition(description.AbsoluteDepth);
-            renderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources, description.ImagePath);
+            this.textId = description.TextName;
+            this.text = GetComponentInChildren<TMPro.TMP_Text>();
 
-            positonBase += renderer.sprite.bounds.size * Vector2.down;
-            Vector2 sizeReal = renderer.sprite.textureRect.size / Constants.PixelsPerUnit;
-
-            // Adjust the rect so that text can properly render
-            RectTransform transform = GetComponent<RectTransform>();
-            if (transform)
+            if (description.Id != null)
             {
-                transform.sizeDelta = sizeReal;
+                this.name = description.Id;
             }
 
-            text.rectTransform.sizeDelta = sizeReal;
+            transform.localPosition = GameUtils.ToUnityCoordinates(description.Position) + positonBase;
 
-            var meshRenderer = text.GetComponent<MeshRenderer>();
-            meshRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(description.AbsoluteDepth);
+            SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+            if (renderer != null)
+            {
+                renderer.sortingOrder = GameUtils.ToUnitySortingPosition(description.AbsoluteDepth);
+                renderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources, description.ImagePath);
 
-            UpdateText(ownSet);
-            ownSet.LocalizationChanged += UpdateText;
+                positonBase += renderer.sprite.bounds.size * Vector2.down;
+                Vector2 sizeReal = renderer.sprite.textureRect.size / Constants.PixelsPerUnit;
+
+                // Adjust the rect so that text can properly render
+                RectTransform transform = GetComponent<RectTransform>();
+                if (transform)
+                {
+                    transform.sizeDelta = sizeReal;
+                }
+
+                text.rectTransform.sizeDelta = sizeReal;
+
+                var meshRenderer = text.GetComponent<MeshRenderer>();
+                meshRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(description.AbsoluteDepth);
+
+                UpdateText(ownSet);
+                ownSet.LocalizationChanged += UpdateText;
+            }
         }
     }
 }

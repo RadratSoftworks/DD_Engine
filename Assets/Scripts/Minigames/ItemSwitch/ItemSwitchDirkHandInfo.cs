@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ItemSwitchDirkHandInfo
+namespace DDEngine.Minigame.ItemSwitch
 {
-    public string AnimationPath;
-    public Vector2 OriginalPosition;
-};
+    public class ItemSwitchDirkHandInfo
+    {
+        public string AnimationPath;
+        public Vector2 OriginalPosition;
+    };
+}

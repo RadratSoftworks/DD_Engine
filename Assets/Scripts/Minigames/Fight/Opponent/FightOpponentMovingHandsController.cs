@@ -1,41 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 
-public class FightOpponentMovingHandsController : MonoBehaviour
+namespace DDEngine.Minigame.Fight
 {
-    private Sequence moveSequence;
-    private Vector3 originalPosition;
-
-    [SerializeField]
-    private float moveDelta = 0.05f;
-
-    [SerializeField]
-    private float moveDuration = 1.0f;
-
-    private void Awake()
+    public class FightOpponentMovingHandsController : MonoBehaviour
     {
-        originalPosition = transform.position;
-    }
+        private Sequence moveSequence;
+        private Vector3 originalPosition;
 
-    private void Start()
-    {
-        DOTween.Init();
-    }
+        [SerializeField]
+        private float moveDelta = 0.05f;
 
-    private void OnEnable()
-    {
-        transform.localPosition = originalPosition;
+        [SerializeField]
+        private float moveDuration = 1.0f;
 
-        moveSequence = DOTween.Sequence()
-            .Append(transform.DOLocalMove(originalPosition + Vector3.up * moveDelta, moveDuration / 2))
-            .Append(transform.DOLocalMove(originalPosition + Vector3.down * moveDelta, moveDuration / 2))
-            .SetLoops(-1);
-    }
+        private void Awake()
+        {
+            originalPosition = transform.position;
+        }
 
-    private void OnDisable()
-    {
-        moveSequence.Kill();
+        private void Start()
+        {
+            DOTween.Init();
+        }
+
+        private void OnEnable()
+        {
+            transform.localPosition = originalPosition;
+
+            moveSequence = DOTween.Sequence()
+                .Append(transform.DOLocalMove(originalPosition + Vector3.up * moveDelta, moveDuration / 2))
+                .Append(transform.DOLocalMove(originalPosition + Vector3.down * moveDelta, moveDuration / 2))
+                .SetLoops(-1);
+        }
+
+        private void OnDisable()
+        {
+            moveSequence.Kill();
+        }
     }
 }

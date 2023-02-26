@@ -1,4 +1,6 @@
-﻿namespace DDEngine.Installer.States
+﻿using DDEngine.Utils.FSM;
+
+namespace DDEngine.Installer.States
 {
     public class PickInstallFileState : IState
     {

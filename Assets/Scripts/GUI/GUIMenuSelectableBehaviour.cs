@@ -1,52 +1,55 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 
-public class GUIMenuSelectableBehaviour : MonoBehaviour
+namespace DDEngine.GUI
 {
-    public float distanceXSinkBack = 0.15f;
-    public float sinkDuration = 0.6f;
-
-    private Vector2 originalPosition;
-    private AudioSource selectedAudio;
-    protected Sequence selectedSequence;
-
-    // Start is called before the first frame update
-    void Start()
+    public class GUIMenuSelectableBehaviour : MonoBehaviour
     {
-        DOTween.Init();
-    }
+        public float distanceXSinkBack = 0.15f;
+        public float sinkDuration = 0.6f;
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
+        private Vector2 originalPosition;
+        private AudioSource selectedAudio;
+        protected Sequence selectedSequence;
 
-    public virtual void OnOptionSelected()
-    {
-        if (originalPosition == null)
+        // Start is called before the first frame update
+        void Start()
         {
-            originalPosition = transform.position;
+            DOTween.Init();
         }
 
-        if (selectedAudio == null)
+        // Update is called once per frame
+        void Update()
         {
-            selectedAudio = GetComponent<AudioSource>();
-            selectedAudio.clip = SoundManager.Instance.GetAudioClip(FilePaths.MenuOptionSwitchSFXFileName);
         }
 
-        // We can play later
-        selectedAudio.Play();
+        public virtual void OnOptionSelected()
+        {
+            if (originalPosition == null)
+            {
+                originalPosition = transform.position;
+            }
 
-        selectedSequence = DOTween.Sequence();
-        selectedSequence.AppendInterval(selectedAudio.clip.length)
-            .Append(transform.DOLocalMoveX(originalPosition.x - distanceXSinkBack, sinkDuration));
-    }
+            if (selectedAudio == null)
+            {
+                selectedAudio = GetComponent<AudioSource>();
+                selectedAudio.clip = SoundManager.Instance.GetAudioClip(FilePaths.MenuOptionSwitchSFXFileName);
+            }
 
-    public virtual void OnOptionDeselected()
-    {
-        selectedAudio.Stop();
-        selectedSequence.Kill();
+            // We can play later
+            selectedAudio.Play();
 
-        transform.DOLocalMoveX(originalPosition.x, sinkDuration);
+            selectedSequence = DOTween.Sequence();
+            selectedSequence.AppendInterval(selectedAudio.clip.length)
+                .Append(transform.DOLocalMoveX(originalPosition.x - distanceXSinkBack, sinkDuration));
+        }
+
+        public virtual void OnOptionDeselected()
+        {
+            selectedAudio.Stop();
+            selectedSequence.Kill();
+
+            transform.DOLocalMoveX(originalPosition.x, sinkDuration);
+        }
     }
 }

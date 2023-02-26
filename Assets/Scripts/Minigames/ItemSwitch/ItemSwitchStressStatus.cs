@@ -1,9 +1,10 @@
-﻿using System;
-
-public enum ItemSwitchStressStatus
+﻿namespace DDEngine.Minigame.ItemSwitch
 {
-    Stable,
-    Average,
-    Hard,
-    Shutdown
-};
+    public enum ItemSwitchStressStatus
+    {
+        Stable,
+        Average,
+        Hard,
+        Shutdown
+    }
+}

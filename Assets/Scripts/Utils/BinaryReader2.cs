@@ -2,74 +2,78 @@
 using System.IO;
 using System.Text;
 
-public class BinaryReader2 : BinaryReader
+namespace DDEngine.Utils
 {
-    public BinaryReader2(Stream input) : base(input)
+    public class BinaryReader2 : BinaryReader
     {
-    }
-
-    public BinaryReader2(Stream input, Encoding encoding) : base(input, encoding)
-    {
-    }
-
-    public BinaryReader2(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
-    {
-    }
-
-    public string ReadWordLengthString()
-    {
-        ushort len = ReadUInt16BE();
-        byte[] data = new byte[len];
-
-        if (base.BaseStream.Read(data) != len)
+        public BinaryReader2(Stream input) : base(input)
         {
-            return null;
         }
 
-        return Encoding.UTF8.GetString(data);
-    }
-
-    public String ReadZeroTerminatedString()
-    {
-        string result = "";
-        do
+        public BinaryReader2(Stream input, Encoding encoding) : base(input, encoding)
         {
-            char c = (char)base.PeekChar();
-            if (c == 0)
+        }
+
+        public BinaryReader2(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
+        {
+        }
+
+        public string ReadWordLengthString()
+        {
+            ushort len = ReadUInt16BE();
+            byte[] data = new byte[len];
+
+            if (base.BaseStream.Read(data) != len)
             {
-                break;
-            } else
-            {
-                base.ReadByte();
-                result += c;
+                return null;
             }
-        } while (true);
 
-        return result;
-    }
+            return Encoding.UTF8.GetString(data);
+        }
 
-    public short ReadInt16BE()
-    {
-        var data = base.ReadBytes(2);
-        Array.Reverse(data);
-        return BitConverter.ToInt16(data, 0);
-    }
-    public int ReadInt32BE()
-    {
-        var data = base.ReadBytes(4);
-        Array.Reverse(data);
-        return BitConverter.ToInt32(data, 0);
-    }
+        public String ReadZeroTerminatedString()
+        {
+            string result = "";
+            do
+            {
+                char c = (char)base.PeekChar();
+                if (c == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    base.ReadByte();
+                    result += c;
+                }
+            } while (true);
 
-    public ushort ReadUInt16BE()
-    {
-        var data = base.ReadBytes(2);
-        Array.Reverse(data);
-        return BitConverter.ToUInt16(data, 0);
-    }
+            return result;
+        }
 
-    public void RewindByte()
-    {
-        BaseStream.Seek(-1, SeekOrigin.Current);
+        public short ReadInt16BE()
+        {
+            var data = base.ReadBytes(2);
+            Array.Reverse(data);
+            return BitConverter.ToInt16(data, 0);
+        }
+        public int ReadInt32BE()
+        {
+            var data = base.ReadBytes(4);
+            Array.Reverse(data);
+            return BitConverter.ToInt32(data, 0);
+        }
+
+        public ushort ReadUInt16BE()
+        {
+            var data = base.ReadBytes(2);
+            Array.Reverse(data);
+            return BitConverter.ToUInt16(data, 0);
+        }
+
+        public void RewindByte()
+        {
+            BaseStream.Seek(-1, SeekOrigin.Current);
+        }
     }
 }

@@ -1,34 +1,37 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.Utils;
 
-public class GUIControlScrollingPictureDescription : GUIControlDescription
+namespace DDEngine.GUI.Parser
 {
-    public string ImagePath { get; set; }
-    public Vector2 TopPosition { get; set; }
-    public Vector2 Scroll { get; set; }
-    public Vector2 ScrollSize { get; set; }
-
-    public GUIControlScrollingPictureDescription(GUIControlDescription parent, BinaryReader2 reader)
+    public class GUIControlScrollingPictureDescription : GUIControlDescription
     {
-        Internalize(parent, reader);
-    }
+        public string ImagePath { get; set; }
+        public Vector2 TopPosition { get; set; }
+        public Vector2 Scroll { get; set; }
+        public Vector2 ScrollSize { get; set; }
 
-    private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
-    {
-        short x = reader.ReadInt16BE();
-        short y = reader.ReadInt16BE();
-        Depth = reader.ReadInt16BE();
+        public GUIControlScrollingPictureDescription(GUIControlDescription parent, BinaryReader2 reader)
+        {
+            Internalize(parent, reader);
+        }
 
-        TopPosition = new Vector2(x, y);
+        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        {
+            short x = reader.ReadInt16BE();
+            short y = reader.ReadInt16BE();
+            Depth = reader.ReadInt16BE();
 
-        short scrollX = reader.ReadInt16BE();
-        short scrollY = reader.ReadInt16BE();
-        short scrollWidth = reader.ReadInt16BE();
-        short scrollHeight = reader.ReadInt16BE();
+            TopPosition = new Vector2(x, y);
 
-        Scroll = new Vector2(scrollX, scrollY);
-        ScrollSize = new Vector2(scrollWidth, scrollHeight);
+            short scrollX = reader.ReadInt16BE();
+            short scrollY = reader.ReadInt16BE();
+            short scrollWidth = reader.ReadInt16BE();
+            short scrollHeight = reader.ReadInt16BE();
 
-        ImagePath = reader.ReadWordLengthString();
+            Scroll = new Vector2(scrollX, scrollY);
+            ScrollSize = new Vector2(scrollWidth, scrollHeight);
+
+            ImagePath = reader.ReadWordLengthString();
+        }
     }
 }

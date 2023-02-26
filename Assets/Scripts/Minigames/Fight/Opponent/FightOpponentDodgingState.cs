@@ -1,28 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine;
 
-public class FightOpponentDodgingState : FightOpponentBlockStateBase
+namespace DDEngine.Minigame.Fight
 {
-    private SpriteAnimatorController bodyBlockAnim;
-
-    public FightOpponentDodgingState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo) 
-        : base(stateMachine, opponentInfo, FighterState.Idle)
+    public class FightOpponentDodgingState : FightOpponentBlockStateBase
     {
+        private SpriteAnimatorController bodyBlockAnim;
 
-        bodyBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
-            opponentInfo.BodyBlockAnimPath, Vector2.zero, FightOpponentConstants.OpponentBodyDepth);
-    }
+        public FightOpponentDodgingState(FightOpponentController stateMachine, FightOpponentInfo opponentInfo)
+            : base(stateMachine, opponentInfo, FighterState.Idle)
+        {
 
-    public override void Enter()
-    {
-        bodyBlockAnim.Enable();
-        base.Enter();
-    }
+            bodyBlockAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
+                opponentInfo.BodyBlockAnimPath, Vector2.zero, FightOpponentConstants.OpponentBodyDepth);
+        }
 
-    public override void Leave()
-    {
-        bodyBlockAnim.Disable();
-        base.Leave();
+        public override void Enter()
+        {
+            bodyBlockAnim.Enable();
+            base.Enter();
+        }
+
+        public override void Leave()
+        {
+            bodyBlockAnim.Disable();
+            base.Leave();
+        }
     }
 }

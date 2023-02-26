@@ -2,162 +2,167 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MinigameVariable
+namespace DDEngine.Minigame
 {
-    private Dictionary<string, object> properties = new Dictionary<string, object>();
-    private string name;
-
-    public Dictionary<string, object> Properties => properties;
-    public string Name => name;
-    public object Value { get; set; }
-
-    public MinigameVariable(string name, object value = null)
+    public class MinigameVariable
     {
-        this.name = name;
-        this.Value = value;
-    }
+        private Dictionary<string, object> properties = new Dictionary<string, object>();
+        private string name;
 
-    public bool ConvertToVector2(out Vector2 result)
-    {
-        result = Vector2.zero;
+        public Dictionary<string, object> Properties => properties;
+        public string Name => name;
+        public object Value { get; set; }
 
-        if (!TryGetValue("x", out int xValue) || !TryGetValue("y", out int yValue))
+        public MinigameVariable(string name, object value = null)
         {
-            return false;
+            this.name = name;
+            this.Value = value;
         }
 
-        result = new Vector2(xValue, yValue);
-        return true;
-    }
-
-    public bool ConvertToRect(out Rect result)
-    {
-        result = Rect.zero;
-
-        if (!TryGetValue("x", out int xValue) || !TryGetValue("y", out int yValue) ||
-            !TryGetValue("w", out int wValue) || !TryGetValue("h", out int hValue))
+        public bool ConvertToVector2(out Vector2 result)
         {
-            return false;
+            result = Vector2.zero;
+
+            if (!TryGetValue("x", out int xValue) || !TryGetValue("y", out int yValue))
+            {
+                return false;
+            }
+
+            result = new Vector2(xValue, yValue);
+            return true;
         }
 
-        result = new Rect(new Vector2(xValue, yValue), new Vector2(wValue, hValue));
-        return true;
-    }
-
-    public bool TryGetValues<T>(string name, out List<T> resultGet)
-    {
-        resultGet = null;
-        int count = 0;
-
-        while (true)
+        public bool ConvertToRect(out Rect result)
         {
-            string nameArrayed = string.Format("{0}[{1}]", name, count);
-            if (!properties.ContainsKey(nameArrayed))
+            result = Rect.zero;
+
+            if (!TryGetValue("x", out int xValue) || !TryGetValue("y", out int yValue) ||
+                !TryGetValue("w", out int wValue) || !TryGetValue("h", out int hValue))
             {
-                break;
+                return false;
             }
 
-            object valueRaw = properties[nameArrayed];
-            if (!(valueRaw is T))
-            {
-                break;
-            }
-
-            if (resultGet == null)
-            {
-                resultGet = new List<T>();
-            }
-
-            resultGet.Add((T)valueRaw);
-            count++;
+            result = new Rect(new Vector2(xValue, yValue), new Vector2(wValue, hValue));
+            return true;
         }
 
-        return (count != 0);
-    }
-
-    public bool TryGetValue<T>(string name, out T resultGet)
-    {
-        resultGet = default(T);
-
-        if (properties.TryGetValue(name, out object resultValue))
+        public bool TryGetValues<T>(string name, out List<T> resultGet)
         {
-            if (resultValue is MinigameVariable)
+            resultGet = null;
+            int count = 0;
+
+            while (true)
             {
-                Type genericType = typeof(T);
-                if (genericType == typeof(MinigameVariable))
+                string nameArrayed = string.Format("{0}[{1}]", name, count);
+                if (!properties.ContainsKey(nameArrayed))
                 {
-                    resultGet = (T)resultValue;
-                    return true;
+                    break;
                 }
 
-                MinigameVariable resultVariable = resultValue as MinigameVariable;
-                if (resultVariable == null)
+                object valueRaw = properties[nameArrayed];
+                if (!(valueRaw is T))
                 {
-                    return false;
+                    break;
                 }
 
-                if (genericType == typeof(Vector2))
+                if (resultGet == null)
                 {
-                    if (!resultVariable.ConvertToVector2(out Vector2 resultVec2))
+                    resultGet = new List<T>();
+                }
+
+                resultGet.Add((T)valueRaw);
+                count++;
+            }
+
+            return (count != 0);
+        }
+
+        public bool TryGetValue<T>(string name, out T resultGet)
+        {
+            resultGet = default(T);
+
+            if (properties.TryGetValue(name, out object resultValue))
+            {
+                if (resultValue is MinigameVariable)
+                {
+                    Type genericType = typeof(T);
+                    if (genericType == typeof(MinigameVariable))
+                    {
+                        resultGet = (T)resultValue;
+                        return true;
+                    }
+
+                    MinigameVariable resultVariable = resultValue as MinigameVariable;
+                    if (resultVariable == null)
                     {
                         return false;
                     }
 
-                    resultGet = (T)(object)resultVec2;
+                    if (genericType == typeof(Vector2))
+                    {
+                        if (!resultVariable.ConvertToVector2(out Vector2 resultVec2))
+                        {
+                            return false;
+                        }
+
+                        resultGet = (T)(object)resultVec2;
+                        return true;
+                    }
+
+                    if (!(resultVariable.Value is T))
+                    {
+                        return false;
+                    }
+
+                    resultGet = (T)resultVariable.Value;
                     return true;
                 }
-
-                if (!(resultVariable.Value is T))
+                else
                 {
-                    return false;
-                }
+                    if (!(resultValue is T))
+                    {
+                        return false;
+                    }
 
-                resultGet = (T)resultVariable.Value;
-                return true;
-            } else
+                    resultGet = (T)resultValue;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void AddProperty(string name, object obj)
+        {
+            if (properties.ContainsKey(name))
             {
-                if (!(resultValue is T))
-                {
-                    return false;
-                }
-
-                resultGet = (T)resultValue;
-                return true;
+                properties[name] = obj;
+            }
+            else
+            {
+                properties.Add(name, obj);
             }
         }
 
-        return false;
-    }
-
-    public void AddProperty(string name, object obj)
-    {
-        if (properties.ContainsKey(name))
+        public MinigameVariable AddOrGetChildMember(string name)
         {
-            properties[name] = obj;
-        } else
-        {
-            properties.Add(name, obj);
-        }
-    }
-
-    public MinigameVariable AddOrGetChildMember(string name)
-    {
-        if (properties.ContainsKey(name))
-        {
-            if (!(properties[name] is MinigameVariable))
+            if (properties.ContainsKey(name))
             {
-                MinigameVariable var = new MinigameVariable(name, properties[name]);
-                properties[name] = var;
+                if (!(properties[name] is MinigameVariable))
+                {
+                    MinigameVariable var = new MinigameVariable(name, properties[name]);
+                    properties[name] = var;
+                }
+
+                return properties[name] as MinigameVariable;
             }
+            else
+            {
+                MinigameVariable variable = new MinigameVariable(name);
+                properties.Add(name, variable);
 
-            return properties[name] as MinigameVariable;
-        }
-        else
-        {
-            MinigameVariable variable = new MinigameVariable(name);
-            properties.Add(name, variable);
-
-            return variable;
+                return variable;
+            }
         }
     }
 }

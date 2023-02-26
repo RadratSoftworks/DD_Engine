@@ -1,23 +1,25 @@
-﻿
-public enum GadgetOpcode
+﻿namespace DDEngine.Gadget
 {
-    // Dialogues
-    Load,
-    Pan,
-    Continue,
-    Balloon,
-    Stinger,
-    Text,
-    HideText,
-    Play,
-    Pause,
-    Clear,
-    Background,
-    Animation,
-    StartAction,
-    FadeIn,
-    FadeOut,
-    Icon,
-    Choice,
-    ChoiceConditional
+    public enum GadgetOpcode
+    {
+        // Dialogues
+        Load,
+        Pan,
+        Continue,
+        Balloon,
+        Stinger,
+        Text,
+        HideText,
+        Play,
+        Pause,
+        Clear,
+        Background,
+        Animation,
+        StartAction,
+        FadeIn,
+        FadeOut,
+        Icon,
+        Choice,
+        ChoiceConditional
+    }
 }

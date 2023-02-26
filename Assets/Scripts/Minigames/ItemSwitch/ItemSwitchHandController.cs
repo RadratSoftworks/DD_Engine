@@ -1,80 +1,85 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
-public class ItemSwitchHandController : MonoBehaviour
+using DDEngine.Utils;
+
+namespace DDEngine.Minigame.ItemSwitch
 {
-    private SpriteAnimatorController handAnimatorController;
-    private Sequence shakeSequence;
-    private Vector2 position;
-
-    [SerializeField]
-    private float shakePatternDuration = 10.0f;
-
-    [SerializeField]
-    private float stableRevertDuration = 0.2f;
-
-    [SerializeField]
-    private float bitStressShakeStrength = 0.05f;
-
-    [SerializeField]
-    private float hardStressShakeStrength = 0.2f;
-
-    [SerializeField]
-    private int bitStressShakeVibrato = 3;
-
-    [SerializeField]
-    private int hardStressShakeVibrato = 5;
-
-    private void Awake()
+    public class ItemSwitchHandController : MonoBehaviour
     {
-        handAnimatorController = GetComponent<SpriteAnimatorController>();
-    }
+        private SpriteAnimatorController handAnimatorController;
+        private Sequence shakeSequence;
+        private Vector2 position;
 
-    private void Start()
-    {
-        DOTween.Init();
-    }
+        [SerializeField]
+        private float shakePatternDuration = 10.0f;
 
-    public void Setup(ItemSwitchStressMachineController indicator, ItemSwitchDirkHandInfo handInfo)
-    {
-        transform.localPosition = GameUtils.ToUnityCoordinates(handInfo.OriginalPosition);
-        handAnimatorController.Setup(handInfo.OriginalPosition, SpriteAnimatorController.SortOrderNotSet, handInfo.AnimationPath);
-        
-        indicator.StressStatusEntered += OnStressStatusEntered;
-        shakeSequence = DOTween.Sequence();
-        position = transform.localPosition;
-    }
+        [SerializeField]
+        private float stableRevertDuration = 0.2f;
 
-    public void Shutdown()
-    {
-        shakeSequence?.Kill();
-    }
+        [SerializeField]
+        private float bitStressShakeStrength = 0.05f;
 
-    private void OnStressStatusEntered(ItemSwitchStressStatus status)
-    {
-        shakeSequence?.Kill();
+        [SerializeField]
+        private float hardStressShakeStrength = 0.2f;
 
-        shakeSequence = DOTween.Sequence();
-        shakeSequence.Append(transform.DOLocalMove(position, stableRevertDuration));
+        [SerializeField]
+        private int bitStressShakeVibrato = 3;
 
-        switch (status)
+        [SerializeField]
+        private int hardStressShakeVibrato = 5;
+
+        private void Awake()
         {
-            case ItemSwitchStressStatus.Stable:
-                break;
+            handAnimatorController = GetComponent<SpriteAnimatorController>();
+        }
 
-            case ItemSwitchStressStatus.Average:
-                shakeSequence.Append(transform.DOShakePosition(shakePatternDuration, strength: bitStressShakeStrength, vibrato: bitStressShakeVibrato).SetEase(Ease.Unset))
-                    .SetLoops(-1);
-                break;
+        private void Start()
+        {
+            DOTween.Init();
+        }
 
-            case ItemSwitchStressStatus.Hard:
-                shakeSequence.Append(transform.DOShakePosition(shakePatternDuration, strength: hardStressShakeStrength, vibrato: hardStressShakeVibrato).SetEase(Ease.Unset))
-                    .SetLoops(-1);
-                break;
+        public void Setup(ItemSwitchStressMachineController indicator, ItemSwitchDirkHandInfo handInfo)
+        {
+            transform.localPosition = GameUtils.ToUnityCoordinates(handInfo.OriginalPosition);
+            handAnimatorController.Setup(handInfo.OriginalPosition, SpriteAnimatorController.SortOrderNotSet, handInfo.AnimationPath);
 
-            case ItemSwitchStressStatus.Shutdown:
-                Shutdown();
-                break;
+            indicator.StressStatusEntered += OnStressStatusEntered;
+            shakeSequence = DOTween.Sequence();
+            position = transform.localPosition;
+        }
+
+        public void Shutdown()
+        {
+            shakeSequence?.Kill();
+        }
+
+        private void OnStressStatusEntered(ItemSwitchStressStatus status)
+        {
+            shakeSequence?.Kill();
+
+            shakeSequence = DOTween.Sequence();
+            shakeSequence.Append(transform.DOLocalMove(position, stableRevertDuration));
+
+            switch (status)
+            {
+                case ItemSwitchStressStatus.Stable:
+                    break;
+
+                case ItemSwitchStressStatus.Average:
+                    shakeSequence.Append(transform.DOShakePosition(shakePatternDuration, strength: bitStressShakeStrength, vibrato: bitStressShakeVibrato).SetEase(Ease.Unset))
+                        .SetLoops(-1);
+                    break;
+
+                case ItemSwitchStressStatus.Hard:
+                    shakeSequence.Append(transform.DOShakePosition(shakePatternDuration, strength: hardStressShakeStrength, vibrato: hardStressShakeVibrato).SetEase(Ease.Unset))
+                        .SetLoops(-1);
+                    break;
+
+                case ItemSwitchStressStatus.Shutdown:
+                    Shutdown();
+                    break;
+            }
         }
     }
 }

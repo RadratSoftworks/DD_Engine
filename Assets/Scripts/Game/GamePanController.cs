@@ -1,44 +1,46 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
-public class GamePanController: MonoBehaviour
+namespace DDEngine.Game
 {
-    [SerializeField]
-    private Transform relativeToTransform;
-
-    private Vector3 GetStartingPosition()
+    public class GamePanController : MonoBehaviour
     {
-        return (relativeToTransform == null) ? transform.localPosition : (relativeToTransform.localPosition + transform.localPosition);
-    }
+        [SerializeField]
+        private Transform relativeToTransform;
 
-    private IEnumerator PanCoroutine(Vector2 targetPosition, int frames)
-    {
-        Vector3 destDelta = (new Vector3(targetPosition.x, targetPosition.y, 0) - GetStartingPosition());
-        Vector3 destLocal = transform.localPosition + destDelta;
-        Vector3 increasePerSe = destDelta / frames;
-        increasePerSe.z = 0.0f;
-
-        for (int i = 0; i < frames; i++)
+        private Vector3 GetStartingPosition()
         {
-            transform.localPosition += increasePerSe;
-            yield return null;
+            return (relativeToTransform == null) ? transform.localPosition : (relativeToTransform.localPosition + transform.localPosition);
         }
 
-        transform.localPosition = destLocal;
-        yield break;
-    }
-
-    public void Pan(Vector2 targetPosition, int frames)
-    {
-        StopAllCoroutines();
-
-        if (frames == 0)
+        private IEnumerator PanCoroutine(Vector2 targetPosition, int frames)
         {
-            transform.localPosition = targetPosition;
-            return;
+            Vector3 destDelta = (new Vector3(targetPosition.x, targetPosition.y, 0) - GetStartingPosition());
+            Vector3 destLocal = transform.localPosition + destDelta;
+            Vector3 increasePerSe = destDelta / frames;
+            increasePerSe.z = 0.0f;
+
+            for (int i = 0; i < frames; i++)
+            {
+                transform.localPosition += increasePerSe;
+                yield return null;
+            }
+
+            transform.localPosition = destLocal;
+            yield break;
         }
 
-        StartCoroutine(PanCoroutine(targetPosition, frames));
+        public void Pan(Vector2 targetPosition, int frames)
+        {
+            StopAllCoroutines();
+
+            if (frames == 0)
+            {
+                transform.localPosition = targetPosition;
+                return;
+            }
+
+            StartCoroutine(PanCoroutine(targetPosition, frames));
+        }
     }
 }

@@ -1,72 +1,75 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.Utils.FSM;
 
-public class FightPlayerTakingDamageState : IState
+namespace DDEngine.Minigame.Fight
 {
-    private FightPlayerController stateMachine;
-    private SpriteAnimatorController damageAnimation;
-    private SpriteAnimatorController deadAnimation;
-    private FighterHealthController playerHealthController;
-
-    public FightPlayerTakingDamageState(FightPlayerController stateMachine, FightPlayerInfo playerInfo)
+    public class FightPlayerTakingDamageState : IState
     {
-        this.stateMachine = stateMachine;
+        private FightPlayerController stateMachine;
+        private SpriteAnimatorController damageAnimation;
+        private SpriteAnimatorController deadAnimation;
+        private FighterHealthController playerHealthController;
 
-        playerHealthController = stateMachine.GetComponent<FighterHealthController>();
-        damageAnimation = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
-            stateMachine.transform, playerInfo.GetHitAnimPath, Vector2.zero,
-            FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
-
-        deadAnimation = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
-            stateMachine.transform, playerInfo.GameOverAnimPath, Vector2.zero,
-            FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
-
-        damageAnimation.Done += OnAnimationDone;
-        deadAnimation.Done += OnAnimationDone;
-    }
-
-    private void OnAnimationDone(SpriteAnimatorController target)
-    {
-        if (playerHealthController.IsDead)
+        public FightPlayerTakingDamageState(FightPlayerController stateMachine, FightPlayerInfo playerInfo)
         {
-            stateMachine.Transition(FighterState.KnockedOut);
+            this.stateMachine = stateMachine;
+
+            playerHealthController = stateMachine.GetComponent<FighterHealthController>();
+            damageAnimation = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
+                stateMachine.transform, playerInfo.GetHitAnimPath, Vector2.zero,
+                FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
+
+            deadAnimation = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject,
+                stateMachine.transform, playerInfo.GameOverAnimPath, Vector2.zero,
+                FightPlayerConstants.PlayerSpriteDepth, allowLoop: false);
+
+            damageAnimation.Done += OnAnimationDone;
+            deadAnimation.Done += OnAnimationDone;
         }
-        else
+
+        private void OnAnimationDone(SpriteAnimatorController target)
         {
-            stateMachine.Transition(FighterState.Idle);
-        }
-    }
-
-    public void Enter()
-    {
-    }
-
-    public void Leave()
-    {
-        damageAnimation.Disable();
-        deadAnimation.Disable();
-    }
-
-    public void ReceiveData(IStateMachine sender, object data)
-    {
-        if (data is int)
-        {
-            playerHealthController.TakeDamage((int)data);
-
             if (playerHealthController.IsDead)
             {
-                deadAnimation.Enable();
-                sender.GiveData(FightAttackResult.KnockedOut);
-            } else
+                stateMachine.Transition(FighterState.KnockedOut);
+            }
+            else
             {
-                damageAnimation.Enable();
-                sender.GiveData(FightAttackResult.DealtDamage);
+                stateMachine.Transition(FighterState.Idle);
             }
         }
-    }
 
-    public void Update()
-    {
+        public void Enter()
+        {
+        }
+
+        public void Leave()
+        {
+            damageAnimation.Disable();
+            deadAnimation.Disable();
+        }
+
+        public void ReceiveData(IStateMachine sender, object data)
+        {
+            if (data is int)
+            {
+                playerHealthController.TakeDamage((int)data);
+
+                if (playerHealthController.IsDead)
+                {
+                    deadAnimation.Enable();
+                    sender.GiveData(FightAttackResult.KnockedOut);
+                }
+                else
+                {
+                    damageAnimation.Enable();
+                    sender.GiveData(FightAttackResult.DealtDamage);
+                }
+            }
+        }
+
+        public void Update()
+        {
+        }
     }
 }

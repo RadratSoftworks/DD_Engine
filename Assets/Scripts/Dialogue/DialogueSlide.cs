@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DDEngine.BaseScript;
+using DDEngine.Gadget;
 
-public class DialogueSlide
+namespace DDEngine.Dialogue
 {
-    public ScriptBlock<GadgetOpcode> DialogScript { get; set; }
-    public string Type { get; set; }
-    public int Id { get; set; }
+    public class DialogueSlide
+    {
+        public ScriptBlock<GadgetOpcode> DialogScript { get; set; }
+        public string Type { get; set; }
+        public int Id { get; set; }
+    }
 }

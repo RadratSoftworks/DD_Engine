@@ -1,8 +1,11 @@
 ﻿using System;
-    
-public class FightSoundInfo
+
+namespace DDEngine.Minigame.Fight
 {
-    public string HitSoundPath;
-    public string HitHardSoundPath;
-    public string MissSoundPath;
+    public class FightSoundInfo
+    {
+        public string HitSoundPath;
+        public string HitHardSoundPath;
+        public string MissSoundPath;
+    }
 }

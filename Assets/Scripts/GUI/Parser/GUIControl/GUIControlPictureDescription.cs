@@ -1,31 +1,34 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.Utils;
 
-public class GUIControlPictureDescription: GUIControlDescription
+namespace DDEngine.GUI.Parser
 {
-    public string ImagePath { get; set; }
-    public string Id { get; set; }
-    public Vector2 TopPosition { get; set; }
-
-    public GUIControlPictureDescription(GUIControlDescription parent, BinaryReader2 reader)
+    public class GUIControlPictureDescription : GUIControlDescription
     {
-        Internalize(parent, reader);
-    }
+        public string ImagePath { get; set; }
+        public string Id { get; set; }
+        public Vector2 TopPosition { get; set; }
 
-    public GUIControlPictureDescription()
-    {
-    }
+        public GUIControlPictureDescription(GUIControlDescription parent, BinaryReader2 reader)
+        {
+            Internalize(parent, reader);
+        }
 
-    private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
-    {
-        Id = GameUtils.ToUnityName(reader.ReadWordLengthString());
+        public GUIControlPictureDescription()
+        {
+        }
 
-        short x = reader.ReadInt16BE();
-        short y = reader.ReadInt16BE();
+        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        {
+            Id = GameUtils.ToUnityName(reader.ReadWordLengthString());
 
-        Depth = reader.ReadInt16BE();
+            short x = reader.ReadInt16BE();
+            short y = reader.ReadInt16BE();
 
-        TopPosition = new Vector2(x, y);
-        ImagePath = reader.ReadWordLengthString();
+            Depth = reader.ReadInt16BE();
+
+            TopPosition = new Vector2(x, y);
+            ImagePath = reader.ReadWordLengthString();
+        }
     }
 }

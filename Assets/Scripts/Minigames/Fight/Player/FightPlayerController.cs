@@ -1,106 +1,111 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using DDEngine.Utils;
+using DDEngine.Utils.FSM;
 
-public class FightPlayerController : StateMachine<FighterState>
+namespace DDEngine.Minigame.Fight
 {
-    public GameObject animationPrefabObject;
-    public GameObject picturePrefabObject;
-    public FightOpponentController directOpponent;
-    public int frameTriggerIntent = 3;
-
-    private bool continueTriggered = false;
-
-    private void RegOrUnregControl(bool register)
+    public class FightPlayerController : StateMachine<FighterState>
     {
-        var fightActionMap = GameInputManager.Instance.FightMinigameActionMap;
+        public GameObject animationPrefabObject;
+        public GameObject picturePrefabObject;
+        public FightOpponentController directOpponent;
+        public int frameTriggerIntent = 3;
 
-        InputAction jabPressed = fightActionMap.FindAction("Jab Pressed");
-        InputAction punchPressed = fightActionMap.FindAction("Punch Pressed");
-        InputAction strongPunchPressed = fightActionMap.FindAction("Strong Punch Pressed");
-        InputAction dodgePressed = fightActionMap.FindAction("Dodge Pressed");
-        InputAction continueRequested = fightActionMap.FindAction("Continue Requested");
+        private bool continueTriggered = false;
 
-        if (register)
+        private void RegOrUnregControl(bool register)
         {
-            jabPressed.performed += OnJabPressed;
-            punchPressed.performed += OnPunchPressed;
-            strongPunchPressed.performed += OnStrongPunchPressed;
-            dodgePressed.performed += OnDodgePressed;
-            continueRequested.performed += OnContinueRequested;
-        }
-        else
-        {
-            jabPressed.performed -= OnJabPressed;
-            punchPressed.performed -= OnPunchPressed;
-            strongPunchPressed.performed -= OnStrongPunchPressed;
-            dodgePressed.performed -= OnDodgePressed;
-            continueRequested.performed -= OnContinueRequested;
-        }
-    }
+            var fightActionMap = GameInputManager.Instance.FightMinigameActionMap;
 
-    private void Awake()
-    {
-        RegOrUnregControl(true);
-    }
+            InputAction jabPressed = fightActionMap.FindAction("Jab Pressed");
+            InputAction punchPressed = fightActionMap.FindAction("Punch Pressed");
+            InputAction strongPunchPressed = fightActionMap.FindAction("Strong Punch Pressed");
+            InputAction dodgePressed = fightActionMap.FindAction("Dodge Pressed");
+            InputAction continueRequested = fightActionMap.FindAction("Continue Requested");
 
-    private void OnDestroy()
-    {
-        RegOrUnregControl(false);
-    }
-
-    public void Setup(FightPlayerInfo playerInfo, string wonScript)
-    {
-        transform.localPosition = GameUtils.ToUnityCoordinates(playerInfo.Position);
-
-        base.AddState(FighterState.Idle, new FightPlayerIdleState(this, playerInfo));
-        base.AddState(FighterState.Dodging, new FightPlayerDodgingState(this, playerInfo));
-        base.AddState(FighterState.Attacking, new FightPlayerAttackingState(this, playerInfo));
-        base.AddState(FighterState.TakingDamage, new FightPlayerTakingDamageState(this, playerInfo));
-        base.AddState(FighterState.KnockedOut, new FightPlayerKnockedOutState(this, playerInfo, wonScript));
-    }
-
-    protected override FighterState GetInitialState()
-    {
-        return FighterState.Idle;
-    }
-
-    public void OnJabPressed(InputAction.CallbackContext context)
-    {
-        GiveData(FightPunchType.Jab);
-    }
-
-    public void OnPunchPressed(InputAction.CallbackContext context)
-    {
-        GiveData(FightPunchType.Punch);
-    }
-
-    public void OnStrongPunchPressed(InputAction.CallbackContext context)
-    {
-        GiveData(FightPunchType.StrongPunch);
-    }
-
-    public void OnDodgePressed(InputAction.CallbackContext context)
-    {
-        GiveData(FightPunchType.Dodging);
-    }
-
-    public void OnContinueRequested(InputAction.CallbackContext context)
-    {
-        if (continueTriggered)
-        {
-            return;
+            if (register)
+            {
+                jabPressed.performed += OnJabPressed;
+                punchPressed.performed += OnPunchPressed;
+                strongPunchPressed.performed += OnStrongPunchPressed;
+                dodgePressed.performed += OnDodgePressed;
+                continueRequested.performed += OnContinueRequested;
+            }
+            else
+            {
+                jabPressed.performed -= OnJabPressed;
+                punchPressed.performed -= OnPunchPressed;
+                strongPunchPressed.performed -= OnStrongPunchPressed;
+                dodgePressed.performed -= OnDodgePressed;
+                continueRequested.performed -= OnContinueRequested;
+            }
         }
 
-        // If either one of us is knocked out, end the fight and disable input
-        if ((directOpponent.CurrentState == FighterState.KnockedOut) ||
-            (CurrentState == FighterState.KnockedOut))
+        private void Awake()
         {
-            FightEndIntent endIntent = new FightEndIntent();
+            RegOrUnregControl(true);
+        }
 
-            directOpponent.GiveDataFrom(this, endIntent);
-            GiveData(endIntent);
+        private void OnDestroy()
+        {
+            RegOrUnregControl(false);
+        }
 
-            continueTriggered = true;
+        public void Setup(FightPlayerInfo playerInfo, string wonScript)
+        {
+            transform.localPosition = GameUtils.ToUnityCoordinates(playerInfo.Position);
+
+            base.AddState(FighterState.Idle, new FightPlayerIdleState(this, playerInfo));
+            base.AddState(FighterState.Dodging, new FightPlayerDodgingState(this, playerInfo));
+            base.AddState(FighterState.Attacking, new FightPlayerAttackingState(this, playerInfo));
+            base.AddState(FighterState.TakingDamage, new FightPlayerTakingDamageState(this, playerInfo));
+            base.AddState(FighterState.KnockedOut, new FightPlayerKnockedOutState(this, playerInfo, wonScript));
+        }
+
+        protected override FighterState GetInitialState()
+        {
+            return FighterState.Idle;
+        }
+
+        public void OnJabPressed(InputAction.CallbackContext context)
+        {
+            GiveData(FightPunchType.Jab);
+        }
+
+        public void OnPunchPressed(InputAction.CallbackContext context)
+        {
+            GiveData(FightPunchType.Punch);
+        }
+
+        public void OnStrongPunchPressed(InputAction.CallbackContext context)
+        {
+            GiveData(FightPunchType.StrongPunch);
+        }
+
+        public void OnDodgePressed(InputAction.CallbackContext context)
+        {
+            GiveData(FightPunchType.Dodging);
+        }
+
+        public void OnContinueRequested(InputAction.CallbackContext context)
+        {
+            if (continueTriggered)
+            {
+                return;
+            }
+
+            // If either one of us is knocked out, end the fight and disable input
+            if ((directOpponent.CurrentState == FighterState.KnockedOut) ||
+                (CurrentState == FighterState.KnockedOut))
+            {
+                FightEndIntent endIntent = new FightEndIntent();
+
+                directOpponent.GiveDataFrom(this, endIntent);
+                GiveData(endIntent);
+
+                continueTriggered = true;
+            }
         }
     }
 }

@@ -1,17 +1,18 @@
-﻿using System;
-
-public enum FighterStopAttackingReason
+﻿namespace DDEngine.Minigame.Fight
 {
-    Pause = 0,
-    OpponentKnockedOut = 1
-};
-
-public class FighterStopAttackingIntent
-{
-    public FighterStopAttackingReason Reason { get; set; }
-
-    public FighterStopAttackingIntent(FighterStopAttackingReason reason)
+    public enum FighterStopAttackingReason
     {
-        Reason = reason;
+        Pause = 0,
+        OpponentKnockedOut = 1
+    };
+
+    public class FighterStopAttackingIntent
+    {
+        public FighterStopAttackingReason Reason { get; set; }
+
+        public FighterStopAttackingIntent(FighterStopAttackingReason reason)
+        {
+            Reason = reason;
+        }
     }
 }

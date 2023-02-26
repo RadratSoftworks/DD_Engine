@@ -1,52 +1,54 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneAudioController : MonoBehaviour
+namespace DDEngine
 {
-    public AudioSource normalSoundSource;
-    public AudioSource bgmSoundSource;
-
-    public void Play(string audioFileName, string playType)
+    public class SceneAudioController : MonoBehaviour
     {
-        AudioClip clip = SoundManager.Instance.GetAudioClip(audioFileName);
-        if (clip == null)
+        public AudioSource normalSoundSource;
+        public AudioSource bgmSoundSource;
+
+        public void Play(string audioFileName, string playType)
         {
-            return;
-        }
-        if (playType.Equals("normal", StringComparison.OrdinalIgnoreCase))
-        {
-            normalSoundSource.PlayOneShot(clip);
-        } else
-        {
-            if (clip == bgmSoundSource.clip)
+            AudioClip clip = SoundManager.Instance.GetAudioClip(audioFileName);
+            if (clip == null)
             {
-                bgmSoundSource.Play();
+                return;
+            }
+            if (playType.Equals("normal", StringComparison.OrdinalIgnoreCase))
+            {
+                normalSoundSource.PlayOneShot(clip);
             }
             else
             {
-                bgmSoundSource.Stop();
-                bgmSoundSource.clip = clip;
-                bgmSoundSource.loop = true;
+                if (clip == bgmSoundSource.clip)
+                {
+                    bgmSoundSource.Play();
+                }
+                else
+                {
+                    bgmSoundSource.Stop();
+                    bgmSoundSource.clip = clip;
+                    bgmSoundSource.loop = true;
 
-                bgmSoundSource.Play();
+                    bgmSoundSource.Play();
+                }
             }
         }
-    }
 
-    public void StopNormal()
-    {
-        normalSoundSource.Stop();
-    }
-
-    public void StopAll()
-    {
-        normalSoundSource.Stop();
-
-        if (bgmSoundSource != null)
+        public void StopNormal()
         {
-            bgmSoundSource.Stop();
+            normalSoundSource.Stop();
+        }
+
+        public void StopAll()
+        {
+            normalSoundSource.Stop();
+
+            if (bgmSoundSource != null)
+            {
+                bgmSoundSource.Stop();
+            }
         }
     }
 }

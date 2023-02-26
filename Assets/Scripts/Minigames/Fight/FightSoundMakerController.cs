@@ -1,58 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class FightSoundMakerController : MonoBehaviour
+namespace DDEngine.Minigame.Fight
 {
-    private AudioSource fxAudioSource;
-
-    private AudioClip missSoundClip;
-    private AudioClip hitSoundClip;
-    private AudioClip hitHardSoundClip;
-
-    private void Awake()
+    public class FightSoundMakerController : MonoBehaviour
     {
-        fxAudioSource = GetComponent<AudioSource>();
-    }
+        private AudioSource fxAudioSource;
 
-    public void Setup(FightSoundInfo soundInfo)
-    {
-        missSoundClip = SoundManager.Instance.GetAudioClip(soundInfo.MissSoundPath);
-        hitSoundClip = SoundManager.Instance.GetAudioClip(soundInfo.HitSoundPath);
-        hitHardSoundClip = SoundManager.Instance.GetAudioClip(soundInfo.HitHardSoundPath);
-    }
+        private AudioClip missSoundClip;
+        private AudioClip hitSoundClip;
+        private AudioClip hitHardSoundClip;
 
-    public void PlayBasedOnAttackResult(FightAttackResult result, FightPunchType punchType)
-    {
-        switch (result)
+        private void Awake()
         {
-            case FightAttackResult.Miss:
-                if (missSoundClip != null)
-                {
-                    fxAudioSource.PlayOneShot(missSoundClip);
-                }
-                break;
+            fxAudioSource = GetComponent<AudioSource>();
+        }
 
-            case FightAttackResult.DealtDamage:
-            case FightAttackResult.KnockedOut:
-                if (punchType == FightPunchType.StrongPunch)
-                {
-                    if (hitHardSoundClip != null)
+        public void Setup(FightSoundInfo soundInfo)
+        {
+            missSoundClip = SoundManager.Instance.GetAudioClip(soundInfo.MissSoundPath);
+            hitSoundClip = SoundManager.Instance.GetAudioClip(soundInfo.HitSoundPath);
+            hitHardSoundClip = SoundManager.Instance.GetAudioClip(soundInfo.HitHardSoundPath);
+        }
+
+        public void PlayBasedOnAttackResult(FightAttackResult result, FightPunchType punchType)
+        {
+            switch (result)
+            {
+                case FightAttackResult.Miss:
+                    if (missSoundClip != null)
                     {
-                        fxAudioSource.PlayOneShot(hitHardSoundClip);
+                        fxAudioSource.PlayOneShot(missSoundClip);
                     }
-                } else
-                {
-                    if (hitSoundClip != null)
+                    break;
+
+                case FightAttackResult.DealtDamage:
+                case FightAttackResult.KnockedOut:
+                    if (punchType == FightPunchType.StrongPunch)
                     {
-                        fxAudioSource.PlayOneShot(hitSoundClip);
+                        if (hitHardSoundClip != null)
+                        {
+                            fxAudioSource.PlayOneShot(hitHardSoundClip);
+                        }
                     }
-                }
+                    else
+                    {
+                        if (hitSoundClip != null)
+                        {
+                            fxAudioSource.PlayOneShot(hitSoundClip);
+                        }
+                    }
 
-                break;
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
         }
     }
 }

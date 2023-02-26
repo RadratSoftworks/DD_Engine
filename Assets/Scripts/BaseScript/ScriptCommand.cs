@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-public class ScriptCommand<T>
+namespace DDEngine.BaseScript
 {
-    public T Opcode { get; set; }
-    public List<object> Arguments { get; set; }
-
-    public ScriptCommand()
+    public class ScriptCommand<T>
     {
-        Arguments = new List<object>();
+        public T Opcode { get; set; }
+        public List<object> Arguments { get; set; }
+
+        public ScriptCommand()
+        {
+            Arguments = new List<object>();
+        }
     }
 }

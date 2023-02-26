@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-public class FightMinigameInfo
+﻿namespace DDEngine.Minigame.Fight
 {
-    public string BackgroundSoundPath;
-    public string BackgroundPicture;
+    public class FightMinigameInfo
+    {
+        public string BackgroundSoundPath;
+        public string BackgroundPicture;
 
-    public FightPlayerInfo PlayerInfo = new FightPlayerInfo();
-    public FightOpponentInfo OpponentInfo = new FightOpponentInfo();
+        public FightPlayerInfo PlayerInfo = new FightPlayerInfo();
+        public FightOpponentInfo OpponentInfo = new FightOpponentInfo();
 
-    public string FileWonScript;
-    public string FileLoseScript;
-};
+        public string FileWonScript;
+        public string FileLoseScript;
+    };
+}

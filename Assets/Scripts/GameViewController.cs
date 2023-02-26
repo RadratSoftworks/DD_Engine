@@ -2,57 +2,59 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameViewController : MonoBehaviour
+namespace DDEngine
 {
-    public static GameViewController Instance;
-
-    [SerializeField]
-    private Vector3 NonFullViewCameraPosition = new Vector3(30.0f, -30.0f, -5.0f);
-
-    [SerializeField]
-    private Vector3 FullViewCameraPosition = new Vector3(3.6f, -4.8f, -5.0f);
-
-    [SerializeField]
-    private Camera normalViewCamera;
-
-    [SerializeField]
-    private CinemachineVirtualCamera fullscreenCamera;
-
-    [SerializeField]
-    private CinemachineConfiner fullscreenCameraConfiner;
-
-    [SerializeField]
-    private RawImage uiNormalViewImage;
-
-    [SerializeField]
-    private Image uiBackgroundImage;
-
-    private void Start()
+    public class GameViewController : MonoBehaviour
     {
-        Instance = this;
-    }
+        public static GameViewController Instance;
 
-    public void SetFullViewWithFocus(Transform follow, Collider2D bounds)
-    {
-        uiNormalViewImage.enabled = false;
-        uiBackgroundImage.enabled = false;
-        normalViewCamera.enabled = false;
+        [SerializeField]
+        private Vector3 NonFullViewCameraPosition = new Vector3(30.0f, -30.0f, -5.0f);
 
-        fullscreenCamera.transform.localPosition = FullViewCameraPosition;
+        [SerializeField]
+        private Vector3 FullViewCameraPosition = new Vector3(3.6f, -4.8f, -5.0f);
 
-        fullscreenCamera.Follow = follow;
-        fullscreenCameraConfiner.m_BoundingShape2D = bounds;
-    }
+        [SerializeField]
+        private Camera normalViewCamera;
 
-    public void SetNormalView()
-    {
-        uiNormalViewImage.enabled = true;
-        uiBackgroundImage.enabled = true;
-        normalViewCamera.enabled = true;
+        [SerializeField]
+        private CinemachineVirtualCamera fullscreenCamera;
 
-        fullscreenCamera.transform.localPosition = NonFullViewCameraPosition;
-        fullscreenCamera.Follow = null;
-        fullscreenCameraConfiner.m_BoundingShape2D = null;
+        [SerializeField]
+        private CinemachineConfiner fullscreenCameraConfiner;
+
+        [SerializeField]
+        private RawImage uiNormalViewImage;
+
+        [SerializeField]
+        private Image uiBackgroundImage;
+
+        private void Start()
+        {
+            Instance = this;
+        }
+
+        public void SetFullViewWithFocus(Transform follow, Collider2D bounds)
+        {
+            uiNormalViewImage.enabled = false;
+            uiBackgroundImage.enabled = false;
+            normalViewCamera.enabled = false;
+
+            fullscreenCamera.transform.localPosition = FullViewCameraPosition;
+
+            fullscreenCamera.Follow = follow;
+            fullscreenCameraConfiner.m_BoundingShape2D = bounds;
+        }
+
+        public void SetNormalView()
+        {
+            uiNormalViewImage.enabled = true;
+            uiBackgroundImage.enabled = true;
+            normalViewCamera.enabled = true;
+
+            fullscreenCamera.transform.localPosition = NonFullViewCameraPosition;
+            fullscreenCamera.Follow = null;
+            fullscreenCameraConfiner.m_BoundingShape2D = null;
+        }
     }
 }
-

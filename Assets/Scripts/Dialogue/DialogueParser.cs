@@ -5,54 +5,58 @@ using System.IO;
 using System.Text;
 
 using UnityEngine;
+using DDEngine.Gadget;
 
-public class DialogueParser
+namespace DDEngine.Dialogue
 {
-    public static Dialogue Parse(Stream fileStream)
+    public class DialogueParser
     {
-        var document = new XmlDocument();
-        document.Load(fileStream);
-
-        var rootDialogues = document.GetElementsByTagName("Dialogue");
-        if (rootDialogues == null)
+        public static GameDialogue Parse(Stream fileStream)
         {
-            Debug.Log("Unable to find dialogue XML tag!");
-        }
+            var document = new XmlDocument();
+            document.Load(fileStream);
 
-        Dictionary<int, DialogueSlide> slides = new Dictionary<int, DialogueSlide>();
-
-        var rootDialogue = rootDialogues.Item(0) as XmlElement;
-        int startId = -1;
-
-        foreach (var dialogueSlideNode in rootDialogue.GetElementsByTagName("DialogueSlide"))
-        {
-            var dialogueSlide = dialogueSlideNode as XmlElement;
-
-            DialogueSlide slide = new DialogueSlide();
-            slide.Type = dialogueSlide.GetAttribute("type") ?? "normal";
-            slide.Type = slide.Type.Trim();
-
-            slide.Id = int.Parse(dialogueSlide.GetAttribute("id"));
-            if (slide.Type.Equals("start", StringComparison.OrdinalIgnoreCase) || (startId == -1))
+            var rootDialogues = document.GetElementsByTagName("Dialogue");
+            if (rootDialogues == null)
             {
-                startId = slide.Id;
+                Debug.Log("Unable to find dialogue XML tag!");
             }
 
-            byte[] dialogueSlideScriptBytes = Encoding.UTF8.GetBytes(dialogueSlide.InnerText);
-            using (MemoryStream stream = new MemoryStream(dialogueSlideScriptBytes))
+            Dictionary<int, DialogueSlide> slides = new Dictionary<int, DialogueSlide>();
+
+            var rootDialogue = rootDialogues.Item(0) as XmlElement;
+            int startId = -1;
+
+            foreach (var dialogueSlideNode in rootDialogue.GetElementsByTagName("DialogueSlide"))
             {
-                slide.DialogScript = GadgetParser.Parse(stream);
+                var dialogueSlide = dialogueSlideNode as XmlElement;
+
+                DialogueSlide slide = new DialogueSlide();
+                slide.Type = dialogueSlide.GetAttribute("type") ?? "normal";
+                slide.Type = slide.Type.Trim();
+
+                slide.Id = int.Parse(dialogueSlide.GetAttribute("id"));
+                if (slide.Type.Equals("start", StringComparison.OrdinalIgnoreCase) || (startId == -1))
+                {
+                    startId = slide.Id;
+                }
+
+                byte[] dialogueSlideScriptBytes = Encoding.UTF8.GetBytes(dialogueSlide.InnerText);
+                using (MemoryStream stream = new MemoryStream(dialogueSlideScriptBytes))
+                {
+                    slide.DialogScript = GadgetParser.Parse(stream);
+                }
+
+                slides.Add(slide.Id, slide);
             }
 
-            slides.Add(slide.Id, slide);
-        }
+            if (startId < 0)
+            {
+                return null;
+            }
 
-        if (startId < 0)
-        {
-            return null;
+            // Load language file!
+            return new GameDialogue(slides, startId);
         }
-
-        // Load language file!
-        return new Dialogue(slides, startId);
     }
 }

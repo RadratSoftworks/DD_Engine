@@ -1,6 +1,7 @@
-﻿using System;
-
-public class FightAttackIntent
+﻿namespace DDEngine.Minigame.Fight
 {
-    public FightDirection Direction { get; set; }
+    public class FightAttackIntent
+    {
+        public FightDirection Direction { get; set; }
+    }
 }

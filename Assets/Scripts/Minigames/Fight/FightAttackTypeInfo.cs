@@ -1,9 +1,10 @@
-﻿using System;
-
-public class FightAttackTypeInfo
+﻿namespace DDEngine.Minigame.Fight
 {
-    public string AnimationPath;
+    public class FightAttackTypeInfo
+    {
+        public string AnimationPath;
 
-    public int HitTimes;
-    public int HitPower;
-};
+        public int HitTimes;
+        public int HitPower;
+    };
+}

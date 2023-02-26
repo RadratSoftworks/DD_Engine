@@ -1,49 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.Utils;
 
-public class GUIControlBackgroundLabelDescription : GUIControlDescription
+namespace DDEngine.GUI.Parser
 {
-    public Vector2 Position { get; set; }
-    public string TextId { get; set; }
-    public Vector2 MarginSize { get; set; }
-    public string Pivot { get; set; }
-
-    public Color FillColor { get; set; }
-
-    public Color TextColor { get; set; }
-
-    public GUIControlBackgroundLabelDescription(GUIControlDescription parent, BinaryReader2 reader)
+    public class GUIControlBackgroundLabelDescription : GUIControlDescription
     {
-        Internalize(parent, reader);
-    }
+        public Vector2 Position { get; set; }
+        public string TextId { get; set; }
+        public Vector2 MarginSize { get; set; }
+        public string Pivot { get; set; }
 
-    private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
-    {
-        short x = reader.ReadInt16BE();
-        short y = reader.ReadInt16BE();
+        public Color FillColor { get; set; }
 
-        Depth = reader.ReadInt16BE();
+        public Color TextColor { get; set; }
 
-        Position = new Vector2(x, y);
-        TextId = reader.ReadWordLengthString();
+        public GUIControlBackgroundLabelDescription(GUIControlDescription parent, BinaryReader2 reader)
+        {
+            Internalize(parent, reader);
+        }
 
-        short marginX = reader.ReadInt16BE();
-        short marginY = reader.ReadInt16BE();
+        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        {
+            short x = reader.ReadInt16BE();
+            short y = reader.ReadInt16BE();
 
-        MarginSize = new Vector2(marginX, marginY);
-        float alpha = (byte)reader.ReadUInt16BE() / 255.0f;
+            Depth = reader.ReadInt16BE();
 
-        FillColor = new Color((byte)reader.ReadUInt16BE() / 255.0f,
-            (byte)reader.ReadUInt16BE() / 255.0f,
-            (byte)reader.ReadUInt16BE() / 255.0f,
-            alpha);
+            Position = new Vector2(x, y);
+            TextId = reader.ReadWordLengthString();
 
-        TextColor = new Color((byte)reader.ReadUInt16BE() / 255.0f,
-            (byte)reader.ReadUInt16BE() / 255.0f,
-            (byte)reader.ReadUInt16BE() / 255.0f,
-            alpha);
+            short marginX = reader.ReadInt16BE();
+            short marginY = reader.ReadInt16BE();
 
-        Pivot = reader.ReadWordLengthString();
+            MarginSize = new Vector2(marginX, marginY);
+            float alpha = (byte)reader.ReadUInt16BE() / 255.0f;
+
+            FillColor = new Color((byte)reader.ReadUInt16BE() / 255.0f,
+                (byte)reader.ReadUInt16BE() / 255.0f,
+                (byte)reader.ReadUInt16BE() / 255.0f,
+                alpha);
+
+            TextColor = new Color((byte)reader.ReadUInt16BE() / 255.0f,
+                (byte)reader.ReadUInt16BE() / 255.0f,
+                (byte)reader.ReadUInt16BE() / 255.0f,
+                alpha);
+
+            Pivot = reader.ReadWordLengthString();
+        }
     }
 }

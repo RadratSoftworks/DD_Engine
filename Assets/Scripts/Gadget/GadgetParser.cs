@@ -6,9 +6,15 @@ using System.Text;
 
 using UnityEngine;
 
-public class GadgetParser
+using DDEngine.Action;
+using DDEngine.BaseScript;
+using DDEngine.GUI;
+
+namespace DDEngine.Gadget
 {
-    private static Dictionary<string, GadgetOpcode> stringToGadgetOps = new Dictionary<string, GadgetOpcode>(StringComparer.OrdinalIgnoreCase)
+    public class GadgetParser
+    {
+        private static Dictionary<string, GadgetOpcode> stringToGadgetOps = new Dictionary<string, GadgetOpcode>(StringComparer.OrdinalIgnoreCase)
     {
         { "play", GadgetOpcode.Play },
         { "animation", GadgetOpcode.Animation },
@@ -31,71 +37,19 @@ public class GadgetParser
         { "conditionalchoice", GadgetOpcode.ChoiceConditional }
     };
 
-    public static ScriptBlock<GadgetOpcode> Parse(Stream stream)
-    {
-        ScriptBlock<GadgetOpcode> blocks = new ScriptBlock<GadgetOpcode>();
-
-        using (StreamReader reader = new StreamReader(stream))
+        public static ScriptBlock<GadgetOpcode> Parse(Stream stream)
         {
-            string actionStrings = null;
-            List<GadgetChoiceInfo> choiceInfos = new List<GadgetChoiceInfo>();
+            ScriptBlock<GadgetOpcode> blocks = new ScriptBlock<GadgetOpcode>();
 
-            do
+            using (StreamReader reader = new StreamReader(stream))
             {
-                string commandLine = reader.ReadLine();
-                if (commandLine == null)
+                string actionStrings = null;
+                List<GadgetChoiceInfo> choiceInfos = new List<GadgetChoiceInfo>();
+
+                do
                 {
-                    if (actionStrings != null)
-                    {
-                        ScriptCommand<GadgetOpcode> command = new ScriptCommand<GadgetOpcode>();
-                        command.Opcode = GadgetOpcode.StartAction;
-                        command.Arguments.Add(ActionParser.ParseEmbedded(new MemoryStream(Encoding.UTF8.GetBytes(actionStrings))));
-
-                        blocks.Commands.Add(command);
-                    }
-
-                    if (choiceInfos.Count != 0)
-                    {
-                        ScriptCommand<GadgetOpcode> command = new ScriptCommand<GadgetOpcode>();
-                        command.Opcode = GadgetOpcode.Choice;
-                        command.Arguments.Add(choiceInfos);
-
-                        blocks.Commands.Add(command);
-                    }
-
-                    break;
-                }
-                commandLine = commandLine.Trim();
-                if (commandLine.StartsWith('#') || (commandLine == ""))
-                {
-                    continue;
-                }
-                if (commandLine == "unsavable")
-                {
-                    blocks.Saveable = false;
-                    continue;
-                }
-                var commands = commandLine.Split(' ');
-
-                if (!stringToGadgetOps.ContainsKey(commands[0]))
-                {
-                    Debug.LogError("Unrecognised gadget opcode: " + commands[0]);
-                }
-                else
-                {
-                    GadgetOpcode opcode = stringToGadgetOps[commands[0]];
-
-                    if (opcode == GadgetOpcode.StartAction)
-                    {
-                        string actionString = commandLine.Substring(commands[0].Length).Trim().Trim('\"');
-                        if (actionStrings == null)
-                        {
-                            actionStrings = actionString + '\n';
-                        } else
-                        {
-                            actionStrings += actionString + '\n';
-                        }
-                    } else
+                    string commandLine = reader.ReadLine();
+                    if (commandLine == null)
                     {
                         if (actionStrings != null)
                         {
@@ -104,59 +58,115 @@ public class GadgetParser
                             command.Arguments.Add(ActionParser.ParseEmbedded(new MemoryStream(Encoding.UTF8.GetBytes(actionStrings))));
 
                             blocks.Commands.Add(command);
-                            actionStrings = null;
                         }
 
-                        if (opcode == GadgetOpcode.Choice)
+                        if (choiceInfos.Count != 0)
                         {
-                            if (commands.Length < 4)
-                            {
-                                Debug.LogError("Unsufficent number of arguments for opcode choice!");
-                            }
+                            ScriptCommand<GadgetOpcode> command = new ScriptCommand<GadgetOpcode>();
+                            command.Opcode = GadgetOpcode.Choice;
+                            command.Arguments.Add(choiceInfos);
 
-                            GadgetChoiceInfo info = new GadgetChoiceInfo()
-                            {
-                                DialogueId = int.Parse(commands[1]),
-                                TextId = commands[2],
-                                ChoiceKind = commands[3]
-                            };
-
-                            choiceInfos.Add(info);
+                            blocks.Commands.Add(command);
                         }
-                        else if (opcode == GadgetOpcode.ChoiceConditional)
+
+                        break;
+                    }
+                    commandLine = commandLine.Trim();
+                    if (commandLine.StartsWith('#') || (commandLine == ""))
+                    {
+                        continue;
+                    }
+                    if (commandLine == "unsavable")
+                    {
+                        blocks.Saveable = false;
+                        continue;
+                    }
+                    var commands = commandLine.Split(' ');
+
+                    if (!stringToGadgetOps.ContainsKey(commands[0]))
+                    {
+                        Debug.LogError("Unrecognised gadget opcode: " + commands[0]);
+                    }
+                    else
+                    {
+                        GadgetOpcode opcode = stringToGadgetOps[commands[0]];
+
+                        if (opcode == GadgetOpcode.StartAction)
                         {
-                            if (commands.Length < 6)
+                            string actionString = commandLine.Substring(commands[0].Length).Trim().Trim('\"');
+                            if (actionStrings == null)
                             {
-                                Debug.LogError("Unsufficent number of arguments for opcode conditional choice!");
+                                actionStrings = actionString + '\n';
+                            }
+                            else
+                            {
+                                actionStrings += actionString + '\n';
+                            }
+                        }
+                        else
+                        {
+                            if (actionStrings != null)
+                            {
+                                ScriptCommand<GadgetOpcode> command = new ScriptCommand<GadgetOpcode>();
+                                command.Opcode = GadgetOpcode.StartAction;
+                                command.Arguments.Add(ActionParser.ParseEmbedded(new MemoryStream(Encoding.UTF8.GetBytes(actionStrings))));
+
+                                blocks.Commands.Add(command);
+                                actionStrings = null;
                             }
 
-                            GadgetChoiceInfo info = new GadgetChoiceInfo()
+                            if (opcode == GadgetOpcode.Choice)
                             {
-                                ConditionalVariables = GUIConditionHelper.GetParticipateVariablesInCondition(commands[1]),
-                                ConditionalVariableValues = GUIConditionHelper.GetRequiredValues(commands[2]),
-                                DialogueId = int.Parse(commands[3]),
-                                TextId = commands[4],
-                                ChoiceKind = commands[5]
-                            };
+                                if (commands.Length < 4)
+                                {
+                                    Debug.LogError("Unsufficent number of arguments for opcode choice!");
+                                }
 
-                            choiceInfos.Add(info);
-                        } else
-                        {
-                            ScriptCommand<GadgetOpcode> individualCommand = new ScriptCommand<GadgetOpcode>();
-                            individualCommand.Opcode = stringToGadgetOps[commands[0]];
+                                GadgetChoiceInfo info = new GadgetChoiceInfo()
+                                {
+                                    DialogueId = int.Parse(commands[1]),
+                                    TextId = commands[2],
+                                    ChoiceKind = commands[3]
+                                };
 
-                            if (commands.Length > 1)
-                            {
-                                individualCommand.Arguments.AddRange(commands.Skip(1));
+                                choiceInfos.Add(info);
                             }
+                            else if (opcode == GadgetOpcode.ChoiceConditional)
+                            {
+                                if (commands.Length < 6)
+                                {
+                                    Debug.LogError("Unsufficent number of arguments for opcode conditional choice!");
+                                }
 
-                            blocks.Commands.Add(individualCommand);
+                                GadgetChoiceInfo info = new GadgetChoiceInfo()
+                                {
+                                    ConditionalVariables = GUIConditionHelper.GetParticipateVariablesInCondition(commands[1]),
+                                    ConditionalVariableValues = GUIConditionHelper.GetRequiredValues(commands[2]),
+                                    DialogueId = int.Parse(commands[3]),
+                                    TextId = commands[4],
+                                    ChoiceKind = commands[5]
+                                };
+
+                                choiceInfos.Add(info);
+                            }
+                            else
+                            {
+                                ScriptCommand<GadgetOpcode> individualCommand = new ScriptCommand<GadgetOpcode>();
+                                individualCommand.Opcode = stringToGadgetOps[commands[0]];
+
+                                if (commands.Length > 1)
+                                {
+                                    individualCommand.Arguments.AddRange(commands.Skip(1));
+                                }
+
+                                blocks.Commands.Add(individualCommand);
+                            }
                         }
                     }
-                }
-            } while (true);
-        }
+                } while (true);
+            }
 
-        return blocks;
+            return blocks;
+        }
     }
 }

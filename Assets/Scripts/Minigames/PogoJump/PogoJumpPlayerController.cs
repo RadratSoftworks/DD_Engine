@@ -4,149 +4,158 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PogoJumpPlayerController : MonoBehaviour
+using DDEngine.Utils;
+
+namespace DDEngine.Minigame.PogoJump
 {
-    private const int PlayerDrawLayer = 0;
-    private const string JumpConfirmPressedActionName = "Confirm Pressed";
-
-    private List<SpriteAnimatorController> jumpLevelAnimControllers = new List<SpriteAnimatorController>();
-    
-    private AudioSource jumpSound;
-    private SpriteAnimatorController currentJumpAnim;
-
-    private int difficulty;
-    private bool jumpTriggered;
-    private bool jumpPressedThisFrame;
-    private int currentJumpLevel;
-    private string wonMinigameScriptPath;
-
-    private void Awake()
+    public class PogoJumpPlayerController : MonoBehaviour
     {
-        jumpSound = GetComponent<AudioSource>();
-    }
+        private const int PlayerDrawLayer = 0;
+        private const string JumpConfirmPressedActionName = "Confirm Pressed";
 
-    private void Start()
-    {
-        var pogoJumpActionMap = GameInputManager.Instance.PogoJumpMinigameActionMap;
+        private List<SpriteAnimatorController> jumpLevelAnimControllers = new List<SpriteAnimatorController>();
 
-        InputAction confirmAction = pogoJumpActionMap.FindAction(JumpConfirmPressedActionName);
-        confirmAction.performed += OnConfirmPressed;
-    }
+        private AudioSource jumpSound;
+        private SpriteAnimatorController currentJumpAnim;
 
-    private void UnbindInput()
-    {
-        var pogoJumpActionMap = GameInputManager.Instance.PogoJumpMinigameActionMap;
+        private int difficulty;
+        private bool jumpTriggered;
+        private bool jumpPressedThisFrame;
+        private int currentJumpLevel;
+        private string wonMinigameScriptPath;
 
-        InputAction confirmAction = pogoJumpActionMap.FindAction(JumpConfirmPressedActionName);
-        confirmAction.performed -= OnConfirmPressed;
-    }
-
-    private void OnDestroy()
-    {
-        if (GameInputManager.Instance.PogoJumpMinigameActionMap.enabled)
+        private void Awake()
         {
-            UnbindInput();
+            jumpSound = GetComponent<AudioSource>();
         }
-    }
 
-    public void Setup(PogoJumpMinigameInfo minigameInfo, GameObject animationPrefab)
-    {
-        transform.localPosition = GameUtils.ToUnityCoordinates(minigameInfo.PlayerPosition);
-
-        foreach (string animationPath in minigameInfo.JumpTierAnimations)
+        private void Start()
         {
-            bool isFirst = jumpLevelAnimControllers.Count == 0;
+            var pogoJumpActionMap = GameInputManager.Instance.PogoJumpMinigameActionMap;
 
-            jumpLevelAnimControllers.Add(MinigameConstructUtils.InstantiateAndGet(animationPrefab, transform, animationPath,
-                Vector2.zero, PlayerDrawLayer, allowLoop: false));
+            InputAction confirmAction = pogoJumpActionMap.FindAction(JumpConfirmPressedActionName);
+            confirmAction.performed += OnConfirmPressed;
+        }
 
-            if (isFirst)
+        private void UnbindInput()
+        {
+            var pogoJumpActionMap = GameInputManager.Instance.PogoJumpMinigameActionMap;
+
+            InputAction confirmAction = pogoJumpActionMap.FindAction(JumpConfirmPressedActionName);
+            confirmAction.performed -= OnConfirmPressed;
+        }
+
+        private void OnDestroy()
+        {
+            if (GameInputManager.Instance.PogoJumpMinigameActionMap.enabled)
             {
-                jumpLevelAnimControllers.Last().Enable();
-            } else
-            {
-                jumpLevelAnimControllers.Last().Done += OnJumpAnimationDone;
+                UnbindInput();
             }
         }
 
-        currentJumpAnim = jumpLevelAnimControllers[0];
-
-        difficulty = minigameInfo.Difficulty;
-        currentJumpLevel = 0;
-        jumpTriggered = false;
-        wonMinigameScriptPath = minigameInfo.WonScript;
-
-        jumpSound.clip = SoundManager.Instance.GetAudioClip(minigameInfo.JumpSoundPath);
-    }
-
-    public void OnConfirmPressed(InputAction.CallbackContext context)
-    {
-        if (jumpPressedThisFrame)
+        public void Setup(PogoJumpMinigameInfo minigameInfo, GameObject animationPrefab)
         {
-            return;
-        }
+            transform.localPosition = GameUtils.ToUnityCoordinates(minigameInfo.PlayerPosition);
 
-        bool passed = (difficulty == 0);
-
-        if (difficulty > 0)
-        {
-            if (currentJumpAnim != null)
+            foreach (string animationPath in minigameInfo.JumpTierAnimations)
             {
-                if (currentJumpAnim.CurrentFrame >= currentJumpAnim.TotalFrame - difficulty)
+                bool isFirst = jumpLevelAnimControllers.Count == 0;
+
+                jumpLevelAnimControllers.Add(MinigameConstructUtils.InstantiateAndGet(animationPrefab, transform, animationPath,
+                    Vector2.zero, PlayerDrawLayer, allowLoop: false));
+
+                if (isFirst)
                 {
-                    passed = true;
+                    jumpLevelAnimControllers.Last().Enable();
+                }
+                else
+                {
+                    jumpLevelAnimControllers.Last().Done += OnJumpAnimationDone;
                 }
             }
+
+            currentJumpAnim = jumpLevelAnimControllers[0];
+
+            difficulty = minigameInfo.Difficulty;
+            currentJumpLevel = 0;
+            jumpTriggered = false;
+            wonMinigameScriptPath = minigameInfo.WonScript;
+
+            jumpSound.clip = SoundManager.Instance.GetAudioClip(minigameInfo.JumpSoundPath);
         }
 
-        if (passed)
+        public void OnConfirmPressed(InputAction.CallbackContext context)
         {
-            jumpSound.Play();
-        }
-
-        if (currentJumpLevel == 0)
-        {
-            currentJumpLevel++;
-            UpdateJumpAnimation();
-        } else
-        {
-            jumpTriggered = passed;
-            jumpPressedThisFrame = true;
-        }
-    }
-
-    private void UpdateJumpAnimation()
-    {
-        if (currentJumpAnim != jumpLevelAnimControllers[currentJumpLevel])
-        {
-            currentJumpAnim.Disable();
-
-            currentJumpAnim = jumpLevelAnimControllers[currentJumpLevel];
-            currentJumpAnim.Enable();
-        }
-    }
-
-    private void OnJumpAnimationDone(SpriteAnimatorController controller)
-    {
-        if (controller == jumpLevelAnimControllers.Last())
-        {
-            // Won the minigame
-            UnbindInput();
-            GameManager.Instance.LoadGadget(wonMinigameScriptPath);
-        } else
-        {
-            if (jumpTriggered)
+            if (jumpPressedThisFrame)
             {
-                currentJumpLevel += 1;
-            } else
-            {
-                currentJumpLevel = Math.Max(currentJumpLevel - 1, 0);
+                return;
             }
 
-            UpdateJumpAnimation();
+            bool passed = (difficulty == 0);
+
+            if (difficulty > 0)
+            {
+                if (currentJumpAnim != null)
+                {
+                    if (currentJumpAnim.CurrentFrame >= currentJumpAnim.TotalFrame - difficulty)
+                    {
+                        passed = true;
+                    }
+                }
+            }
+
+            if (passed)
+            {
+                jumpSound.Play();
+            }
+
+            if (currentJumpLevel == 0)
+            {
+                currentJumpLevel++;
+                UpdateJumpAnimation();
+            }
+            else
+            {
+                jumpTriggered = passed;
+                jumpPressedThisFrame = true;
+            }
         }
 
-        jumpTriggered = false;
-        jumpPressedThisFrame = false;
+        private void UpdateJumpAnimation()
+        {
+            if (currentJumpAnim != jumpLevelAnimControllers[currentJumpLevel])
+            {
+                currentJumpAnim.Disable();
+
+                currentJumpAnim = jumpLevelAnimControllers[currentJumpLevel];
+                currentJumpAnim.Enable();
+            }
+        }
+
+        private void OnJumpAnimationDone(SpriteAnimatorController controller)
+        {
+            if (controller == jumpLevelAnimControllers.Last())
+            {
+                // Won the minigame
+                UnbindInput();
+                GameManager.Instance.LoadGadget(wonMinigameScriptPath);
+            }
+            else
+            {
+                if (jumpTriggered)
+                {
+                    currentJumpLevel += 1;
+                }
+                else
+                {
+                    currentJumpLevel = Math.Max(currentJumpLevel - 1, 0);
+                }
+
+                UpdateJumpAnimation();
+            }
+
+            jumpTriggered = false;
+            jumpPressedThisFrame = false;
+        }
     }
 }

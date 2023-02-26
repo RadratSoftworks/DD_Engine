@@ -1,10 +1,13 @@
-﻿public enum FighterState
+﻿namespace DDEngine.Minigame.Fight
 {
-    Idle,
-    PrepareAttacking,
-    Attacking,
-    TakingDamage,
-    Dodging,
-    TotallyUndefended,
-    KnockedOut
-};
+    public enum FighterState
+    {
+        Idle,
+        PrepareAttacking,
+        Attacking,
+        TakingDamage,
+        Dodging,
+        TotallyUndefended,
+        KnockedOut
+    };
+}

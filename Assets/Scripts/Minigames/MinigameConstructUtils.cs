@@ -1,29 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.Utils;
 
-public static class MinigameConstructUtils
+namespace DDEngine.Minigame
 {
-    public static SpriteAnimatorController InstantiateAndGet(GameObject prefab, Transform parent,
-        string path, Vector2 position, float sortOrder = 0.0f, bool deactiveByDefault = true,
-        bool allowLoop = true)
+    public static class MinigameConstructUtils
     {
-        SpriteAnimatorController controller = UnityUtils.InstantiateAndGetComponent<SpriteAnimatorController>(prefab, parent, path);
-        if (controller != null)
+        public static SpriteAnimatorController InstantiateAndGet(GameObject prefab, Transform parent,
+            string path, Vector2 position, float sortOrder = 0.0f, bool deactiveByDefault = true,
+            bool allowLoop = true)
         {
-            controller.Setup(position, sortOrder, path, allowLoop: allowLoop);
+            SpriteAnimatorController controller = UnityUtils.InstantiateAndGetComponent<SpriteAnimatorController>(prefab, parent, path);
+            if (controller != null)
+            {
+                controller.Setup(position, sortOrder, path, allowLoop: allowLoop);
+            }
+            controller.SetEnableState(deactiveByDefault ? false : true);
+            return controller;
         }
-        controller.SetEnableState(deactiveByDefault ? false : true);
-        return controller;
-    }
 
-    public static BoxCollider2D SetupBoundsObject(GameObject boundsObj, Rect bounds) {
-        boundsObj.transform.localPosition = GameUtils.ToUnityCoordinates(bounds.center);
-        BoxCollider2D collider = boundsObj.GetComponent<BoxCollider2D>();
-        if (collider != null)
+        public static BoxCollider2D SetupBoundsObject(GameObject boundsObj, Rect bounds)
         {
-            collider.size = GameUtils.ToUnitySize(bounds.size);
+            boundsObj.transform.localPosition = GameUtils.ToUnityCoordinates(bounds.center);
+            BoxCollider2D collider = boundsObj.GetComponent<BoxCollider2D>();
+            if (collider != null)
+            {
+                collider.size = GameUtils.ToUnitySize(bounds.size);
+            }
+            return collider;
         }
-        return collider;
     }
 }

@@ -1,11 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ItemSwitchTimerInfo
+namespace DDEngine.Minigame.ItemSwitch
 {
-    public string CountdownAnimationPath;
-    public string ReadyAnimationPath;
-    public string LostAnimationPath;
-    public string WonAnimationPath;
-    public Vector2 Position;
+    public class ItemSwitchTimerInfo
+    {
+        public string CountdownAnimationPath;
+        public string ReadyAnimationPath;
+        public string LostAnimationPath;
+        public string WonAnimationPath;
+        public Vector2 Position;
+    }
 }

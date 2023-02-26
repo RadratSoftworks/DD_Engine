@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GameGC
+namespace DDEngine
 {
-    private const float NextUnloadDelta = 180.0f;
-    private static float nextUnloadedAssetsTime = Time.realtimeSinceStartup;
-
-    public static void TryUnloadUnusedAssets()
+    public class GameGC
     {
-        float currentTime = Time.realtimeSinceStartup;
-        if (currentTime >= nextUnloadedAssetsTime)
+        private const float NextUnloadDelta = 180.0f;
+        private static float nextUnloadedAssetsTime = Time.realtimeSinceStartup;
+
+        public static void TryUnloadUnusedAssets()
         {
-            Resources.UnloadUnusedAssets();
-            nextUnloadedAssetsTime = currentTime + NextUnloadDelta;
+            float currentTime = Time.realtimeSinceStartup;
+            if (currentTime >= nextUnloadedAssetsTime)
+            {
+                Resources.UnloadUnusedAssets();
+                nextUnloadedAssetsTime = currentTime + NextUnloadDelta;
+            }
         }
     }
 }

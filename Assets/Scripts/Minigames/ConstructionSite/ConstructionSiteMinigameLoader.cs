@@ -1,41 +1,45 @@
 ﻿using UnityEngine;
+using DDEngine.GUI;
 
-public class ConstructionSiteMinigameLoader : MonoBehaviour
+namespace DDEngine.Minigame.ConstructionSite
 {
-    public static ConstructionSiteMinigameLoader Instance;
-
-    [SerializeField]
-    private GameObject constructionSiteScenePrefabObject;
-
-    private void Start()
+    public class ConstructionSiteMinigameLoader : MonoBehaviour
     {
-        Instance = this;
-    }
+        public static ConstructionSiteMinigameLoader Instance;
 
-    public GUIControlSet Load(ConstructionSiteMinigameInfo info, string filename, Vector2 viewResolution)
-    {
-        GUIControlSet constructionSiteControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
-            constructionSiteScenePrefabObject, filename, viewResolution,
-            new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: false));
+        [SerializeField]
+        private GameObject constructionSiteScenePrefabObject;
 
-        constructionSiteControlSet.StateChanged += enabled =>
+        private void Start()
         {
-            if (enabled)
-            {
-                GameInputManager.Instance.FlyMinigameActionMap.Enable();
-            }
-            else
-            {
-                GameInputManager.Instance.FlyMinigameActionMap.Disable();
-            }
-        };
-
-        ConstructionSiteSceneController constructionSiteSceneController = constructionSiteControlSet.GameObject.GetComponent<ConstructionSiteSceneController>();
-        if (constructionSiteSceneController != null)
-        {
-            constructionSiteSceneController.Setup(constructionSiteControlSet, info);
+            Instance = this;
         }
 
-        return constructionSiteControlSet;
+        public GUIControlSet Load(ConstructionSiteMinigameInfo info, string filename, Vector2 viewResolution)
+        {
+            GUIControlSet constructionSiteControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
+                constructionSiteScenePrefabObject, filename, viewResolution,
+                new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: false));
+
+            constructionSiteControlSet.StateChanged += enabled =>
+            {
+                if (enabled)
+                {
+                    GameInputManager.Instance.FlyMinigameActionMap.Enable();
+                }
+                else
+                {
+                    GameInputManager.Instance.FlyMinigameActionMap.Disable();
+                }
+            };
+
+            ConstructionSiteSceneController constructionSiteSceneController = constructionSiteControlSet.GameObject.GetComponent<ConstructionSiteSceneController>();
+            if (constructionSiteSceneController != null)
+            {
+                constructionSiteSceneController.Setup(constructionSiteControlSet, info);
+            }
+
+            return constructionSiteControlSet;
+        }
     }
 }

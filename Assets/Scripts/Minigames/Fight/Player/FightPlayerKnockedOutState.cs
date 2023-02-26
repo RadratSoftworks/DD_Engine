@@ -1,40 +1,43 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.Utils.FSM;
 
-public class FightPlayerKnockedOutState : IState
+namespace DDEngine.Minigame.Fight
 {
-    private SpriteAnimatorController knockedOutAnim;
-    private string runScript;
-
-    public FightPlayerKnockedOutState(FightPlayerController stateMachine, FightPlayerInfo opponentInfo, string scriptToRun)
+    public class FightPlayerKnockedOutState : IState
     {
-        knockedOutAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
-            opponentInfo.KnockedOutAnimPath, Vector2.zero);
+        private SpriteAnimatorController knockedOutAnim;
+        private string runScript;
 
-        runScript = scriptToRun;
-    }
-
-    public void Enter()
-    {
-        knockedOutAnim.Enable();
-    }
-
-    public void Leave()
-    {
-    }
-
-    public void ReceiveData(IStateMachine sender, object data)
-    {
-        if (!(data is FightEndIntent))
+        public FightPlayerKnockedOutState(FightPlayerController stateMachine, FightPlayerInfo opponentInfo, string scriptToRun)
         {
-            return;
+            knockedOutAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
+                opponentInfo.KnockedOutAnimPath, Vector2.zero);
+
+            runScript = scriptToRun;
         }
 
-        GameManager.Instance.SetCurrentGUI(null);
-        GameManager.Instance.LoadGadget(runScript);
-    }
+        public void Enter()
+        {
+            knockedOutAnim.Enable();
+        }
 
-    public void Update()
-    {
+        public void Leave()
+        {
+        }
+
+        public void ReceiveData(IStateMachine sender, object data)
+        {
+            if (!(data is FightEndIntent))
+            {
+                return;
+            }
+
+            GameManager.Instance.SetCurrentGUI(null);
+            GameManager.Instance.LoadGadget(runScript);
+        }
+
+        public void Update()
+        {
+        }
     }
 }

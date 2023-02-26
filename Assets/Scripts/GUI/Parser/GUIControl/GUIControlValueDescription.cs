@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using DDEngine.Utils;
 
-public class GUIControlValueDescription : GUIControlDescription
+namespace DDEngine.GUI.Parser
 {
-    public string ExactValue { get; set; }
-
-    private List<GUIControlDescription> controlsOnExactValueMatch = new List<GUIControlDescription>();
-
-    public List<GUIControlDescription> ControlsOnExactValueMatch => controlsOnExactValueMatch;
-
-    public GUIControlValueDescription(GUIControlDescription parent, BinaryReader2 reader)
+    public class GUIControlValueDescription : GUIControlDescription
     {
-        Internalize(parent,reader);
-    }
+        public string ExactValue { get; set; }
 
-    private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
-    {
-        ExactValue = reader.ReadWordLengthString();
-        controlsOnExactValueMatch = GUIControlListReader.InternalizeControls(parent,reader);
+        private List<GUIControlDescription> controlsOnExactValueMatch = new List<GUIControlDescription>();
+
+        public List<GUIControlDescription> ControlsOnExactValueMatch => controlsOnExactValueMatch;
+
+        public GUIControlValueDescription(GUIControlDescription parent, BinaryReader2 reader)
+        {
+            Internalize(parent, reader);
+        }
+
+        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        {
+            ExactValue = reader.ReadWordLengthString();
+            controlsOnExactValueMatch = GUIControlListReader.InternalizeControls(parent, reader);
+        }
     }
 }

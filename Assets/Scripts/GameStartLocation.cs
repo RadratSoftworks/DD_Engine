@@ -1,6 +1,9 @@
-﻿public enum GameStartLocation
+﻿namespace DDEngine
 {
-    Undefined,
-    Menu,
-    Game
+    public enum GameStartLocation
+    {
+        Undefined,
+        Menu,
+        Game
+    }
 }

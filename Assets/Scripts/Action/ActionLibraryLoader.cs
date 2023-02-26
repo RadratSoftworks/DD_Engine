@@ -1,25 +1,28 @@
 ﻿using System.IO;
 
-public static class ActionLibraryLoader
+namespace DDEngine.Action
 {
-    public static readonly string FileExtension = ".action";
-
-    public static ActionLibrary Load(string filename)
+    public static class ActionLibraryLoader
     {
-        ResourceFile resourcePack = ResourceManager.Instance.PickBestResourcePackForFile(filename);
-        if (!resourcePack.Exists(filename))
+        public static readonly string FileExtension = ".action";
+
+        public static ActionLibrary Load(string filename)
         {
-            resourcePack = ResourceManager.Instance.ProtectedGeneralResources;
+            ResourceFile resourcePack = ResourceManager.Instance.PickBestResourcePackForFile(filename);
             if (!resourcePack.Exists(filename))
             {
-                throw new FileNotFoundException("Can't find action script file " + filename);
+                resourcePack = ResourceManager.Instance.ProtectedGeneralResources;
+                if (!resourcePack.Exists(filename))
+                {
+                    throw new FileNotFoundException("Can't find action script file " + filename);
+                }
             }
-        }
-        byte[] data = resourcePack.ReadResourceData(resourcePack.Resources[filename]);
+            byte[] data = resourcePack.ReadResourceData(resourcePack.Resources[filename]);
 
-        using (MemoryStream stream = new MemoryStream(data))
-        {
-            return ActionParser.Parse(stream);
+            using (MemoryStream stream = new MemoryStream(data))
+            {
+                return ActionParser.Parse(stream);
+            }
         }
     }
 }

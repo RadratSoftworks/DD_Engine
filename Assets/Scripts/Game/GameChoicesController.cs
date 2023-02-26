@@ -1,223 +1,231 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class GameChoicesController : MonoBehaviour
+using DDEngine.Utils;
+using DDEngine.Dialogue;
+
+namespace DDEngine.Game
 {
-    public GameObject backgroundObject;
-    public GameObject highlightObject;
-    public GameObject choicesObject;
-    public GameObject singleChoicePrefab;
-    public Color highlightColor = Color.yellow;
-
-    private SpriteRenderer backgroundRenderer;
-    private SpriteRenderer highlightRenderer;
-    private RectTransform choicesTransform;
-
-    private List<Tuple<Dialogue, DialogueSlide>> choicesToDialogueIds = new List<Tuple<Dialogue, DialogueSlide>>();
-    private List<GameSingleChoiceController> singleChoiceControllers = new List<GameSingleChoiceController>();
-    private List<RectTransform> singleChoiceTransforms = new List<RectTransform>();
-
-    private int activeChoice = -1;
-
-    public delegate void OnChoiceConfirmed(Dialogue dialogue, DialogueSlide dialogueSlide);
-    public event OnChoiceConfirmed ChoiceConfirmed;
-
-    void Awake()
+    public class GameChoicesController : MonoBehaviour
     {
-        backgroundRenderer = backgroundObject.GetComponent<SpriteRenderer>();
-        highlightRenderer = highlightObject.GetComponent<SpriteRenderer>();
-    }
+        public GameObject backgroundObject;
+        public GameObject highlightObject;
+        public GameObject choicesObject;
+        public GameObject singleChoicePrefab;
+        public Color highlightColor = Color.yellow;
 
-    private void RegOrUnregActions(bool register)
-    {
-        var inputMap = GameInputManager.Instance.GameChoicesActionMap;
+        private SpriteRenderer backgroundRenderer;
+        private SpriteRenderer highlightRenderer;
+        private RectTransform choicesTransform;
 
-        InputAction choiceUp = inputMap.FindAction("Choice Up");
-        InputAction choiceDown = inputMap.FindAction("Choice Down");
-        InputAction choiceConfirmed = inputMap.FindAction("Choice Confirm");
+        private List<Tuple<GameDialogue, DialogueSlide>> choicesToDialogueIds = new List<Tuple<GameDialogue, DialogueSlide>>();
+        private List<GameSingleChoiceController> singleChoiceControllers = new List<GameSingleChoiceController>();
+        private List<RectTransform> singleChoiceTransforms = new List<RectTransform>();
 
-        if (register)
+        private int activeChoice = -1;
+
+        public delegate void OnChoiceConfirmed(GameDialogue dialogue, DialogueSlide dialogueSlide);
+        public event OnChoiceConfirmed ChoiceConfirmed;
+
+        void Awake()
         {
-            choiceUp.performed += OnChoiceUp;
-            choiceDown.performed += OnChoiceDown;
-            choiceConfirmed.performed += OnChoiceConfirm;
-        } else
-        {
-            choiceUp.performed -= OnChoiceUp;
-            choiceDown.performed -= OnChoiceDown;
-            choiceConfirmed.performed -= OnChoiceConfirm;
-        }
-    }
-
-    private void SetInputState(bool enabled = true)
-    {
-        var inputMap = GameInputManager.Instance.GameChoicesActionMap;
-        if (inputMap.enabled == enabled)
-        {
-            return;
+            backgroundRenderer = backgroundObject.GetComponent<SpriteRenderer>();
+            highlightRenderer = highlightObject.GetComponent<SpriteRenderer>();
         }
 
-        if (enabled)
+        private void RegOrUnregActions(bool register)
         {
-            inputMap.Enable();
-        } else
-        {
-            inputMap.Disable();
-        }
-    }
+            var inputMap = GameInputManager.Instance.GameChoicesActionMap;
 
-    private void Start()
-    {
-        GameInputManager.Instance.SetGUIInputActionMapState(false);
+            InputAction choiceUp = inputMap.FindAction("Choice Up");
+            InputAction choiceDown = inputMap.FindAction("Choice Down");
+            InputAction choiceConfirmed = inputMap.FindAction("Choice Confirm");
 
-        SetInputState(true);
-        RegOrUnregActions(true);
-    }
-
-    private void OnDestroy()
-    {
-        RegOrUnregActions(false);
-    }
-
-    private void OnEnable()
-    {
-        SetInputState(true);
-    }
-
-    private void OnDisable()
-    {
-        SetInputState(false);
-    }
-
-    public void Close()
-    {
-        foreach (GameSingleChoiceController choiceController in singleChoiceControllers)
-        {
-            choiceController.Hide();
-        }
-
-        choicesToDialogueIds.Clear();
-        gameObject.SetActive(false);
-    }
-
-    private void UpdateHighlight()
-    {
-        // Set highlight
-        RectTransform childTransform = singleChoiceTransforms[activeChoice];
-
-        highlightObject.transform.localPosition = childTransform.localPosition + new Vector3(0, choicesTransform.localPosition.y, 0);
-        highlightRenderer.size = childTransform.sizeDelta;
-
-        highlightRenderer.color = highlightColor;
-    }
-
-    public void UpdateTextAndRenderLayout()
-    {
-        foreach (var controller in singleChoiceControllers)
-        {
-            controller.UpdateLayout();
-        }
-
-        LayoutRebuilder.ForceRebuildLayoutImmediate(choicesTransform);
-        backgroundRenderer.size = choicesTransform.sizeDelta + new Vector2(0, choicesTransform.localPosition.y * 2.5f);
-
-        UpdateHighlight();
-    }
-
-    private void SetActiveChoice(int choice)
-    {
-        if (choice >= singleChoiceControllers.Count)
-        {
-            throw new ArgumentOutOfRangeException("Index of hoice to select is out of range");
-        }
-
-        if (activeChoice >= 0)
-        {
-            GameSingleChoiceController previousController = singleChoiceControllers[activeChoice];
-            previousController.SetChoosen(false);
-        }
-
-        GameSingleChoiceController controller = singleChoiceControllers[choice];
-        controller.SetChoosen(true);
-
-        activeChoice = choice;
-
-        UpdateHighlight();
-    }
-
-    public void OnChoiceUp(InputAction.CallbackContext context)
-    {
-        SetActiveChoice((activeChoice == 0) ? (choicesToDialogueIds.Count - 1) : (activeChoice - 1));
-    }
-
-    public void OnChoiceDown(InputAction.CallbackContext context)
-    {
-        SetActiveChoice((activeChoice + 1) % choicesToDialogueIds.Count);
-    }
-
-    public void OnChoiceConfirm(InputAction.CallbackContext context)
-    {
-        (Dialogue dialogue, DialogueSlide dialogueSlide) = choicesToDialogueIds[activeChoice];
-        ChoiceConfirmed?.Invoke(dialogue, dialogueSlide);
-    }
-
-    public void AddChoice(string choice, Dialogue dialogue, int dialogueIdIfChoose)
-    {
-        DialogueSlide slide = dialogue.GetDialogueSlideWithId(dialogueIdIfChoose);
-
-        if (!gameObject.activeSelf)
-        {
-            gameObject.SetActive(true);
-        }
-
-        if (choicesToDialogueIds.Count == 0)
-        {
-            activeChoice = 0;
-        }
-
-        if (choicesToDialogueIds.Count < singleChoiceControllers.Count)
-        {
-            GameSingleChoiceController grabController = singleChoiceControllers[choicesToDialogueIds.Count];
-            grabController.SetChoiceValue(choice);
-
-            if (choicesToDialogueIds.Count == 0)
+            if (register)
             {
-                grabController.SetChoosen(true);
+                choiceUp.performed += OnChoiceUp;
+                choiceDown.performed += OnChoiceDown;
+                choiceConfirmed.performed += OnChoiceConfirm;
             }
-        } else
-        {
-            GameObject obj = Instantiate(singleChoicePrefab, choicesObject.transform, false);
-            GameSingleChoiceController controller = obj.GetComponent<GameSingleChoiceController>(); ;
-
-            if (controller == null)
+            else
             {
-                Debug.LogError("Failed to get single choice controller");
+                choiceUp.performed -= OnChoiceUp;
+                choiceDown.performed -= OnChoiceDown;
+                choiceConfirmed.performed -= OnChoiceConfirm;
+            }
+        }
+
+        private void SetInputState(bool enabled = true)
+        {
+            var inputMap = GameInputManager.Instance.GameChoicesActionMap;
+            if (inputMap.enabled == enabled)
+            {
                 return;
             }
 
-            singleChoiceControllers.Add(controller);
-            singleChoiceTransforms.Add(obj.GetComponent<RectTransform>());
-
-            controller.SetChoiceValue(choice);
-
-            if (choicesToDialogueIds.Count == 0)
+            if (enabled)
             {
-                controller.SetChoosen(true);
+                inputMap.Enable();
+            }
+            else
+            {
+                inputMap.Disable();
             }
         }
 
-        choicesToDialogueIds.Add(new Tuple<Dialogue, DialogueSlide>(dialogue, slide));
-    }
+        private void Start()
+        {
+            GameInputManager.Instance.SetGUIInputActionMapState(false);
 
-    public void Setup(Vector2 canvasSize)
-    {
-        transform.localPosition = GameUtils.ToUnityCoordinates(canvasSize * Vector2.up);
+            SetInputState(true);
+            RegOrUnregActions(true);
+        }
 
-        choicesTransform = choicesObject.GetComponent<RectTransform>();
-        choicesTransform.sizeDelta = new Vector2(GameUtils.ToUnitySize(canvasSize).x, choicesTransform.sizeDelta.y);
+        private void OnDestroy()
+        {
+            RegOrUnregActions(false);
+        }
+
+        private void OnEnable()
+        {
+            SetInputState(true);
+        }
+
+        private void OnDisable()
+        {
+            SetInputState(false);
+        }
+
+        public void Close()
+        {
+            foreach (GameSingleChoiceController choiceController in singleChoiceControllers)
+            {
+                choiceController.Hide();
+            }
+
+            choicesToDialogueIds.Clear();
+            gameObject.SetActive(false);
+        }
+
+        private void UpdateHighlight()
+        {
+            // Set highlight
+            RectTransform childTransform = singleChoiceTransforms[activeChoice];
+
+            highlightObject.transform.localPosition = childTransform.localPosition + new Vector3(0, choicesTransform.localPosition.y, 0);
+            highlightRenderer.size = childTransform.sizeDelta;
+
+            highlightRenderer.color = highlightColor;
+        }
+
+        public void UpdateTextAndRenderLayout()
+        {
+            foreach (var controller in singleChoiceControllers)
+            {
+                controller.UpdateLayout();
+            }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(choicesTransform);
+            backgroundRenderer.size = choicesTransform.sizeDelta + new Vector2(0, choicesTransform.localPosition.y * 2.5f);
+
+            UpdateHighlight();
+        }
+
+        private void SetActiveChoice(int choice)
+        {
+            if (choice >= singleChoiceControllers.Count)
+            {
+                throw new ArgumentOutOfRangeException("Index of hoice to select is out of range");
+            }
+
+            if (activeChoice >= 0)
+            {
+                GameSingleChoiceController previousController = singleChoiceControllers[activeChoice];
+                previousController.SetChoosen(false);
+            }
+
+            GameSingleChoiceController controller = singleChoiceControllers[choice];
+            controller.SetChoosen(true);
+
+            activeChoice = choice;
+
+            UpdateHighlight();
+        }
+
+        public void OnChoiceUp(InputAction.CallbackContext context)
+        {
+            SetActiveChoice((activeChoice == 0) ? (choicesToDialogueIds.Count - 1) : (activeChoice - 1));
+        }
+
+        public void OnChoiceDown(InputAction.CallbackContext context)
+        {
+            SetActiveChoice((activeChoice + 1) % choicesToDialogueIds.Count);
+        }
+
+        public void OnChoiceConfirm(InputAction.CallbackContext context)
+        {
+            (GameDialogue dialogue, DialogueSlide dialogueSlide) = choicesToDialogueIds[activeChoice];
+            ChoiceConfirmed?.Invoke(dialogue, dialogueSlide);
+        }
+
+        public void AddChoice(string choice, GameDialogue dialogue, int dialogueIdIfChoose)
+        {
+            DialogueSlide slide = dialogue.GetDialogueSlideWithId(dialogueIdIfChoose);
+
+            if (!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+            }
+
+            if (choicesToDialogueIds.Count == 0)
+            {
+                activeChoice = 0;
+            }
+
+            if (choicesToDialogueIds.Count < singleChoiceControllers.Count)
+            {
+                GameSingleChoiceController grabController = singleChoiceControllers[choicesToDialogueIds.Count];
+                grabController.SetChoiceValue(choice);
+
+                if (choicesToDialogueIds.Count == 0)
+                {
+                    grabController.SetChoosen(true);
+                }
+            }
+            else
+            {
+                GameObject obj = Instantiate(singleChoicePrefab, choicesObject.transform, false);
+                GameSingleChoiceController controller = obj.GetComponent<GameSingleChoiceController>(); ;
+
+                if (controller == null)
+                {
+                    Debug.LogError("Failed to get single choice controller");
+                    return;
+                }
+
+                singleChoiceControllers.Add(controller);
+                singleChoiceTransforms.Add(obj.GetComponent<RectTransform>());
+
+                controller.SetChoiceValue(choice);
+
+                if (choicesToDialogueIds.Count == 0)
+                {
+                    controller.SetChoosen(true);
+                }
+            }
+
+            choicesToDialogueIds.Add(new Tuple<GameDialogue, DialogueSlide>(dialogue, slide));
+        }
+
+        public void Setup(Vector2 canvasSize)
+        {
+            transform.localPosition = GameUtils.ToUnityCoordinates(canvasSize * Vector2.up);
+
+            choicesTransform = choicesObject.GetComponent<RectTransform>();
+            choicesTransform.sizeDelta = new Vector2(GameUtils.ToUnitySize(canvasSize).x, choicesTransform.sizeDelta.y);
+        }
     }
 }

@@ -1,44 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using DDEngine.GUI;
 
-public class ItemSwitchMinigameLoader : MonoBehaviour
+namespace DDEngine.Minigame.ItemSwitch
 {
-    public static ItemSwitchMinigameLoader Instance;
-
-    [SerializeField]
-    private GameObject itemSwitchScenePrefabObject;
-
-    private void Start()
+    public class ItemSwitchMinigameLoader : MonoBehaviour
     {
-        Instance = this;
-    }
+        public static ItemSwitchMinigameLoader Instance;
 
-    public GUIControlSet Load(ItemSwitchMinigameInfo info, string filename, Vector2 viewResolution)
-    {
-        GUIControlSet itemSwitchControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
-            itemSwitchScenePrefabObject, filename, viewResolution,
-            new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: true));
+        [SerializeField]
+        private GameObject itemSwitchScenePrefabObject;
 
-        itemSwitchControlSet.StateChanged += enabled =>
+        private void Start()
         {
-            if (enabled)
-            {
-                GameInputManager.Instance.ItemSwitchMinigameActionMap.Enable();
-            }
-            else
-            {
-                GameInputManager.Instance.ItemSwitchMinigameActionMap.Disable();
-            }
-        };
-
-        ItemSwitchSceneController itemSwitchSceneController = itemSwitchControlSet.GameObject.GetComponent<ItemSwitchSceneController>();
-        if (itemSwitchSceneController != null)
-        {
-            itemSwitchSceneController.Setup(info);
+            Instance = this;
         }
 
-        return itemSwitchControlSet;
+        public GUIControlSet Load(ItemSwitchMinigameInfo info, string filename, Vector2 viewResolution)
+        {
+            GUIControlSet itemSwitchControlSet = new GUIControlSet(GUIControlSetFactory.Instance.container,
+                itemSwitchScenePrefabObject, filename, viewResolution,
+                new GUIControlSetInstantiateOptions(destroyWhenDisabled: true, preferredDpad: true));
 
+            itemSwitchControlSet.StateChanged += enabled =>
+            {
+                if (enabled)
+                {
+                    GameInputManager.Instance.ItemSwitchMinigameActionMap.Enable();
+                }
+                else
+                {
+                    GameInputManager.Instance.ItemSwitchMinigameActionMap.Disable();
+                }
+            };
+
+            ItemSwitchSceneController itemSwitchSceneController = itemSwitchControlSet.GameObject.GetComponent<ItemSwitchSceneController>();
+            if (itemSwitchSceneController != null)
+            {
+                itemSwitchSceneController.Setup(info);
+            }
+
+            return itemSwitchControlSet;
+
+        }
     }
 }

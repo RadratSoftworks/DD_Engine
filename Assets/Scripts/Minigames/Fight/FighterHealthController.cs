@@ -1,36 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public class FighterHealthController : MonoBehaviour
+namespace DDEngine.Minigame.Fight
 {
-    [SerializeField]
-    private int maxHealth = 50;
-
-    private int currentHealth;
-
-    public int MaxHealth => maxHealth;
-    public int CurrentHealth => currentHealth;
-    public bool IsDead => CurrentHealth == 0;
-
-    public event Action HealthChanged;
-
-    private void Start()
+    public class FighterHealthController : MonoBehaviour
     {
-        currentHealth = maxHealth;
-    }
+        [SerializeField]
+        private int maxHealth = 50;
 
-    public void TakeDamage(int damageCount)
-    {
-        if (currentHealth == 0)
+        private int currentHealth;
+
+        public int MaxHealth => maxHealth;
+        public int CurrentHealth => currentHealth;
+        public bool IsDead => CurrentHealth == 0;
+
+        public event System.Action HealthChanged;
+
+        private void Start()
         {
-            return;
+            currentHealth = maxHealth;
         }
 
-        currentHealth = Math.Max(0, currentHealth - damageCount);
-        HealthChanged?.Invoke();
+        public void TakeDamage(int damageCount)
+        {
+            if (currentHealth == 0)
+            {
+                return;
+            }
 
-        //Debug.Log("Current health points: " + currentHealth);
+            currentHealth = Math.Max(0, currentHealth - damageCount);
+            HealthChanged?.Invoke();
+
+            //Debug.Log("Current health points: " + currentHealth);
+        }
     }
 }

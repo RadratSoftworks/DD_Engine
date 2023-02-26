@@ -1,41 +1,41 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
-using System.Text;
+using DDEngine.Action;
 
-public class GUIMenuController : MonoBehaviour
+namespace DDEngine.GUI
 {
-    [SerializeField]
-    private GUIMenuOptionsController menuOptionsController;
-
-    private ActionLibrary actionLibrary;
-    private GUIControlSet controlSet;
-
-    public GameObject Options => menuOptionsController.gameObject;
-
-    // Start is called before the first frame update
-    void Start()
+    public class GUIMenuController : MonoBehaviour
     {
-        menuOptionsController.OnButtonClicked += OnButtonClicked;
-    }
+        [SerializeField]
+        private GUIMenuOptionsController menuOptionsController;
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
+        private ActionLibrary actionLibrary;
+        private GUIControlSet controlSet;
 
-    public void Setup(GUIControlSet set, string filename)
-    {
-        controlSet = set;
-        actionLibrary = ActionLibraryLoader.Load(filename);
-    }
+        public GameObject Options => menuOptionsController.gameObject;
 
-    public void OnButtonClicked(string name)
-    {
-        if (actionLibrary != null)
+        // Start is called before the first frame update
+        void Start()
         {
-            GameManager.Instance.RunPersistentCoroutine(actionLibrary.HandleAction(controlSet.ActionInterpreter, name, Constants.OnClickScriptEventName));
+            menuOptionsController.OnButtonClicked += OnButtonClicked;
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+        }
+
+        public void Setup(GUIControlSet set, string filename)
+        {
+            controlSet = set;
+            actionLibrary = ActionLibraryLoader.Load(filename);
+        }
+
+        public void OnButtonClicked(string name)
+        {
+            if (actionLibrary != null)
+            {
+                GameManager.Instance.RunPersistentCoroutine(actionLibrary.HandleAction(controlSet.ActionInterpreter, name, Constants.OnClickScriptEventName));
+            }
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ItemSwitchStressMachineInfo
+namespace DDEngine.Minigame.ItemSwitch
 {
-    public string BackgroundImagePath;
-    public string IndicatorImagePath;
+    public class ItemSwitchStressMachineInfo
+    {
+        public string BackgroundImagePath;
+        public string IndicatorImagePath;
 
-    public Vector2 Position;
+        public Vector2 Position;
+    }
 }

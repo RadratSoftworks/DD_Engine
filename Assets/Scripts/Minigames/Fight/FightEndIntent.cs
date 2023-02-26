@@ -1,5 +1,6 @@
-﻿using System;
-
-public class FightEndIntent
+﻿namespace DDEngine.Minigame.Fight
 {
+    public class FightEndIntent
+    {
+    }
 }
