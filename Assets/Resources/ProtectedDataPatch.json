@@ -40,6 +40,11 @@
 					"context": "Fix Chapter 3 Map load movie set location wrong path"
 				},
 				{
+					"offset": "1504",
+					"newBytes": "6C",
+					"context": "Fix chapter 3 Hotel arrows location"
+				},
+				{
 					"offset": "16D3",
 					"newBytes": "63 6B 0A 6C",
 					"context": "Fix chapter 4 on movie set click"
