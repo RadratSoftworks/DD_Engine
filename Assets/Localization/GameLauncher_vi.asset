@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: GameLauncher_vi
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: vi
+  m_SharedData: {fileID: 11400000, guid: 333ba7e8cd207a64d84ed970a8e57e0b, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 15862525952
+    m_Localized: "T\u1EADp th\u1EC3 n\u1EAFm gi\u1EEF b\u1EA3n quy\u1EC1n c\u1EE7a
+      tr\xF2 ch\u01A1i v\xE0 c\xE1c t\xE0i nguy\xEAn c\u1EE7a n\xF3 l\xE0 Nokia Corporation.\n\nBi\u1EC3u
+      t\u01B0\u1EE3ng EKA2L1 \u0111\u01B0\u1EE3c thi\u1EBFt k\u1EBF v\xE0 v\u1EBD
+      b\u1EDFi dmolina007 & Frenesi."
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

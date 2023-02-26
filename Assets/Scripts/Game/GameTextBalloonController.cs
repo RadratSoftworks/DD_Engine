@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
 
 // Tried to use vertical layout but it is very inconsistent with pivots...
 public class GameTextBalloonController : MonoBehaviour
@@ -25,6 +26,10 @@ public class GameTextBalloonController : MonoBehaviour
     public GameObject textObject;
     public GameObject balloonObject;
     public GameObject stingerObject;
+
+    private string pendingBalloon = null;
+    private string pendingStinger = null;
+    private Vector2 pendingStingerPos;
 
     public Color normalTextBackgroundColor = Color.white;
     public Color fullItalicTextBackgroundColor = Color.yellow;
@@ -218,6 +223,16 @@ public class GameTextBalloonController : MonoBehaviour
             balloonRenderer.transform.localPosition = rectTransform.sizeDelta * GetPivot();
         }
 
+        if (pendingBalloon != null)
+        {
+            UpdateBalloonImpl();
+        }
+
+        if (pendingStinger != null)
+        {
+            UpdateStingerImpl();
+        }
+
         if (GameSettings.TextSpeed != GameTextSpeed.Instant)
         {
             currentTextCoroutine = GraduallyAppearTextCoroutine();
@@ -225,21 +240,45 @@ public class GameTextBalloonController : MonoBehaviour
         }
     }
 
-    public void SetBalloon(string balloonFilename)
+    private void UpdateBalloonImpl()
     {
         balloonRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
-            balloonFilename, GetSpritePivot());
+            pendingBalloon, GetSpritePivot());
+
+        pendingBalloon = null;
     }
 
-    public void SetStinger(Vector2 stingerPos, string stingerFilename)
+    private void UpdateStingerImpl()
     {
         stingerObject.SetActive(true);
 
         stingerRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.GeneralResources,
-            stingerFilename, GetSpritePivot());
+            pendingStinger, GetSpritePivot());
 
-        stingerPositionRelative = GameUtils.ToUnityCoordinates(stingerPos);
+        stingerPositionRelative = GameUtils.ToUnityCoordinates(pendingStingerPos);
         AdjustStingerPosition();
+
+        pendingStinger = null;
+    }
+
+    public void SetBalloon(string balloonFilename)
+    {
+        pendingBalloon = balloonFilename;
+        if (gameObject.activeSelf)
+        {
+            UpdateBalloonImpl();
+        }
+    }
+
+    public void SetStinger(Vector2 stingerPos, string stingerFilename)
+    {
+        pendingStingerPos = stingerPos;
+        pendingStinger = stingerFilename;
+
+        if (gameObject.activeSelf)
+        {
+            UpdateStingerImpl();
+        }
     }
 
     private void AdjustStingerPosition()

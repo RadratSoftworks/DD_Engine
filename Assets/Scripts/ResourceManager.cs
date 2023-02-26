@@ -90,9 +90,9 @@ public class ResourceManager : MonoBehaviour
         return generalResources;
     }
 
-    public TMP_FontAsset GetFontAssetForLocalization()
+    private TMP_FontAsset GetFontAssetForLanguage(GameLanguage language)
     {
-        switch (GameSettings.GameLanguage)
+        switch (language)
         {
             case GameLanguage.SimplifiedChinese:
                 return SimplifiedChineseFontAsset;
@@ -101,16 +101,32 @@ public class ResourceManager : MonoBehaviour
                 return EnglishFontAsset;
         }
     }
+    public TMP_FontAsset GetFontAssetForStagingLanguageText()
+    {
+        return GetFontAssetForLanguage((GameSettings.StagingGameLanguage == GameLanguage.Undefined) ?
+            GameSettings.GameLanguage : GameSettings.StagingGameLanguage);
+    }
+
+    public TMP_FontAsset GetFontAssetForLocalization()
+    {
+        return GetFontAssetForLanguage(GameSettings.GameLanguage);
+    }
+
+    public void UpdateLanguagePack()
+    {
+        localizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, GetLanguageCodeForLocalization())));
+        protectedLocalizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.ProtectedLocalizationResourceFileName, GetLanguageCodeForLocalization())));
+    }
 
     private IEnumerator LoadDataCoroutine()
     {
         generalResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.GeneralResourceFileName));
         yield return null;
-        localizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, GetLanguageCodeForLocalization())));
-        yield return null;
         introResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.IntroResourceFileName));
         yield return null;
         protectedGeneralResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.ProtectedGeneralResourceFileName));
+        yield return null;
+        localizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, GetLanguageCodeForLocalization())));
         yield return null;
         protectedLocalizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.ProtectedLocalizationResourceFileName, GetLanguageCodeForLocalization())));
         yield return null;

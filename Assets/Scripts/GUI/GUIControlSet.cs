@@ -15,6 +15,8 @@ public class GUIControlSet
     private ActionLibrary standardActionLibrary;
 
     private Dictionary<string, string> langStrings = new Dictionary<string, string>();
+    private GameLanguage currentLanguage = GameLanguage.Undefined;
+    private string langStringsFile;
 
     public Dictionary<string, string> Strings => langStrings;
     public GameObject GameObject => gameObject;
@@ -35,6 +37,9 @@ public class GUIControlSet
 
     public delegate void OnLocationScrollSpeedSetRequested(Vector2[] speeds);
     public event OnLocationScrollSpeedSetRequested LocationScrollSpeedSetRequested;
+
+    public delegate void OnLocalizationChanged(GUIControlSet controlSet);
+    public event OnLocalizationChanged LocalizationChanged;
 
     private int performingBusyAnimationCount = 0;
     private bool destroyOnDisable;
@@ -57,6 +62,9 @@ public class GUIControlSet
     public GUIControlSet(GameObject parentContainer, GUIControlDescriptionFile description, Vector2 viewSize, GUIControlSetInstantiateOptions options)
     {
         langStrings = LocalizerHelper.GetStrings(description.Filename);
+        langStringsFile = description.Filename;
+        currentLanguage = GameSettings.GameLanguage;
+
         saveable = description.Saveable;
 
         try
@@ -126,6 +134,14 @@ public class GUIControlSet
 
         gameObject.SetActive(true);
         StateChanged?.Invoke(true);
+
+        if ((currentLanguage != GameLanguage.Undefined) && (currentLanguage != GameSettings.GameLanguage))
+        {
+            currentLanguage = GameSettings.GameLanguage;
+            langStrings = LocalizerHelper.GetStrings(langStringsFile);
+
+            LocalizationChanged?.Invoke(this);
+        }
     }
 
     public void EnableRecommendedTouchControl()

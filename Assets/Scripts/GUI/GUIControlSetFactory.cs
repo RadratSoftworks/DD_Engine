@@ -289,7 +289,7 @@ public class GUIControlSetFactory : GameBaseAssetManager<GUIControlSet>
 
         if (controller != null)
         {
-            controller.Setup(description.TopPosition, ownSet.GetLanguageString(description.TextName), description.AbsoluteDepth);
+            controller.Setup(ownSet, description.TopPosition, description.TextName, description.AbsoluteDepth);
         }
     }
 

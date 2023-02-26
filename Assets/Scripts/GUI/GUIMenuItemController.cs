@@ -2,11 +2,10 @@
 
 public class GUIMenuItemController : GUIMenuSelectableBehaviour
 {
-    private GUIControlSet ownSet;
     private TMPro.TMP_Text text;
     private string textId;
 
-    private void UpdateText()
+    private void UpdateText(GUIControlSet ownSet)
     {
         text.text = ownSet.GetLanguageString(textId);
         text.font = ResourceManager.Instance.GetFontAssetForLocalization();
@@ -14,7 +13,6 @@ public class GUIMenuItemController : GUIMenuSelectableBehaviour
 
     public void Setup(GUIControlSet ownSet, GUIControlMenuItemDescription description, ref Vector2 positonBase)
     {
-        this.ownSet = ownSet;
         this.textId = description.TextName;
         this.text = GetComponentInChildren<TMPro.TMP_Text>();
 
@@ -46,7 +44,8 @@ public class GUIMenuItemController : GUIMenuSelectableBehaviour
             var meshRenderer = text.GetComponent<MeshRenderer>();
             meshRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(description.AbsoluteDepth);
 
-            UpdateText();
+            UpdateText(ownSet);
+            ownSet.LocalizationChanged += UpdateText;
         }
     }
 }

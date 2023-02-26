@@ -5,6 +5,8 @@ using DG.Tweening;
 
 public class GUISettingMultiValuesOptionController : GUIMenuSelectableBehaviour
 {
+    private const string LanguageSettingName = "language";
+
     [SerializeField]
     private SpriteAnimatorController focusIdleAnimation;
 
@@ -24,13 +26,37 @@ public class GUISettingMultiValuesOptionController : GUIMenuSelectableBehaviour
 
     private void SetupOptionDisplayText()
     {
+        // Not yet ready
+        if ((optionText == null) || (ownSet == null))
+        {
+            return;
+        }
+
+        // Treat language setting a bit special, since we have to display the right font for it
+        // but not committing the change until SaveSettings action opcode is called...
         optionText.text = ownSet.GetLanguageString(valuesAndTextValuesId[currentValueIndex].Item2);
-        optionText.font = ResourceManager.Instance.GetFontAssetForLocalization();
+        optionText.font = (settingName == LanguageSettingName) ? 
+            ResourceManager.Instance.GetFontAssetForStagingLanguageText() :
+            ResourceManager.Instance.GetFontAssetForLocalization();
     }
 
     private void UpdateSettingAndText()
     {
         GameSettings.SetIngameSettingValue(settingName, valuesAndTextValuesId[currentValueIndex].Item1);
+        SetupOptionDisplayText();
+    }
+
+    private void GetValueFromSettingAndSetup()
+    {
+        string optionValue = GameSettings.GetIngameSettingValue(settingName);
+        currentValueIndex = valuesAndTextValuesId.FindIndex(value => value.Item1 == optionValue);
+
+        if (currentValueIndex == -1)
+        {
+            Debug.LogError(string.Format("Invalid setting value: {0}. Default to value at index 0", optionValue));
+            currentValueIndex = 0;
+        }
+
         SetupOptionDisplayText();
     }
 
@@ -68,16 +94,13 @@ public class GUISettingMultiValuesOptionController : GUIMenuSelectableBehaviour
 
         optionText.rectTransform.sizeDelta = backgroundRenderer.sprite.bounds.size;
 
-        string optionValue = GameSettings.GetIngameSettingValue(settingName);
-        currentValueIndex = valuesAndTextValuesId.FindIndex(value => value.Item1 == optionValue);
+        GetValueFromSettingAndSetup();
+        ownSet.LocalizationChanged += _ => SetupOptionDisplayText();
+    }
 
-        if (currentValueIndex == -1)
-        {
-            Debug.LogError(string.Format("Invalid setting value: {0}. Default to value at index 0", optionValue));
-            currentValueIndex = 0;
-        }
-
-        SetupOptionDisplayText();
+    private void OnEnable()
+    {
+        GetValueFromSettingAndSetup();
     }
 
     public void OnLeftValueTriggered()

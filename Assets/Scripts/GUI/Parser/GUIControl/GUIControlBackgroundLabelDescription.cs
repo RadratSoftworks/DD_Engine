@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class GUIControlBackgroundLabelDescription : GUIControlDescription
 {
-    public Vector2 TopPosition { get; set; }
+    public Vector2 Position { get; set; }
     public string TextId { get; set; }
     public Vector2 MarginSize { get; set; }
-    public string UnkStr { get; set; }
+    public string Pivot { get; set; }
 
     public Color FillColor { get; set; }
 
@@ -25,7 +25,7 @@ public class GUIControlBackgroundLabelDescription : GUIControlDescription
 
         Depth = reader.ReadInt16BE();
 
-        TopPosition = new Vector2(x, y);
+        Position = new Vector2(x, y);
         TextId = reader.ReadWordLengthString();
 
         short marginX = reader.ReadInt16BE();
@@ -44,6 +44,6 @@ public class GUIControlBackgroundLabelDescription : GUIControlDescription
             (byte)reader.ReadUInt16BE() / 255.0f,
             alpha);
 
-        UnkStr = reader.ReadWordLengthString();
+        Pivot = reader.ReadWordLengthString();
     }
 }
