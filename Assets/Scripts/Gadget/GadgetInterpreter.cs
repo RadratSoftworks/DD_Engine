@@ -312,6 +312,20 @@ namespace DDEngine.Gadget
             GameManager.Instance.SetBackgroundColor(new Color(r, g, b, a));
         }
 
+        private void HandleVibrate(ScriptCommand<GadgetOpcode> command)
+        {
+            if (command.Arguments.Count < 2)
+            {
+                Debug.LogError("Not enough arguments for vibrate command!");
+                return;
+            }
+
+            float frameCount = int.Parse(command.Arguments[0] as string);
+            int amplitude = int.Parse(command.Arguments[0] as string);
+
+            Vibrator.Vibrate(frameCount / Constants.BaseGameFps, amplitude);
+        }
+
         public IEnumerator Execute(System.Action onGadgetStart = null)
         {
             if (GameManager.Instance.GUIBusy)
@@ -411,6 +425,10 @@ namespace DDEngine.Gadget
 
                     case GadgetOpcode.Background:
                         HandleBackground(command);
+                        break;
+
+                    case GadgetOpcode.Vibrate:
+                        HandleVibrate(command);
                         break;
 
                     default:

@@ -26,7 +26,6 @@ namespace DDEngine.GUI
 
         private Vector2 originalPosition;
         private Vector2 size;
-        private bool definePan;
         private bool dialogueStateChangeSubscribed = false;
 
         private GUILocationController locationController;
@@ -137,7 +136,6 @@ namespace DDEngine.GUI
             return amountRaw;
         }
 
-        // Return the amount of time until scrolling is done!
         public void ScrollLocation(Vector2 amountRaw)
         {
             if (scroll.x == 0)

@@ -34,7 +34,8 @@ namespace DDEngine.Gadget
         { "icon", GadgetOpcode.Icon },
         { "hidetext", GadgetOpcode.HideText },
         { "choice", GadgetOpcode.Choice },
-        { "conditionalchoice", GadgetOpcode.ChoiceConditional }
+        { "conditionalchoice", GadgetOpcode.ChoiceConditional },
+        { "vibra", GadgetOpcode.Vibrate }
     };
 
         public static ScriptBlock<GadgetOpcode> Parse(Stream stream)

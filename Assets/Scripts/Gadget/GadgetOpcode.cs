@@ -20,6 +20,7 @@
         FadeOut,
         Icon,
         Choice,
-        ChoiceConditional
+        ChoiceConditional,
+        Vibrate
     }
 }
