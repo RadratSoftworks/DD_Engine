@@ -38,7 +38,7 @@ namespace DDEngine.Utils
             }
 
 #if UNITY_ANDROID
-            Vibration.Vibrate((long)(durationInSeconds * 1000), Mathf.Clamp(amplitude, MinAmplitude, MaxAmplitude) * 255.0f / MaxAmplitude);
+            Vibration.Vibrate((long)(durationInSeconds * 1000), (int)(Mathf.Clamp(amplitude, MinAmplitude, MaxAmplitude) * 255.0f / MaxAmplitude));
 #else
             cancelPreviousRumbleToken.Cancel();
 

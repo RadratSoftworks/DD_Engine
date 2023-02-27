@@ -12,6 +12,8 @@ namespace DDEngine
         private const string GameVolumeKey = "GameVolume";
         private const string TextSpeedKey = "TextSpeed";
         private const string GameStartLocationKey = "GameStartLocation";
+        private const string GameCompletedKey = "GameCompleted";
+        private const string GameCompletedCompatKey = "completed_game";
         private const int defaultCachedChangeDelta = 10;
         private const int defaultCacheThreshold = 5;
 
@@ -227,6 +229,17 @@ namespace DDEngine
                     // Same value but just all lowercased
                     return StartLocation.ToString().ToLower();
 
+                case "completed_game":
+                    {
+                        int compatValue = PlayerPrefs.GetInt(GameCompletedCompatKey, -1);
+                        if (compatValue < 0)
+                        {
+                            compatValue = PlayerPrefs.GetInt(GameCompletedKey);
+                        }
+
+                        return (compatValue <= 0) ? "null" : "true";
+                    }
+
                 default:
                     return PlayerPrefs.GetString(key);
             }
@@ -278,6 +291,12 @@ namespace DDEngine
                             StartLocation = location;
                         }
 
+                        break;
+                    }
+
+                case "completed_game":
+                    {
+                        PlayerPrefs.SetInt(GameCompletedKey, (value.Equals("true", StringComparison.OrdinalIgnoreCase) ? 1 : 0));
                         break;
                     }
 

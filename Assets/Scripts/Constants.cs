@@ -21,6 +21,7 @@ namespace DDEngine
         public static readonly string IconLayer = "Icon";
         public static readonly string Anonymous = "Anonymous";
         public static readonly string SaveExistsVarName = "save_exists";
+        public static readonly string CompletedGameVarName = "completed_game";
 
         public static readonly string SwitchNgiUri = "https://anni.12l1.com";
 

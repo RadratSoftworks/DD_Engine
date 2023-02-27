@@ -11,27 +11,28 @@ namespace DDEngine.Action
     public class ActionParser
     {
         private static Dictionary<string, ActionOpcode> stringToActionOps = new Dictionary<string, ActionOpcode>(StringComparer.OrdinalIgnoreCase)
-    {
-        { "loadlocation", ActionOpcode.LoadLocation },
-        { "return", ActionOpcode.Return },
-        { "clearglobals", ActionOpcode.ClearGlobals },
-        { "setglobal", ActionOpcode.SetGlobal },
-        { "loaddialogue", ActionOpcode.LoadDialogue },
-        { "loadgadget", ActionOpcode.LoadGadget },
-        { "play", ActionOpcode.Play },
-        { "locationoffset", ActionOpcode.SetLocationOffset },
-        { "panlocation", ActionOpcode.PanLocation },
-        { "scrollspeeds", ActionOpcode.SetScrollSpeeds },
-        { "achieve", ActionOpcode.Achieve },
-        { "loadminigame", ActionOpcode.LoadMiniGame },
-        { "resumesave", ActionOpcode.ResumeSave },
-        { "switchngi", ActionOpcode.SwitchNgi },
-        { "timer", ActionOpcode.Timer },
-        { "deletesaves", ActionOpcode.DeleteSaves },
-        { "deletesettings", ActionOpcode.DeleteSettings },
-        { "savesettings", ActionOpcode.SaveSettings },
-        { "quit", ActionOpcode.Quit }
-    };
+        {
+            { "loadlocation", ActionOpcode.LoadLocation },
+            { "return", ActionOpcode.Return },
+            { "clearglobals", ActionOpcode.ClearGlobals },
+            { "setglobal", ActionOpcode.SetGlobal },
+            { "loaddialogue", ActionOpcode.LoadDialogue },
+            { "loadgadget", ActionOpcode.LoadGadget },
+            { "play", ActionOpcode.Play },
+            { "locationoffset", ActionOpcode.SetLocationOffset },
+            { "panlocation", ActionOpcode.PanLocation },
+            { "scrollspeeds", ActionOpcode.SetScrollSpeeds },
+            { "achieve", ActionOpcode.Achieve },
+            { "loadminigame", ActionOpcode.LoadMiniGame },
+            { "resumesave", ActionOpcode.ResumeSave },
+            { "switchngi", ActionOpcode.SwitchNgi },
+            { "timer", ActionOpcode.Timer },
+            { "deletesaves", ActionOpcode.DeleteSaves },
+            { "deletesettings", ActionOpcode.DeleteSettings },
+            { "savesettings", ActionOpcode.SaveSettings },
+            { "quit", ActionOpcode.Quit },
+            { "setsetting", ActionOpcode.SetSetting }
+        };
 
         public static ScriptBlock<ActionOpcode> ParseEmbedded(Stream stream)
         {

@@ -15,6 +15,10 @@ namespace DDEngine.Action
             public IEnumerator Coroutine { get; set; }
         };
 
+        private static readonly List<string> GlobalVarsBridgeToGameSettingsList = new() {
+            "completed_game"
+        };
+
         private static Dictionary<string, string> globalScriptValues = new Dictionary<string, string>();
 
         public delegate void OnVariableChanged(List<string> nameChanged);
@@ -135,6 +139,10 @@ namespace DDEngine.Action
 
                     case ActionOpcode.DeleteSettings:
                         RunDeleteSettings();
+                        break;
+
+                    case ActionOpcode.SetSetting:
+                        RunSetSetting(command);
                         break;
 
                     default:
@@ -343,24 +351,38 @@ namespace DDEngine.Action
             }
         }
 
-        public void RunSaveSettings()
+        private void RunSetSetting(ScriptCommand<ActionOpcode> command)
+        {
+            if (command.Arguments.Count < 2)
+            {
+                Debug.LogError("Not enough arguments for set setting!");
+                return;
+            }
+
+            string varname = command.Arguments[0] as string;
+            string value = command.Arguments[1] as string;
+
+            GameSettings.SetIngameSettingValue(varname, value);
+        }
+
+        private void RunSaveSettings()
         {
             GameSettings.Save();
             ResourceManager.Instance.UpdateLanguagePack();
         }
 
-        public void RunDeleteSettings()
+        private void RunDeleteSettings()
         {
             GameSettings.Reset();
             ResourceManager.Instance.UpdateLanguagePack();
         }
 
-        public void RunDeleteSaves()
+        private void RunDeleteSaves()
         {
             GameManager.Instance.ClearSave();
         }
 
-        public void RunQuit()
+        private void RunQuit()
         {
             Application.Quit();
         }
@@ -369,24 +391,38 @@ namespace DDEngine.Action
         {
             isGlobal = false;
 
-            if (globalScriptValues.TryGetValue(variableName, out string val))
+            if (GlobalVarsBridgeToGameSettingsList.Contains(variableName))
             {
-                isGlobal = true;
-                return val;
+                return GameSettings.GetIngameSettingValue(variableName);
             }
+            else
+            {
+                if (globalScriptValues.TryGetValue(variableName, out string val))
+                {
+                    isGlobal = true;
+                    return val;
+                }
 
-            return "null";
+                return "null";
+            }
         }
 
         public void SetGlobalVariable(string varName, string value)
         {
-            if (!globalScriptValues.ContainsKey(varName))
+            if (GlobalVarsBridgeToGameSettingsList.Contains(varName))
             {
-                globalScriptValues.Add(varName, value);
+                GameSettings.SetIngameSettingValue(varName, value);
             }
             else
             {
-                globalScriptValues[varName] = value;
+                if (!globalScriptValues.ContainsKey(varName))
+                {
+                    globalScriptValues.Add(varName, value);
+                }
+                else
+                {
+                    globalScriptValues[varName] = value;
+                }
             }
 
 #if UNITY_EDITOR

@@ -691,6 +691,8 @@ namespace DDEngine
                 return;
             }
 
+            bool saveWasAvailable = SaveAvailable;
+
             using (StreamWriter file = new StreamWriter(SavePath))
             {
                 if ((activeGUI != null) && (activeGUI.Location != null))
@@ -705,6 +707,11 @@ namespace DDEngine
                 };
 
                 serializer.Serialize(file, gameSave);
+            }
+
+            if (!saveWasAvailable)
+            {
+                defaultActionInterpreter.SetGlobalVariable(Constants.SaveExistsVarName, "true");
             }
         }
 

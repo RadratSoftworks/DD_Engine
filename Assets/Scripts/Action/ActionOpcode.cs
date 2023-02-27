@@ -20,6 +20,7 @@
         DeleteSaves,
         SaveSettings,
         DeleteSettings,
+        SetSetting,
         Quit
     };
 }
