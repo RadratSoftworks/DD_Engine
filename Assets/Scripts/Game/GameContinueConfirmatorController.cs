@@ -19,8 +19,6 @@ namespace DDEngine.Game
 
         private void OnEnable()
         {
-            GameInputManager.Instance.SetGUIInputActionMapState(false);
-
             if (hearing)
             {
                 GameInputManager.Instance.ContinueGameActionMap.Enable();

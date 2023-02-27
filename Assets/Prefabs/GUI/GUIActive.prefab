@@ -225,7 +225,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arrows: {fileID: 5634714165566321706}
   focusPoint: {fileID: 539232849703744728}
-  arrowMaximumOutpointDist: {x: 21, y: 21}
+  arrowMinimumOutpointDist: {x: 21, y: 21}
+  arrowMaximumOutpointDist: {x: 29, y: 29}
 --- !u!1 &3470401414016409173
 GameObject:
   m_ObjectHideFlags: 0

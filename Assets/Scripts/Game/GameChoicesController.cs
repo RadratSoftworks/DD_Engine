@@ -78,8 +78,6 @@ namespace DDEngine.Game
 
         private void Start()
         {
-            GameInputManager.Instance.SetGUIInputActionMapState(false);
-
             SetInputState(true);
             RegOrUnregActions(true);
         }

@@ -11,9 +11,9 @@ namespace DDEngine.GUI
         [SerializeField]
         private GameObject focusPoint;
 
-        [Tooltip("The maximum amount of units an arrow can translate from the starting position")]
+        [Tooltip("The minimum amount of units an arrow can translate from the starting position")]
         [SerializeField]
-        private Vector2 arrowMaximumOutpointDist = new Vector2(21, 21);
+        private Vector2 arrowMinimumOutpointDist = new Vector2(21, 21);
 
         private GUIControlSet controlSet;
         private GUILayerController layerController;
@@ -66,7 +66,7 @@ namespace DDEngine.GUI
             transform.localPosition = GameUtils.ToUnityCoordinates(detectBounds.position + detectBounds.size / 2);
 
             // The size of the arrows point is accounted with the maximum outpoint state (point outwards) of the arrows.
-            Vector3 sizeTransformed = (size - arrowMaximumOutpointDist) / 2;
+            Vector3 sizeTransformed = (size - arrowMinimumOutpointDist) / 2;
 
             BoxCollider2D collider = GetComponent<BoxCollider2D>();
             if (collider != null)
@@ -76,21 +76,21 @@ namespace DDEngine.GUI
 
             Vector3[] positionMove =
             {
-            Vector3.Scale(sizeTransformed, new Vector3(-1, -1)),
-            Vector3.Scale(sizeTransformed, new Vector3(1, -1)),
-            Vector3.Scale(sizeTransformed, new Vector3(-1, 1)),
-            Vector3.Scale(sizeTransformed, new Vector3(1, 1))
-        };
+                Vector3.Scale(sizeTransformed, new Vector3(-1, -1)),
+                Vector3.Scale(sizeTransformed, new Vector3(1, -1)),
+                Vector3.Scale(sizeTransformed, new Vector3(-1, 1)),
+                Vector3.Scale(sizeTransformed, new Vector3(1, 1))
+            };
 
             Vector2[] origin =
             {
-            Vector2.right,
-            Vector2.zero,
-            Vector3.one,
-            Vector2.up
-        };
+                Vector2.right,
+                Vector2.zero,
+                Vector3.one,
+                Vector2.up
+            };
 
-            arrows.transform.localPosition = GameUtils.ToUnityCoordinates(position + (size + arrowMaximumOutpointDist) / 2) - new Vector2(transform.localPosition.x, transform.localPosition.y);
+            arrows.transform.localPosition = GameUtils.ToUnityCoordinates(position + (size + arrowMinimumOutpointDist) / 2) - new Vector2(transform.localPosition.x, transform.localPosition.y);
             focusPoint.transform.localPosition = GameUtils.ToUnityCoordinates(position + size / 2) - new Vector2(transform.localPosition.x, transform.localPosition.y);
 
             for (int i = 0; i < 4; i++)

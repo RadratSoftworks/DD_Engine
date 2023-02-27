@@ -344,6 +344,8 @@ namespace DDEngine
             StartCoroutine(interpreter.Execute(() => {
                 // Use a dpad for dialogue navigation
                 GameInputManager.Instance.SetNavigationTouchControl(false);
+                GameInputManager.Instance.SetGUIInputActionMapState(false);
+
                 DialogueStateChanged?.Invoke(true);
             }));
         }

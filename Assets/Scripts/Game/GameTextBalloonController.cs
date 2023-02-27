@@ -102,8 +102,6 @@ namespace DDEngine.Game
 
         private void Start()
         {
-            GameInputManager.Instance.SetGUIInputActionMapState(false);
-
             var dialogueBalloonMap = GameInputManager.Instance.DialogueBalloonActionMap;
             dialogueBalloonMap.Enable();
 
@@ -184,8 +182,6 @@ namespace DDEngine.Game
 
         public void ChangeText(string newText)
         {
-            GameInputManager.Instance.SetGUIInputActionMapState(false);
-
             gameObject.SetActive(true);
 
             if (currentTextCoroutine != null)
