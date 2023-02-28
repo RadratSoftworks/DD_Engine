@@ -138,25 +138,50 @@ namespace DDEngine.GUI
 
         public void ScrollLocation(Vector2 amountRaw)
         {
+            // On phone apperently the scroll pixels are rounded?
+            Vector2 originalGame = GameUtils.FromUnityCoordinates(originalPosition);
+            Vector2 currentPositionGame = GameUtils.FromUnityCoordinates(new Vector2(transform.localPosition.x, transform.localPosition.y));
+            Vector2 newPositionGame = currentPositionGame + GameUtils.FromUnityCoordinates(amountRaw);
+
+            Vector2 moveFromOrg = Vector2.zero;
+
+            if (scroll.x != 0)
+            {
+                int scrollRoundedX = Mathf.CeilToInt(scroll.x / layerScrollFactor);
+                float dist = (int)newPositionGame.x - (int)originalGame.x;
+
+                Debug.Log(dist + " " + originalGame);
+                moveFromOrg.x = Mathf.RoundToInt(dist / scrollRoundedX) * scrollRoundedX;
+            }
+
+            if (scroll.y != 0)
+            {
+                int scrollRoundedY = Mathf.CeilToInt(scroll.y / layerScrollFactor);
+                float dist = (int)newPositionGame.y - (int)originalGame.y;
+
+                Debug.Log(dist + " " + originalGame);
+                moveFromOrg.y = Mathf.RoundToInt(dist / scrollRoundedY) * scrollRoundedY;
+            }
+
+            Vector2 amountFinal = GameUtils.ToUnityCoordinates(originalGame + moveFromOrg - currentPositionGame);
             if (scroll.x == 0)
             {
-                amountRaw.x = 0;
-            }
-            else
+                amountFinal.x = 0.0f;
+            } else
             {
-                amountRaw.x /= scroll.x / layerScrollFactor;
+                amountFinal.x /= scroll.x / layerScrollFactor;
             }
 
             if (scroll.y == 0)
             {
-                amountRaw.y = 0;
+                amountFinal.y = 0.0f;
             }
             else
             {
-                amountRaw.y /= scroll.y / layerScrollFactor;
+                amountFinal.y /= scroll.y / layerScrollFactor;
             }
 
-            locationController.Scroll(amountRaw, hasDuration: true);
+            locationController.Scroll(amountFinal, hasDuration: true);
         }
 
         public void ForceScroll(Vector2 scrollAmount, float duration, EaseType ease = EaseType.Normal, bool forFrameScroll = false)
