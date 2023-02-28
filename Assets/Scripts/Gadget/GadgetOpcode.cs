@@ -21,6 +21,7 @@
         Icon,
         Choice,
         ChoiceConditional,
-        Vibrate
+        Vibrate,
+        StopAmbient
     }
 }

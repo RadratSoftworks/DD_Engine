@@ -482,6 +482,11 @@ namespace DDEngine
             persistentAudioController.Play(filename, type);
         }
 
+        public void StopAudioAmbient()
+        {
+            persistentAudioController.StopAmbient();
+        }
+
         public void PlayAudioInDialogue(string filename, string type)
         {
             if (type.Equals("normal", StringComparison.OrdinalIgnoreCase))

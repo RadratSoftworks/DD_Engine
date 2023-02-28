@@ -60,6 +60,8 @@ namespace DDEngine
             menuTriggerActionMap = assets.FindActionMap("Menu Trigger");
         }
 
+        public bool GUIInputActionMapEnabled => guiInputActionMapEnabled;
+
         public void SetGUIMenuTriggerActionMapState(bool enabled)
         {
             if (enabled)

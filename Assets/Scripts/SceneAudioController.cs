@@ -41,6 +41,14 @@ namespace DDEngine
             normalSoundSource.Stop();
         }
 
+        public void StopAmbient()
+        {
+            if (bgmSoundSource != null)
+            {
+                bgmSoundSource.Stop();
+            }
+        }
+
         public void StopAll()
         {
             normalSoundSource.Stop();

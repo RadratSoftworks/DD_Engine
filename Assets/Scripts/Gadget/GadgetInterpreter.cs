@@ -326,6 +326,11 @@ namespace DDEngine.Gadget
             Vibrator.Vibrate(frameCount / Constants.BaseGameFps, amplitude);
         }
 
+        private void HandleStopAmbient()
+        {
+            GameManager.Instance.StopAudioAmbient();
+        }
+
         public IEnumerator Execute(System.Action onGadgetStart = null)
         {
             if (GameManager.Instance.GUIBusy)
@@ -429,6 +434,10 @@ namespace DDEngine.Gadget
 
                     case GadgetOpcode.Vibrate:
                         HandleVibrate(command);
+                        break;
+
+                    case GadgetOpcode.StopAmbient:
+                        HandleStopAmbient();
                         break;
 
                     default:

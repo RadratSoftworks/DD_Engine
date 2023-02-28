@@ -15,28 +15,29 @@ namespace DDEngine.Gadget
     public class GadgetParser
     {
         private static Dictionary<string, GadgetOpcode> stringToGadgetOps = new Dictionary<string, GadgetOpcode>(StringComparer.OrdinalIgnoreCase)
-    {
-        { "play", GadgetOpcode.Play },
-        { "animation", GadgetOpcode.Animation },
-        { "startaction", GadgetOpcode.StartAction },
-        { "background", GadgetOpcode.Background },
-        { "load", GadgetOpcode.Load },
-        { "pause", GadgetOpcode.Pause },
-        { "wait", GadgetOpcode.Pause },     // Intentional...
-        { "pan", GadgetOpcode.Pan },
-        { "fadein", GadgetOpcode.FadeIn },
-        { "fadeout", GadgetOpcode.FadeOut },
-        { "clear", GadgetOpcode.Clear },
-        { "continue", GadgetOpcode.Continue },
-        { "text", GadgetOpcode.Text },
-        { "balloon", GadgetOpcode.Balloon },
-        { "stinger", GadgetOpcode.Stinger },
-        { "icon", GadgetOpcode.Icon },
-        { "hidetext", GadgetOpcode.HideText },
-        { "choice", GadgetOpcode.Choice },
-        { "conditionalchoice", GadgetOpcode.ChoiceConditional },
-        { "vibra", GadgetOpcode.Vibrate }
-    };
+        {
+            { "play", GadgetOpcode.Play },
+            { "animation", GadgetOpcode.Animation },
+            { "startaction", GadgetOpcode.StartAction },
+            { "background", GadgetOpcode.Background },
+            { "load", GadgetOpcode.Load },
+            { "pause", GadgetOpcode.Pause },
+            { "wait", GadgetOpcode.Pause },     // Intentional...
+            { "pan", GadgetOpcode.Pan },
+            { "fadein", GadgetOpcode.FadeIn },
+            { "fadeout", GadgetOpcode.FadeOut },
+            { "clear", GadgetOpcode.Clear },
+            { "continue", GadgetOpcode.Continue },
+            { "text", GadgetOpcode.Text },
+            { "balloon", GadgetOpcode.Balloon },
+            { "stinger", GadgetOpcode.Stinger },
+            { "icon", GadgetOpcode.Icon },
+            { "hidetext", GadgetOpcode.HideText },
+            { "choice", GadgetOpcode.Choice },
+            { "conditionalchoice", GadgetOpcode.ChoiceConditional },
+            { "vibra", GadgetOpcode.Vibrate },
+            { "stopambient", GadgetOpcode.StopAmbient }
+        };
 
         public static ScriptBlock<GadgetOpcode> Parse(Stream stream)
         {

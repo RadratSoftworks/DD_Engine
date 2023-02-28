@@ -255,10 +255,20 @@ namespace DDEngine.GUI
 
         private void OnPanRequested(Vector2 amount)
         {
-            // Temporary disable inputs
-            GameInputManager.Instance.SetGUIInputActionMapState(false);
+            // Temporary disable inputs if it's on
+            bool shouldDisableInput = GameInputManager.Instance.GUIInputActionMapEnabled;
+
+            if (shouldDisableInput)
+            {
+                GameInputManager.Instance.SetGUIInputActionMapState(false);
+            }
+
             ScrollFromOrigin(GameUtils.ToUnityCoordinates(amount), true);
-            GameInputManager.Instance.SetGUIInputActionMapState(true);
+
+            if (shouldDisableInput)
+            {
+                GameInputManager.Instance.SetGUIInputActionMapState(true);
+            }
         }
 
         private void OnScrollSpeedsSet(Vector2[] speeds)
