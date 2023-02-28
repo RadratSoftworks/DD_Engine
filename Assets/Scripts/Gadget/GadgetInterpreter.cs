@@ -323,7 +323,10 @@ namespace DDEngine.Gadget
             float frameCount = int.Parse(command.Arguments[0] as string);
             int amplitude = int.Parse(command.Arguments[0] as string);
 
-            Vibrator.Vibrate(frameCount / Constants.BaseGameFps, amplitude);
+            if (GameSettings.Vibration)
+            {
+                Vibrator.Vibrate(frameCount / Constants.BaseGameFps, amplitude);
+            }
         }
 
         private void HandleStopAmbient()

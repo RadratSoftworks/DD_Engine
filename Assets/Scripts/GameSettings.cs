@@ -14,6 +14,7 @@ namespace DDEngine
         private const string GameStartLocationKey = "GameStartLocation";
         private const string GameCompletedKey = "GameCompleted";
         private const string GameCompletedCompatKey = "completed_game";
+        private const string VibraKey = "vibra";
         private const int defaultCachedChangeDelta = 10;
         private const int defaultCacheThreshold = 5;
 
@@ -173,6 +174,18 @@ namespace DDEngine
             }
         }
 
+        public static bool Vibration
+        {
+            get
+            {
+                return PlayerPrefs.GetString(VibraKey, "on") == "on";
+            }
+            set
+            {
+                PlayerPrefs.SetString(VibraKey, (value == false) ? "off" : "on");
+            }
+        }
+
         public static void RestoreSettings()
         {
             AudioListener.volume = PlayerPrefs.GetFloat(GameVolumeKey, 1.0f);
@@ -240,6 +253,11 @@ namespace DDEngine
                         return (compatValue <= 0) ? "null" : "true";
                     }
 
+                case "vibra":
+                    {
+                        return Vibration ? "on" : "off";
+                    }
+
                 default:
                     return PlayerPrefs.GetString(key);
             }
@@ -297,6 +315,12 @@ namespace DDEngine
                 case "completed_game":
                     {
                         PlayerPrefs.SetInt(GameCompletedKey, (value.Equals("true", StringComparison.OrdinalIgnoreCase) ? 1 : 0));
+                        break;
+                    }
+
+                case "vibra":
+                    {
+                        Vibration = (value.Equals("on", StringComparison.OrdinalIgnoreCase) ? true : false);
                         break;
                     }
 
