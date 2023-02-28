@@ -23,9 +23,7 @@ namespace DDEngine.GUI
         private GUIControlSet controlSet;
 
         private GUILayerController panLayerController;
-        private GUIActiveController currentActiveController;
         private List<GUILayerController> layerControllers = new List<GUILayerController>();
-        private List<GUIActiveController> pendingClaimActiveControllers = new List<GUIActiveController>();
 
         private int scrollInProgressCount = 0;
         private float previousDialogueDisabledTimestamp = -1;
@@ -34,6 +32,7 @@ namespace DDEngine.GUI
         public float MoveAmount => moveAmount;
 
         public bool ScrollAnimationDone => (scrollInProgressCount == 0);
+        public event System.Action ActiveConfirmed;
 
         private void RegOrUnregAction(bool reg)
         {
@@ -234,11 +233,6 @@ namespace DDEngine.GUI
 
         private void OnActiveConfirmed(InputAction.CallbackContext context)
         {
-            if (currentActiveController == null)
-            {
-                return;
-            }
-
             bool passed = true;
 
             // The input sometimes trigger too fast
@@ -247,10 +241,7 @@ namespace DDEngine.GUI
                 passed = (Time.time - previousDialogueDisabledTimestamp) >= activeCooldownFromCloseDialogue;
             }
 
-            if (context.ReadValueAsButton() && passed)
-            {
-                currentActiveController.OnConfirmed();
-            }
+            ActiveConfirmed?.Invoke();
         }
 
         private void OnPanRequested(Vector2 amount)
@@ -282,51 +273,6 @@ namespace DDEngine.GUI
                     layerController.scroll = speeds[index++];
                 }
             }
-        }
-
-        public bool ClaimActive(GUIActiveController controller)
-        {
-            if (currentActiveController != null)
-            {
-                if (!pendingClaimActiveControllers.Contains(controller))
-                {
-                    pendingClaimActiveControllers.Add(controller);
-                }
-
-                return false;
-            }
-
-            currentActiveController = controller;
-            currentActiveController.OnClaimSuccess();
-
-            return true;
-        }
-
-        public bool ReleaseActive(GUIActiveController controller)
-        {
-            if (currentActiveController == controller)
-            {
-                if (pendingClaimActiveControllers.Count != 0)
-                {
-                    currentActiveController = pendingClaimActiveControllers[0];
-                    pendingClaimActiveControllers.RemoveAt(0);
-
-                    currentActiveController.OnClaimSuccess();
-                }
-                else
-                {
-                    currentActiveController = null;
-                }
-
-                return true;
-            }
-
-            if (pendingClaimActiveControllers.Contains(controller))
-            {
-                pendingClaimActiveControllers.Remove(controller);
-            }
-
-            return false;
         }
     }
 }

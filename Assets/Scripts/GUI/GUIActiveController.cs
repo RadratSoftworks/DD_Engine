@@ -27,6 +27,7 @@ namespace DDEngine.GUI
         private void Awake()
         {
             layerController = GetComponentInParent<GUILayerController>();
+            layerController.Location.ActiveConfirmed += OnConfirmed;
         }
 
         private void Start()
@@ -63,7 +64,9 @@ namespace DDEngine.GUI
             this.PanToCenterWhenSelect = panToWhenSelected;
             controlSet = set;
 
-            transform.localPosition = GameUtils.ToUnityCoordinates(detectBounds.position + detectBounds.size / 2);
+            // Indent and reduce the size a bit, the reason is physics is working with small unit
+            // So active keep encountering each other, not even trigger exit when the collider is stuck between
+            transform.localPosition = GameUtils.ToUnityCoordinates(detectBounds.position + detectBounds.size / 2 + new Vector2(1, 1));
 
             // The size of the arrows point is accounted with the maximum outpoint state (point outwards) of the arrows.
             Vector3 sizeTransformed = (size - arrowMinimumOutpointDist) / 2;
@@ -71,7 +74,7 @@ namespace DDEngine.GUI
             BoxCollider2D collider = GetComponent<BoxCollider2D>();
             if (collider != null)
             {
-                collider.size = GameUtils.ToUnitySize(detectBounds.size);
+                collider.size = GameUtils.ToUnitySize(new Vector2(Mathf.Max(detectBounds.size.x - 2, 1.0f), Mathf.Max(detectBounds.size.y - 2, 1.0f)));
             }
 
             Vector3[] positionMove =
@@ -105,31 +108,28 @@ namespace DDEngine.GUI
         private void OnTriggerEnter2D(Collider2D collision)
         {
             actionCenterViewPoint = collision.transform.position;
-            layerController.Location.ClaimActive(this);
+            arrows.SetActive(true);
+            GameManager.Instance.RunPersistentCoroutine(controlSet.HandleAction(name, Constants.OnFocusScriptEventName));
         }
 
         private void OnTriggerExit2D(Collider2D collision)
         {
-            if (layerController.Location.ReleaseActive(this))
-            {
-                arrows.SetActive(false);
-            }
+            arrows.SetActive(false);
         }
 
         public void OnConfirmed()
         {
+            if (!arrows.activeSelf)
+            {
+                return;
+            }
+
             if (PanToCenterWhenSelect)
             {
                 layerController.ScrollLocation(focusPoint.transform.InverseTransformPoint(actionCenterViewPoint));
             }
 
             GameManager.Instance.RunPersistentCoroutine(controlSet.HandleAction(name, Constants.OnClickScriptEventName));
-        }
-
-        public void OnClaimSuccess()
-        {
-            arrows.SetActive(true);
-            GameManager.Instance.RunPersistentCoroutine(controlSet.HandleAction(name, Constants.OnFocusScriptEventName));
         }
 
         private void OnDialogueStateChanged(bool enabled)
