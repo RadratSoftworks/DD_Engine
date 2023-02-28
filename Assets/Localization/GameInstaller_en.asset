@@ -20,9 +20,8 @@ MonoBehaviour:
     - rid: 8498583327662145538
   m_TableData:
   - m_Id: 8428883968
-    m_Localized: To play the game, you must install the game data. Please click the
-      button below and choose the game's .n-gage file in the pop-up window to begin
-      the installation process.
+    m_Localized: Please install the game data from Dirk Dagger's .n-gage file to
+      continue.
     m_Metadata:
       m_Items: []
   - m_Id: 1458320084992
