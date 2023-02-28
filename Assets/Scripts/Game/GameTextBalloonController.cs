@@ -128,16 +128,6 @@ namespace DDEngine.Game
             GameInputManager.Instance.DialogueBalloonActionMap.Disable();
         }
 
-        private static bool IsTextFullItalic(string text)
-        {
-            return text.StartsWith("<i>") && text.EndsWith("</i>");
-        }
-
-        private static bool IsTextFullMiddle(string text)
-        {
-            return text.StartsWith("<m>") && text.EndsWith("</m>");
-        }
-
         private IEnumerator GraduallyAppearTextCoroutine()
         {
             var waitTime = new WaitForSeconds((GameSettings.TextSpeed == GameTextSpeed.Normal) ? timePerCharacterReveal : timePerCharacterRevealFast);
@@ -190,21 +180,21 @@ namespace DDEngine.Game
                 currentTextCoroutine = null;
             }
 
-            if (IsTextFullItalic(newText))
+            if (TextFormatting.IsTextFullItalic(newText))
             {
                 backgroundRenderer.color = balloonRenderer.color = fullItalicTextBackgroundColor;
             }
-            else if (IsTextFullMiddle(newText))
+            else if (TextFormatting.IsTextFullMiddle(newText))
             {
                 backgroundRenderer.color = balloonRenderer.color = fullMiddleTextBackgroundColor;
                 ballonText.color = fullMiddleTextColor;
-
-                newText = newText.Replace("<m>", "").Replace("</m>", "");
             }
             else
             {
                 backgroundRenderer.color = balloonRenderer.color = normalTextBackgroundColor;
             }
+
+            newText = TextFormatting.PostTransform(newText);
 
             ballonText.maxVisibleCharacters = (GameSettings.TextSpeed == GameTextSpeed.Instant) ? newText.Length : 0;
             ballonText.text = newText;

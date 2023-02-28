@@ -20,10 +20,14 @@ namespace DDEngine.GUI
         private RectTransform rectTransform;
         private Color fillColor;
         private string textId;
+        private bool textFullMiddle;
 
         private void UpdateText(GUIControlSet ownSet)
         {
-            labelText.text = ownSet.GetLanguageString(textId);
+            string textFromSet = ownSet.GetLanguageString(textId);
+            textFullMiddle = TextFormatting.IsTextFullMiddle(textFromSet);
+
+            labelText.text = TextFormatting.PostTransform(textFromSet);
             labelText.font = ResourceManager.Instance.GetFontAssetForLocalization();
             labelText.maxVisibleCharacters = labelText.text.Length;
 
@@ -35,7 +39,7 @@ namespace DDEngine.GUI
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
 
             boxSpriteRenderer.size = rectTransform.sizeDelta;
-            boxSpriteRenderer.color = fillColor;
+            boxSpriteRenderer.color = textFullMiddle ? Color.clear : fillColor;
         }
 
         private Vector2 GetPivotFromString(string pivot)
