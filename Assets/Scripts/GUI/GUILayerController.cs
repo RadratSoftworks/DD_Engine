@@ -20,7 +20,7 @@ namespace DDEngine.GUI
         public float layerScrollFactor = 100.0f;
 
         [Tooltip("How much distance can the layer scroll beyond its boundary")]
-        private float extraScrollDelta = 0.01f;
+        public float extraScrollDelta = 0.0f;
 
         public Vector2 scroll;
 
@@ -136,7 +136,58 @@ namespace DDEngine.GUI
             return amountRaw;
         }
 
-        public void ScrollLocation(Vector2 amountRaw)
+        public Vector3 ReAdjustPanAmountToAccurate(Vector3 limitedPanAmount)
+        {
+            Vector3 originalPositionGame = GameUtils.FromUnityCoordinates(originalPosition);
+            Vector3 currentGame = GameUtils.FromUnityCoordinates(new Vector2(transform.localPosition.x, transform.localPosition.y));
+            Vector3 moveGame = GameUtils.FromUnityCoordinates(limitedPanAmount * scroll / layerScrollFactor);
+            Vector3 destRounded = new((int)(currentGame.x + moveGame.x), (int)currentGame.y + moveGame.y);
+
+            // The distance must not make the position go over the destination. All are clamped down using int conversion
+            // This seems to be the math on phone, since on each frame they scrolled scroll / 100 pixels, but it must be compared and converted to int because
+            // the game works on pixel coordinates (which is integer).
+            if (scroll.x != 0)
+            {
+                int distance = (int)(destRounded.x - originalPositionGame.x);
+                float moveAmount = scroll.x / layerScrollFactor;
+
+                distance = (int)((int)(distance / moveAmount) * moveAmount);
+                moveGame.x = (originalPositionGame.x + distance - currentGame.x);
+            }
+
+            if (scroll.y != 0)
+            {
+                int distance = (int)(destRounded.y - originalPositionGame.y);
+                float moveAmount = scroll.y / layerScrollFactor;
+
+                distance = (int)((int)(distance / moveAmount) * moveAmount);
+                moveGame.y = (originalPositionGame.y + distance - currentGame.y);
+            }
+
+            limitedPanAmount = GameUtils.ToUnityCoordinates(moveGame);
+
+            if (scroll.x == 0)
+            {
+                limitedPanAmount.x = 0;
+            }
+            else
+            {
+                limitedPanAmount.x /= scroll.x / layerScrollFactor;
+            }
+
+            if (scroll.y == 0)
+            {
+                limitedPanAmount.y = 0;
+            }
+            else
+            {
+                limitedPanAmount.y /= scroll.y / layerScrollFactor;
+            }
+
+            return limitedPanAmount;
+        }
+
+        public void AccurateScrollLocation(Vector2 amountRaw)
         {
             if (scroll.x == 0)
             {
@@ -156,7 +207,7 @@ namespace DDEngine.GUI
                 amountRaw.y /= scroll.y / layerScrollFactor;
             }
 
-            locationController.Scroll(amountRaw, hasDuration: true);
+            locationController.Scroll(amountRaw, hasDuration: true, readjustPanAmountCallback: value => ReAdjustPanAmountToAccurate(value));
         }
 
         public void ForceScroll(Vector2 scrollAmount, float duration, EaseType ease = EaseType.Normal, bool forFrameScroll = false)

@@ -126,7 +126,7 @@ namespace DDEngine.GUI
 
             if (PanToCenterWhenSelect)
             {
-                layerController.ScrollLocation(focusPoint.transform.InverseTransformPoint(actionCenterViewPoint));
+                layerController.AccurateScrollLocation(focusPoint.transform.InverseTransformPoint(actionCenterViewPoint));
             }
 
             GameManager.Instance.RunPersistentCoroutine(controlSet.HandleAction(name, Constants.OnClickScriptEventName));

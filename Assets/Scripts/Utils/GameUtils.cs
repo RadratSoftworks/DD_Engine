@@ -11,6 +11,11 @@ namespace DDEngine.Utils
             return (position / 100.0f) * NegateYVector;
         }
 
+        public static Vector2 FromUnityCoordinates(Vector2 position)
+        {
+            return (position * 100.0f) * NegateYVector;
+        }
+
         public static Vector2 ToUnitySize(Vector2 size)
         {
             return (size / 100.0f);

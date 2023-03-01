@@ -161,9 +161,15 @@ namespace DDEngine.GUI
             yield break;
         }
 
-        public void Scroll(Vector2 amount, bool hasDuration = false, bool busyWhileAnimating = true, bool accountingScrollFactor = true, bool forFrameScroll = false, GUILayerController.EaseType ease = GUILayerController.EaseType.Normal)
+        public void Scroll(Vector2 amount, bool hasDuration = false, bool busyWhileAnimating = true, bool accountingScrollFactor = true, bool forFrameScroll = false, GUILayerController.EaseType ease = GUILayerController.EaseType.Normal, System.Func<Vector2, Vector2> readjustPanAmountCallback = null)
         {
             Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, forFrameScroll, accountingScrollFactor);
+
+            if (readjustPanAmountCallback != null)
+            {
+                targetPanAmount = readjustPanAmountCallback(targetPanAmount);
+            }
+
             if (targetPanAmount == Vector3.zero)
             {
                 return;
