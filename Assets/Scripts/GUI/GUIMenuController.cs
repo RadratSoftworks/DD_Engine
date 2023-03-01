@@ -10,6 +10,7 @@ namespace DDEngine.GUI
 
         private ActionLibrary actionLibrary;
         private GUIControlSet controlSet;
+        private AudioClip selectedAudio;
 
         public GameObject Options => menuOptionsController.gameObject;
 
@@ -17,6 +18,7 @@ namespace DDEngine.GUI
         void Start()
         {
             menuOptionsController.OnButtonClicked += OnButtonClicked;
+            selectedAudio = SoundManager.Instance.GetAudioClip(FilePaths.MenuOptionClickSFXFileName);
         }
 
         // Update is called once per frame
@@ -32,6 +34,8 @@ namespace DDEngine.GUI
 
         public void OnButtonClicked(string name)
         {
+            GameManager.Instance.PlayNormalAudioPersistent(selectedAudio);
+
             if (actionLibrary != null)
             {
                 GameManager.Instance.RunPersistentCoroutine(actionLibrary.HandleAction(controlSet.ActionInterpreter, name, Constants.OnClickScriptEventName));

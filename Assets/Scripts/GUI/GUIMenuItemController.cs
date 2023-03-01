@@ -9,6 +9,12 @@ namespace DDEngine.GUI
         private TMPro.TMP_Text text;
         private string textId;
 
+        public GUIMenuItemController()
+            : base(FilePaths.MenuOptionSwitchSFXFileName)
+        {
+
+        }
+
         private void UpdateText(GUIControlSet ownSet)
         {
             text.text = ownSet.GetLanguageString(textId);

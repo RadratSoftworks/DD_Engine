@@ -23,7 +23,9 @@
         public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
 
         // Sound
-        public static readonly string MenuOptionSwitchSFXFileName = "sound/menu_click_bullet";
+        public static readonly string MenuOptionClickSFXFileName = "sound/menu_click_bullet";
+        public static readonly string MenuOptionSwitchSFXFileName = "sound/menu_select";
+        public static readonly string MenuOptionSwitchToMultipleSFXFileName = "sound/menu_select_multiple";
 
         // Extension
         public static readonly string MinigameFileExtension = ".mini";

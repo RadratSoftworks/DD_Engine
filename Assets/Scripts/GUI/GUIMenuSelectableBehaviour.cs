@@ -11,6 +11,12 @@ namespace DDEngine.GUI
         private Vector2 originalPosition;
         private AudioSource selectedAudio;
         protected Sequence selectedSequence;
+        private string selectedAudioPath;
+
+        public GUIMenuSelectableBehaviour(string selectedAudioPath)
+        {
+            this.selectedAudioPath = selectedAudioPath;
+        }
 
         // Start is called before the first frame update
         void Start()
@@ -23,7 +29,7 @@ namespace DDEngine.GUI
         {
         }
 
-        public virtual void OnOptionSelected()
+        public virtual void OnOptionSelected(bool quiet)
         {
             if (originalPosition == null)
             {
@@ -33,11 +39,14 @@ namespace DDEngine.GUI
             if (selectedAudio == null)
             {
                 selectedAudio = GetComponent<AudioSource>();
-                selectedAudio.clip = SoundManager.Instance.GetAudioClip(FilePaths.MenuOptionSwitchSFXFileName);
+                selectedAudio.clip = SoundManager.Instance.GetAudioClip(selectedAudioPath);
             }
 
             // We can play later
-            selectedAudio.Play();
+            if (!quiet)
+            {
+                selectedAudio.Play();
+            }
 
             selectedSequence = DOTween.Sequence();
             selectedSequence.AppendInterval(selectedAudio.clip.length)

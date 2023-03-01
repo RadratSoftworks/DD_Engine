@@ -477,6 +477,11 @@ namespace DDEngine
             }
         }
 
+        public void PlayNormalAudioPersistent(AudioClip clip)
+        {
+            persistentAudioController.PlayNormal(clip);
+        }
+
         public void PlayAudioPersistent(string filename, string type)
         {
             persistentAudioController.Play(filename, type);

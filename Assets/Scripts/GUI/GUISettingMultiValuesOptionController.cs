@@ -29,6 +29,12 @@ namespace DDEngine.GUI
         private GUIControlSet ownSet;
         private int currentValueIndex = 0;
 
+        public GUISettingMultiValuesOptionController()
+            : base(FilePaths.MenuOptionSwitchToMultipleSFXFileName)
+        {
+
+        }
+
         private void SetupOptionDisplayText()
         {
             // Not yet ready
@@ -116,9 +122,9 @@ namespace DDEngine.GUI
             UpdateSettingAndText();
         }
 
-        public override void OnOptionSelected()
+        public override void OnOptionSelected(bool quiet)
         {
-            base.OnOptionSelected();
+            base.OnOptionSelected(quiet);
             selectedSequence.AppendCallback(() => focusIdleAnimation.Enable());
         }
 

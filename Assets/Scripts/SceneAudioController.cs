@@ -8,6 +8,11 @@ namespace DDEngine
         public AudioSource normalSoundSource;
         public AudioSource bgmSoundSource;
 
+        public void PlayNormal(AudioClip clip)
+        {
+            normalSoundSource.PlayOneShot(clip);
+        }
+
         public void Play(string audioFileName, string playType)
         {
             AudioClip clip = SoundManager.Instance.GetAudioClip(audioFileName);

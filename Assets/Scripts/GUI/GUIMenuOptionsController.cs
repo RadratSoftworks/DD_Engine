@@ -65,7 +65,7 @@ namespace DDEngine.GUI
         {
             if (!initializedCurrent)
             {
-                SelectOption(currentChildIndex);
+                SelectOption(currentChildIndex, quiet: true);
                 initializedCurrent = true;
             }
         }
@@ -86,7 +86,7 @@ namespace DDEngine.GUI
             }
         }
 
-        public void SelectOption(int newChildIndex, bool scrolling = false)
+        public void SelectOption(int newChildIndex, bool scrolling = false, bool quiet = false)
         {
             if (scrolling)
             {
@@ -108,11 +108,11 @@ namespace DDEngine.GUI
             if (controllerNew == null)
             {
                 GUISettingMultiValuesOptionController controllerNewNew = newChild.GetComponent<GUISettingMultiValuesOptionController>();
-                controllerNewNew.OnOptionSelected();
+                controllerNewNew.OnOptionSelected(quiet);
             }
             else
             {
-                controllerNew.OnOptionSelected();
+                controllerNew.OnOptionSelected(quiet);
             }
 
             currentChildIndex = newChildIndex;
