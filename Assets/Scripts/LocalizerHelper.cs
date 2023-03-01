@@ -19,7 +19,11 @@ namespace DDEngine
 
                 if (!resources.Exists(langFilename))
                 {
-                    return null;
+                    resources = ResourceManager.Instance.LocalizationResources;
+                    if (!resources.Exists(langFilename))
+                    {
+                        return null;
+                    }
                 }
             }
 

@@ -36,6 +36,7 @@ namespace DDEngine.Game
         private Vector2 pendingStingerPos;
 
         public Color normalTextBackgroundColor = Color.white;
+        public Color normalTextColor = Color.black;
         public Color fullItalicTextBackgroundColor = Color.yellow;
         public Color fullMiddleTextBackgroundColor = Color.clear;
         public Color fullMiddleTextColor = Color.white;
@@ -179,6 +180,8 @@ namespace DDEngine.Game
                 StopCoroutine(currentTextCoroutine);
                 currentTextCoroutine = null;
             }
+
+            ballonText.color = normalTextColor;
 
             if (TextFormatting.IsTextFullItalic(newText))
             {

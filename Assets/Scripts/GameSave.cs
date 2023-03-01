@@ -7,6 +7,8 @@ namespace DDEngine
     [Serializable]
     public class GameSave
     {
+        public const int CurrentVersion = 2;
+
         // Correspond location name -  Value dictionary
         public Dictionary<string, Dictionary<string, string>> ActionValues;
 
@@ -14,6 +16,11 @@ namespace DDEngine
         public string CurrentControlSetPath;
         public Vector2 CurrentLocationOffset;
 
+        public Stack<GadgetObjectInfo> Gadgets;
+
+        public int Version = -1;
+
+        // Compatibility
         public string CurrentGadgetPath;
         public int CurrentGadgetId;
 

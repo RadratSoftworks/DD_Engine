@@ -40,13 +40,19 @@ namespace DDEngine
 
         public bool Enabled => gameObject.activeSelf;
 
-        public void Setup(Vector2 position, float sortOrder, string animationFilename, string layerName = null, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false)
+        public void Setup(Vector2 position, float sortOrder, string animationFilename, string layerName = null, Vector2? origin = null, bool allowLoop = true, bool disableOnDone = false, bool isSortOrderUnity = false)
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
 
-            if (sortOrder >= 0)
+            if (isSortOrderUnity)
             {
-                spriteRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(sortOrder);
+                spriteRenderer.sortingOrder = (int)sortOrder;
+            } else
+            {
+                if (sortOrder >= 0)
+                {
+                    spriteRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(sortOrder);
+                }
             }
 
             if (layerName != null)
@@ -324,6 +330,11 @@ namespace DDEngine
 
             currentAnimateCoroutine = AnimateCoroutine();
             StartCoroutine(currentAnimateCoroutine);
+        }
+
+        public void SetSortOrderUnity(int sortOrder)
+        {
+            spriteRenderer.sortingOrder = GameUtils.ToUnitySortingPosition(sortOrder);
         }
     }
 }

@@ -18,6 +18,7 @@
         StartAction,
         FadeIn,
         FadeOut,
+        Fade,
         Icon,
         Choice,
         ChoiceConditional,

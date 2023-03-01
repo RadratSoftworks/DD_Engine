@@ -6,6 +6,7 @@
         public static readonly string IntroResourceFileName = "startup_general.opes";
         public static readonly string ProtectedGeneralResourceFileName = "protected_general.opes.ngdat";
         public static readonly string LocalizationResourceFileName = "opes_loc-{0}.opes";
+        public static readonly string IntroLocalizedResourceFileName = "startup_loc-{0}.opes";
         public static readonly string ProtectedLocalizationResourceFileName = "protected_loc-{0}.opes";
 
         // Animations
@@ -21,6 +22,8 @@
         // GUI
         //public static readonly string MainChapterGUIControlFileName = "ch2/locations/Corridor.fwd";
         public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
+        public static readonly string IntroMenuGadgetScript = "intro/splash.gdg";
+        public static readonly string IntroGameGadgetScript = "intro/splashStartGame.gdg";
 
         // Sound
         public static readonly string MenuOptionClickSFXFileName = "sound/menu_click_bullet";

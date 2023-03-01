@@ -14,7 +14,7 @@ namespace DDEngine.Gadget
 {
     public class GadgetInterpreter
     {
-        private GameObject parent;
+        private GameSceneController parent;
         private GameDialogue dialogue;
 
         private Dictionary<char, GameObject> gameObjectByLayer;
@@ -22,7 +22,7 @@ namespace DDEngine.Gadget
 
         private ActionInterpreter actionInterpreter;
 
-        public GadgetInterpreter(ActionInterpreter guiActionInterpreter, GameObject parent, ScriptBlock<GadgetOpcode> scriptBlock, GameDialogue dialogue = null)
+        public GadgetInterpreter(ActionInterpreter guiActionInterpreter, GameSceneController parent, ScriptBlock<GadgetOpcode> scriptBlock, GameDialogue dialogue = null)
         {
             this.parent = parent;
             this.scriptBlock = scriptBlock;
@@ -30,11 +30,6 @@ namespace DDEngine.Gadget
 
             gameObjectByLayer = new Dictionary<char, GameObject>();
             actionInterpreter = guiActionInterpreter;
-        }
-
-        private string GetSortingLayer(char layer)
-        {
-            return string.Format("GameLayer{0}", Char.ToUpper(layer));
         }
 
         private void HandleAnimation(ScriptCommand<GadgetOpcode> command)
@@ -56,6 +51,7 @@ namespace DDEngine.Gadget
                     SpriteAnimatorController existingController = existingObject.GetComponentInChildren<SpriteAnimatorController>();
                     if (existingController != null)
                     {
+                        existingController.SetSortOrderUnity(parent.GetSortingOrder(layer));
                         existingController.Restart(position);
                     }
 
@@ -63,14 +59,14 @@ namespace DDEngine.Gadget
                 }
             }
 
-            GameObject animObject = GameObject.Instantiate(GameManager.Instance.gameAnimationPrefabObject, parent.transform, false);
+            GameObject animObject = GameObject.Instantiate(GameManager.Instance.gameAnimationPrefabObject, parent.gameObject.transform, false);
             animObject.name = animFileName;
             animObject.transform.localPosition = Vector2.zero;
 
             SpriteAnimatorController controller = animObject.GetComponentInChildren<SpriteAnimatorController>();
             if (controller != null)
             {
-                controller.Setup(position, 0, animFileName, GetSortingLayer(layer));
+                controller.Setup(position, parent.GetSortingOrder(layer), animFileName, isSortOrderUnity: true);
             }
 
             if (existingObject)
@@ -103,7 +99,7 @@ namespace DDEngine.Gadget
                 }
             }
 
-            GameObject imageObject = GameObject.Instantiate(GameManager.Instance.gameImagePrefabObject, parent.transform, false);
+            GameObject imageObject = GameObject.Instantiate(GameManager.Instance.gameImagePrefabObject, parent.gameObject.transform, false);
             imageObject.transform.localPosition = Vector3.zero;
             imageObject.name = path;
 
@@ -112,8 +108,7 @@ namespace DDEngine.Gadget
             if (spriteRenderer != null)
             {
                 spriteRenderer.sprite = SpriteManager.Instance.Load(ResourceManager.Instance.PickBestResourcePackForFile(path), path);
-                spriteRenderer.sortingOrder = 0;
-                spriteRenderer.sortingLayerName = GetSortingLayer(layer);
+                spriteRenderer.sortingOrder = parent.GetSortingOrder(layer);
             }
 
             if (existingObject)
@@ -224,11 +219,11 @@ namespace DDEngine.Gadget
             }
         }
 
-        private void HandleFade(ScriptCommand<GadgetOpcode> command, bool isFadeIn)
+        private void HandleFadeInOut(ScriptCommand<GadgetOpcode> command, bool isFadeIn)
         {
             if (command.Arguments.Count < 2)
             {
-                Debug.LogError("Not enough argument for fade!");
+                Debug.LogError("Not enough argument for fade in/out!");
                 return;
             }
 
@@ -243,7 +238,32 @@ namespace DDEngine.Gadget
 
                 if (fadeController != null)
                 {
-                    fadeController.Fade(isFadeIn, frames);
+                    fadeController.Fade(isFadeIn ? GameImageFadeController.FadeType.In : GameImageFadeController.FadeType.Out, frames);
+                }
+            }
+        }
+
+        private void HandleFade(ScriptCommand<GadgetOpcode> command)
+        {
+            if (command.Arguments.Count < 3)
+            {
+                Debug.LogError("Not enough argument for fade!");
+                return;
+            }
+
+            char layer = (command.Arguments[0] as string)[0];
+
+            if (gameObjectByLayer.TryGetValue(layer, out GameObject gameObj))
+            {
+                int targetAlpha = int.Parse(command.Arguments[1] as string);
+                int frames = int.Parse(command.Arguments[2] as string);
+                frames = GameManager.Instance.GetRealFrames(frames);
+
+                GameImageFadeController fadeController = gameObj.GetComponentInChildren<GameImageFadeController>();
+
+                if (fadeController != null)
+                {
+                    fadeController.Fade(GameImageFadeController.FadeType.ToValue, frames, targetAlpha);
                 }
             }
         }
@@ -309,7 +329,7 @@ namespace DDEngine.Gadget
             float b = int.Parse(command.Arguments[2] as string) / 255.0f;
             float a = int.Parse(command.Arguments[3] as string) / 255.0f;
 
-            GameManager.Instance.SetBackgroundColor(new Color(r, g, b, a));
+            parent.BackgroundColor = new Color(r, g, b, a);
         }
 
         private void HandleVibrate(ScriptCommand<GadgetOpcode> command)
@@ -341,10 +361,26 @@ namespace DDEngine.Gadget
                 yield return new WaitUntil(() => !GameManager.Instance.GUIBusy);
             }
 
+            if (scriptBlock.Skippable)
+            {
+                GameManager.Instance.StartHearingConfirmation();
+            }
+
             onGadgetStart?.Invoke();
 
             foreach (var command in scriptBlock.Commands)
             {
+                if (scriptBlock.Skippable)
+                {
+                    if (command.Opcode != GadgetOpcode.StartAction)
+                    {
+                        if (GameManager.Instance.ContinueConfirmed)
+                        {
+                            continue;
+                        }
+                    }
+                }
+
                 switch (command.Opcode)
                 {
                     case GadgetOpcode.Pause:
@@ -364,6 +400,14 @@ namespace DDEngine.Gadget
                                 for (int i = 0; i < frameToPause; i++)
                                 {
                                     yield return null;
+
+                                    if (scriptBlock.Skippable)
+                                    {
+                                        if (GameManager.Instance.ContinueConfirmed)
+                                        {
+                                            break;
+                                        }
+                                    }
                                 }
                             }
 
@@ -376,7 +420,11 @@ namespace DDEngine.Gadget
 
                     case GadgetOpcode.FadeIn:
                     case GadgetOpcode.FadeOut:
-                        HandleFade(command, (command.Opcode == GadgetOpcode.FadeIn));
+                        HandleFadeInOut(command, (command.Opcode == GadgetOpcode.FadeIn));
+                        break;
+
+                    case GadgetOpcode.Fade:
+                        HandleFade(command);
                         break;
 
                     case GadgetOpcode.Load:

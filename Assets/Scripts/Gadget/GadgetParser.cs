@@ -9,6 +9,7 @@ using UnityEngine;
 using DDEngine.Action;
 using DDEngine.BaseScript;
 using DDEngine.GUI;
+using System.Text.RegularExpressions;
 
 namespace DDEngine.Gadget
 {
@@ -26,6 +27,7 @@ namespace DDEngine.Gadget
             { "pan", GadgetOpcode.Pan },
             { "fadein", GadgetOpcode.FadeIn },
             { "fadeout", GadgetOpcode.FadeOut },
+            { "fade", GadgetOpcode.Fade },
             { "clear", GadgetOpcode.Clear },
             { "continue", GadgetOpcode.Continue },
             { "text", GadgetOpcode.Text },
@@ -83,7 +85,13 @@ namespace DDEngine.Gadget
                         blocks.Saveable = false;
                         continue;
                     }
-                    var commands = commandLine.Split(' ');
+                    if (commandLine == "skippable")
+                    {
+                        blocks.Skippable = true;
+                        continue;
+                    }
+
+                    var commands = Regex.Split(commandLine, @"\s{1,}");
 
                     if (!stringToGadgetOps.ContainsKey(commands[0]))
                     {

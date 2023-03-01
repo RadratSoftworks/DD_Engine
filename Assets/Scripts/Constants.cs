@@ -5,25 +5,26 @@ namespace DDEngine
 {
     public class Constants
     {
-        public static readonly int PixelsPerUnit = 100;
-        public static readonly string SortingLayerUIName = "UI";
-        public static readonly int CanvasX = 240;
-        public static readonly int CanvasY = 320;
+        public const int PixelsPerUnit = 100;
+        public const string SortingLayerUIName = "UI";
+        public const int CanvasX = 240;
+        public const int CanvasY = 320;
         public static readonly Vector2 CanvasSize = new Vector2(CanvasX, CanvasY);
 
-        public static readonly string OnClickScriptEventName = "onClick";
-        public static readonly string OnFocusScriptEventName = "onFocus";
-        public static readonly int SoundFrequency = 11025;
-        public static readonly int SoundChannelCount = 1;
-        public static readonly int BaseGameFps = 30;
+        public const string OnClickScriptEventName = "onClick";
+        public const string OnFocusScriptEventName = "onFocus";
+        public const int SoundFrequency = 11025;
+        public const int SoundChannelCount = 1;
+        public const int BaseGameFps = 30;
 
-        public static readonly string TextBalloonObjectName = "TextBalloon";
-        public static readonly string IconLayer = "Icon";
-        public static readonly string Anonymous = "Anonymous";
-        public static readonly string SaveExistsVarName = "save_exists";
-        public static readonly string CompletedGameVarName = "completed_game";
+        public const string TextBalloonObjectName = "TextBalloon";
+        public const string IconLayer = "Icon";
+        public const string Anonymous = "Anonymous";
+        public const string SaveExistsVarName = "save_exists";
+        public const string CompletedGameVarName = "completed_game";
 
-        public static readonly string SwitchNgiUri = "https://anni.12l1.com";
+        public const string SwitchNgiUri = "https://anni.12l1.com";
+        public const int TotalGameLayers = 27;  // Include background
 
         public static readonly Dictionary<GameLanguage, string> GameLanguageToResourceLanguageCodeDict =
             new Dictionary<GameLanguage, string>()
@@ -44,6 +45,6 @@ namespace DDEngine
             { "plusmap", "animations/Plus_map.anim" },
             { "newtask", "animations/New_quest.anim" },
             { "taskdone", "animations/Check.anim" }
-            };
+        };
     };
 }

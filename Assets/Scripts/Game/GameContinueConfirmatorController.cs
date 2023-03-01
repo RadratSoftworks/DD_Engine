@@ -27,6 +27,11 @@ namespace DDEngine.Game
 
         public void StartHearing()
         {
+            if (hearing)
+            {
+                return;
+            }
+
             var continueActionMap = GameInputManager.Instance.ContinueGameActionMap;
             continueActionMap.Enable();
 

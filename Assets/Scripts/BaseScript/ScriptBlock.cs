@@ -11,6 +11,11 @@ namespace DDEngine.BaseScript
         /// </summary>
         public bool Saveable { get; set; } = true;
 
+        /// <summary>
+        /// An action press will make this block stop execute.
+        /// </summary>
+        public bool Skippable { get; set; } = false;
+
         public ScriptBlock()
         {
             Commands = new List<ScriptCommand<T>>();

@@ -21,14 +21,6 @@ namespace DDEngine
 {
     public class GameManager : MonoBehaviour
     {
-        private class GadgetObjectInfo
-        {
-            public string Path;
-            public int Id;
-            public bool Saveable;
-            public GameObject Object;
-        }
-
         public static GameManager Instance;
 
         public GameObject gameAnimationPrefabObject;
@@ -40,7 +32,6 @@ namespace DDEngine
         public GameObject textBalloonBottom;
         public GameObject continueConfirmator;
         public GameObject dialogueChoices;
-        public GameObject backgroundObject;
 
         private GadgetObjectInfo activeGadget;
         private GUIControlSet activeGUI;
@@ -57,13 +48,13 @@ namespace DDEngine
         private ActionInterpreter defaultActionInterpreter;
         private GameContinueConfirmatorController confirmedController;
         private GameChoicesController dialogueChoicesController;
-        private SpriteRenderer backgroundRenderer;
 
         private Stack<GadgetObjectInfo> gadgets;
         private float targetFrameFactor = 3;
 
         private GameSave gameSave;
         private bool allowSave = false;
+        private bool inLoad = false;
 
         public ActionInterpreter CurrentActionInterpreter => activeGUI?.ActionInterpreter ?? defaultActionInterpreter;
 
@@ -101,14 +92,12 @@ namespace DDEngine
             textBalloonBottomController = textBalloonBottom.GetComponent<GameTextBalloonController>();
             confirmedController = continueConfirmator.GetComponent<GameContinueConfirmatorController>();
             dialogueChoicesController = dialogueChoices.GetComponent<GameChoicesController>();
-            backgroundRenderer = backgroundObject.GetComponent<SpriteRenderer>();
 
             textBalloonTopController.Setup(Constants.CanvasSize, GameTextBalloonController.Placement.Top);
             textBalloonMiddleController.Setup(Constants.CanvasSize, GameTextBalloonController.Placement.Middle);
             textBalloonBottomController.Setup(Constants.CanvasSize, GameTextBalloonController.Placement.Bottom);
             dialogueChoicesController.Setup(Constants.CanvasSize);
 
-            backgroundRenderer.size = GameUtils.ToUnitySize(Constants.CanvasSize);
             dialogueChoicesController.ChoiceConfirmed += OnChoiceConfirmed;
 
             defaultActionInterpreter = new ActionInterpreter();
@@ -158,16 +147,11 @@ namespace DDEngine
             textBalloonMiddleController.HideText();
             dialogueChoicesController.Close();
             continueConfirmator.SetActive(false);
-            backgroundRenderer.color = Color.clear;
         }
 
-        private void TrySaveOnDialogue()
+        private void SaveOnGadgetChange()
         {
-            gameSave.CurrentGadgetPath = activeGadget.Path;
-            gameSave.CurrentGadgetId = activeGadget.Id;
-
             allowSave = activeGadget.Saveable;
-
             SaveGame();
         }
 
@@ -213,7 +197,7 @@ namespace DDEngine
             }
             else
             {
-                TrySaveOnDialogue();
+                SaveOnGadgetChange();
             }
         }
 
@@ -222,8 +206,8 @@ namespace DDEngine
             activeGadget = newActive;
             activeGadget.Object.SetActive(true);
 
-            TrySaveOnDialogue();
             gadgets.Push(activeGadget);
+            SaveOnGadgetChange();
         }
 
         private void CleanAllPendingGadgets()
@@ -243,10 +227,6 @@ namespace DDEngine
 
             DialogueStateChanged?.Invoke(false);
             StopAllCoroutines();
-
-            // Clear gadget path
-            gameSave.CurrentGadgetPath = null;
-            gameSave.CurrentGadgetId = -1;
 
             SaveGame();
         }
@@ -315,13 +295,11 @@ namespace DDEngine
         {
             if ((GameSettings.StartLocation == GameStartLocation.Menu) || !SaveAvailable)
             {
-                LoadControlSet(FilePaths.MainChapterGUIControlFileName);
+                LoadGadget(FilePaths.IntroMenuGadgetScript);
             }
             else
             {
-                // Enable menu trigger. An actual menu widget will disable it if there is one
-                GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
-                LoadGame();
+                LoadGadget(FilePaths.IntroGameGadgetScript);
             }
         }
 
@@ -340,7 +318,16 @@ namespace DDEngine
                 Object = containerObject
             });
 
-            GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, containerObject, scriptBlock, parent);
+            // Enable menu if the thing is savable
+            if (allowSave && (activeGUI == null))
+            {
+                GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
+            }
+
+            GameSceneController controller = containerObject.GetComponent<GameSceneController>();
+            controller.Setup(Constants.CanvasSize, gadgets.Count - 1);
+
+            GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, controller, scriptBlock, parent);
             StartCoroutine(interpreter.Execute(() => {
                 // Use a dpad for dialogue navigation
                 GameInputManager.Instance.SetNavigationTouchControl(false);
@@ -379,11 +366,11 @@ namespace DDEngine
             return dialogue;
         }
 
-        public void LoadDialogueSlide(GameDialogue parent, DialogueSlide slide)
+        public void LoadDialogueSlide(GameDialogue parent, DialogueSlide slide, bool? forceSavable = null)
         {
             // A dialogue can be saved or not depends on the Gadget script that load the location or dialogue. We can also depends on the previous slide too, no worries,
             // as they all assign savable from the same script root.
-            LoadGadgetScriptBlock(parent, string.Format("Slide_{0}_{1}", slide.Id, parent.FileName), slide.DialogScript, slide.Id, allowSave);
+            LoadGadgetScriptBlock(parent, string.Format("Slide_{0}_{1}", slide.Id, parent.FileName), slide.DialogScript, slide.Id, forceSavable ?? allowSave);
         }
 
         public void LoadDialogue(string filename)
@@ -405,7 +392,7 @@ namespace DDEngine
             }
             else
             {
-                ResourceFile generalResources = ResourceManager.Instance.GeneralResources;
+                ResourceFile generalResources = ResourceManager.Instance.PickBestResourcePackForFile(filename);
                 if (!generalResources.Exists(filename))
                 {
                     throw new FileNotFoundException("Can't find gadget script file " + filename);
@@ -585,11 +572,6 @@ namespace DDEngine
             LoadDialogueSlide(dialogue, dialogueSlide);
         }
 
-        public void SetBackgroundColor(Color color)
-        {
-            backgroundRenderer.color = color;
-        }
-
         public void RunPersistentCoroutine(IEnumerator coroutine)
         {
             StartCoroutine(coroutine);
@@ -610,9 +592,31 @@ namespace DDEngine
             gameSave.ActionValues[globalVarDictKey] = ActionInterpreter.GlobalScriptValues;
         }
 
+        private void LoadSingleGadget(string gadgetPath, int gadgetId, bool? forceSavable = null)
+        {
+            if (gadgetPath != null)
+            {
+                if (Path.GetExtension(gadgetPath).Equals(FilePaths.GadgetScriptFileExtension, StringComparison.OrdinalIgnoreCase))
+                {
+                    LoadGadget(gadgetPath);
+                }
+                else
+                {
+                    if (gadgetId >= 0)
+                    {
+                        GameDialogue dialogue = RetrieveDialogue(gadgetPath);
+                        DialogueSlide dialogueSlide = dialogue.GetDialogueSlideWithId(gadgetId);
+
+                        LoadDialogueSlide(dialogue, dialogueSlide, forceSavable);
+                    }
+                }
+            }
+        }
+
         private void InitializeFromGameSave()
         {
             allowSave = false;
+            inLoad = true;
 
             // Update global action values
             foreach (var item in gameSave.ActionValues[globalVarDictKey])
@@ -643,27 +647,30 @@ namespace DDEngine
             {
                 // Still clear active control set anyway
                 SetCurrentGUI(null);
+                CleanAllPendingGadgets();
             }
 
-            if (gameSave.CurrentGadgetPath != null)
+            if (gameSave.Version <= 1)
             {
-                if (Path.GetExtension(gameSave.CurrentGadgetPath).Equals(FilePaths.GadgetScriptFileExtension, StringComparison.OrdinalIgnoreCase))
-                {
-                    LoadGadget(gameSave.CurrentGadgetPath);
-                }
-                else
-                {
-                    if (gameSave.CurrentGadgetId >= 0)
-                    {
-                        GameDialogue dialogue = RetrieveDialogue(gameSave.CurrentGadgetPath);
-                        DialogueSlide dialogueSlide = dialogue.GetDialogueSlideWithId(gameSave.CurrentGadgetId);
+                LoadSingleGadget(gameSave.CurrentGadgetPath, gameSave.CurrentGadgetId);
 
-                        LoadDialogueSlide(dialogue, dialogueSlide);
+                // Obselete these
+                gameSave.CurrentGadgetPath = null;
+                gameSave.CurrentGadgetId = -1;
+            } else
+            {
+                if (gameSave.Gadgets != null)
+                {
+                    while (gameSave.Gadgets.Count != 0)
+                    {
+                        GadgetObjectInfo info = gameSave.Gadgets.Pop();
+                        LoadSingleGadget(info.Path, info.Id, info.Saveable);
                     }
                 }
             }
 
             allowSave = true;
+            inLoad = false;
 
             // After we done loading, restore the game save data to keep tracking current game progress
             RestoreGameSaveTracking();
@@ -690,7 +697,7 @@ namespace DDEngine
 
         private void SaveGame()
         {
-            if (!allowSave)
+            if (!allowSave || inLoad)
             {
                 return;
             }
@@ -699,6 +706,9 @@ namespace DDEngine
 
             using (StreamWriter file = new StreamWriter(SavePath))
             {
+                gameSave.Version = GameSave.CurrentVersion;
+                gameSave.Gadgets = gadgets;
+
                 if ((activeGUI != null) && (activeGUI.Location != null))
                 {
                     gameSave.CurrentLocationOffset = activeGUI.Location.GetCurrentScrollOffset();
@@ -711,6 +721,9 @@ namespace DDEngine
                 };
 
                 serializer.Serialize(file, gameSave);
+
+                // Release the reference
+                gameSave.Gadgets = null;
             }
 
             if (!saveWasAvailable)

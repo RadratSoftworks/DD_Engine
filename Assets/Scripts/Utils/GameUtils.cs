@@ -26,6 +26,11 @@ namespace DDEngine.Utils
             return (int)(-gameSortingPostion);
         }
 
+        public static int FromUnitySortingPosition(float gameSortingPostion)
+        {
+            return (int)(-gameSortingPostion);
+        }
+
         public static string ToUnityName(string path)
         {
             return path.Replace("/", "_");

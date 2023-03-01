@@ -16,6 +16,7 @@ namespace DDEngine
         private ResourceFile generalResources;
         private ResourceFile localizationResources;
         private ResourceFile introResources;
+        private ResourceFile introLocalizationResources;
         private ResourceFile protectedGeneralResources;
         private ResourceFile protectedLocalizationResources;
         private ProtectedFilePatcher filePatcher;
@@ -67,10 +68,12 @@ namespace DDEngine
 
         public ResourceFile PickBestResourcePackForFile(string filepath)
         {
+            bool langFile = (Path.GetExtension(filepath) == ".lang");
+
             // DRM-protected, so in another file
             if (filepath.StartsWith("chapters/chapter2"))
             {
-                if (Path.GetExtension(filepath) == ".lang")
+                if (langFile)
                 {
                     return protectedLocalizationResources;
                 }
@@ -78,15 +81,20 @@ namespace DDEngine
                 return ProtectedGeneralResources;
             }
 
-            if (Path.GetExtension(filepath) == ".lang")
-            {
-                return LocalizationResources;
-            }
-
             if (filepath.StartsWith("intro", StringComparison.OrdinalIgnoreCase) ||
                 filepath.Contains("game_intro", StringComparison.OrdinalIgnoreCase))
             {
+                if (langFile)
+                {
+                    return introLocalizationResources;
+                }
+
                 return introResources;
+            }
+
+            if (langFile)
+            {
+                return localizationResources;
             }
 
             return generalResources;
@@ -125,6 +133,8 @@ namespace DDEngine
             generalResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.GeneralResourceFileName));
             yield return null;
             introResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.IntroResourceFileName));
+            yield return null;
+            introLocalizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.IntroLocalizedResourceFileName, GetLanguageCodeForLocalization())));
             yield return null;
             protectedGeneralResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.ProtectedGeneralResourceFileName));
             yield return null;
