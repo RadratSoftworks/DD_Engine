@@ -2,6 +2,7 @@
 
 namespace DDEngine
 {
+    [System.Serializable]
     public class GadgetObjectInfo
     {
         public string Path;

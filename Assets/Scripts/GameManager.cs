@@ -661,11 +661,13 @@ namespace DDEngine
             {
                 if (gameSave.Gadgets != null)
                 {
-                    while (gameSave.Gadgets.Count != 0)
+                    for (int i = gameSave.Gadgets.Length - 1; i >= 0; i--)
                     {
-                        GadgetObjectInfo info = gameSave.Gadgets.Pop();
+                        GadgetObjectInfo info = gameSave.Gadgets[i];
                         LoadSingleGadget(info.Path, info.Id, info.Saveable);
                     }
+
+                    gameSave.Gadgets = null;
                 }
             }
 
@@ -707,7 +709,7 @@ namespace DDEngine
             using (StreamWriter file = new StreamWriter(SavePath))
             {
                 gameSave.Version = GameSave.CurrentVersion;
-                gameSave.Gadgets = gadgets;
+                gameSave.Gadgets = gadgets.ToArray();
 
                 if ((activeGUI != null) && (activeGUI.Location != null))
                 {

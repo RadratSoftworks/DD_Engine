@@ -16,7 +16,7 @@ namespace DDEngine
         public string CurrentControlSetPath;
         public Vector2 CurrentLocationOffset;
 
-        public Stack<GadgetObjectInfo> Gadgets;
+        public GadgetObjectInfo[] Gadgets;
 
         public int Version = -1;
 
