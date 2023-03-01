@@ -286,20 +286,7 @@ namespace DDEngine.Action
 
         private void RunSetScrollSpeeds(ScriptCommand<ActionOpcode> command)
         {
-            if (command.Arguments.Count % 2 != 0)
-            {
-                Debug.LogError("Expected scroll speeds argument count to be even!");
-                return;
-            }
-
-            Vector2[] speeds = new Vector2[command.Arguments.Count / 2];
-
-            for (int i = 0; i < speeds.Length; i++)
-            {
-                speeds[i] = new Vector2(int.Parse(command.Arguments[i * 2] as string), int.Parse(command.Arguments[i * 2 + 1] as string));
-            }
-
-            GameManager.Instance.SetControlSetScrollSpeeds(speeds);
+            Debug.LogWarning("Unknown how scroll speeds actually works!");
         }
 
         private void RunTimer(ScriptCommand<ActionOpcode> command)

@@ -585,12 +585,6 @@ namespace DDEngine
             backgroundRenderer.color = color;
         }
 
-        // Which layer that has all zero scroll x and y will not be assigned
-        public void SetControlSetScrollSpeeds(Vector2[] speed)
-        {
-            activeGUI.SetLocationScrollSpeeds(speed);
-        }
-
         public void RunPersistentCoroutine(IEnumerator coroutine)
         {
             StartCoroutine(coroutine);

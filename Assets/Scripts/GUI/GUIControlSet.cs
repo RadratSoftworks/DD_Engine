@@ -39,9 +39,6 @@ namespace DDEngine.GUI
         public delegate void OnPanRequested(Vector2 amount);
         public event OnPanRequested PanRequested;
 
-        public delegate void OnLocationScrollSpeedSetRequested(Vector2[] speeds);
-        public event OnLocationScrollSpeedSetRequested LocationScrollSpeedSetRequested;
-
         public delegate void OnLocalizationChanged(GUIControlSet controlSet);
         public event OnLocalizationChanged LocalizationChanged;
 
@@ -173,11 +170,6 @@ namespace DDEngine.GUI
         public void Pan(Vector2 amount)
         {
             PanRequested?.Invoke(amount);
-        }
-
-        public void SetLocationScrollSpeeds(Vector2[] speeds)
-        {
-            LocationScrollSpeedSetRequested?.Invoke(speeds);
         }
 
         public bool Busy => performingBusyAnimationCount != 0;

@@ -92,7 +92,6 @@ namespace DDEngine.GUI
 
             controlSet.OffsetChanged += OnControlSetOffsetChanged;
             controlSet.PanRequested += OnPanRequested;
-            controlSet.LocationScrollSpeedSetRequested += OnScrollSpeedsSet;
 
             GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
             dialogueChangeSubscribed = true;
@@ -265,19 +264,6 @@ namespace DDEngine.GUI
             if (shouldDisableInput)
             {
                 GameInputManager.Instance.SetGUIInputActionMapState(true);
-            }
-        }
-
-        private void OnScrollSpeedsSet(Vector2[] speeds)
-        {
-            int index = 0;
-
-            foreach (var layerController in layerControllers)
-            {
-                if (layerController.scroll == Vector2.zero)
-                {
-                    layerController.scroll = speeds[index++];
-                }
             }
         }
     }

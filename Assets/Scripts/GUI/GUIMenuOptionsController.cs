@@ -30,6 +30,8 @@ namespace DDEngine.GUI
                 submit.performed += OnSubmit;
                 leftValue.performed += OnLeftValueTriggered;
                 rightValue.performed += OnRightValueTriggered;
+
+                GameInputManager.Instance.SetGUIMenuTriggerActionMapState(false);
             }
             else
             {
@@ -38,13 +40,13 @@ namespace DDEngine.GUI
                 submit.performed -= OnSubmit;
                 leftValue.performed -= OnLeftValueTriggered;
                 rightValue.performed -= OnRightValueTriggered;
+
+                GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
             }
         }
 
         private void Start()
         {
-            GameInputManager.Instance.SetGUIMenuTriggerActionMapState(false);
-
             DOTween.Init();
             RegOrUnregAction(true);
         }

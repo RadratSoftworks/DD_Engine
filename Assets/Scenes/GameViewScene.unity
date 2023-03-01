@@ -1248,6 +1248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dpadControl: {fileID: 1919129659}
   joystickControl: {fileID: 179318375}
+  menuTriggerButton: {fileID: 715639232}
 --- !u!1 &464522999
 GameObject:
   m_ObjectHideFlags: 0

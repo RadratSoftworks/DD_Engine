@@ -11,6 +11,9 @@ namespace DDEngine
         [SerializeField]
         private GameObject joystickControl;
 
+        [SerializeField]
+        private GameObject menuTriggerButton;
+
         public static GameInputManager Instance;
         private PlayerInput playerInput;
 
@@ -67,10 +70,12 @@ namespace DDEngine
             if (enabled)
             {
                 menuTriggerActionMap.Enable();
+                menuTriggerButton.SetActive(true);
             }
             else
             {
                 menuTriggerActionMap.Disable();
+                menuTriggerButton.SetActive(false);
             }
         }
 
