@@ -150,6 +150,7 @@ namespace DDEngine.GUI
             }
 
             ownSet.PreferredDpad = true;
+            ownSet.HasMenuTrigger = false;
         }
 
         private void LoadGuiMenuItem(GUIControlSet ownSet, GameObject parent, GUIControlMenuItemDescription description, ref Vector2 position)

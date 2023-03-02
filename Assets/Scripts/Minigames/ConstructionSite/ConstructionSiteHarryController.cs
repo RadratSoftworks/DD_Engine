@@ -8,13 +8,26 @@ namespace DDEngine.Minigame.ConstructionSite
 {
     public class ConstructionSiteHarryController : MonoBehaviour
     {
-        private const string AnimationPath = "ch3/animations/Harry_fly.anim";
+        private const string AnimationPathLeft = "ch4/animations/Harry_fly.anim";
+        private const string AnimationPathRight = "ch4/animations/Harry_fly_flipped.anim";
 
         [SerializeField]
-        private SpriteAnimatorController animationController;
+        private SpriteAnimatorController leftAnimationController;
+
+        [SerializeField]
+        private SpriteAnimatorController rightAnimationController;
+
+        [SerializeField]
+        private GameObject positionAdjuster;
 
         [SerializeField]
         private Vector2 flyVelocityCap = new Vector2(2.5f, 1.5f);
+
+        [SerializeField]
+        private Vector2 animationOffsetLeft = new Vector2(0.14f, -0.22f);
+
+        [SerializeField]
+        private Vector2 animationOffsetRight = new Vector2(0.4f, -0.22f);
 
         private Rigidbody2D rigidBody;
         private Vector2 moveVector;
@@ -62,14 +75,18 @@ namespace DDEngine.Minigame.ConstructionSite
             rigidBody = GetComponent<Rigidbody2D>();
 
             transform.localPosition = GameUtils.ToUnityCoordinates(position);
-            animationController.Setup(Vector2.zero, SpriteAnimatorController.SortOrderNotSet,
-                AnimationPath, origin: new Vector2(0.5f, 0.5f));
+
+            leftAnimationController.Setup(Vector2.zero, SpriteAnimatorController.SortOrderNotSet,
+                AnimationPathLeft, origin: new Vector2(0.5f, 0.5f));
+
+            rightAnimationController.Setup(Vector2.zero, SpriteAnimatorController.SortOrderNotSet,
+                AnimationPathRight, origin: new Vector2(0.5f, 0.5f));
         }
 
         private void FixedUpdate()
         {
             // Apply wind force
-            rigidBody.AddForce(Vector2.right * 0.3f, ForceMode2D.Impulse);
+            rigidBody.AddForce(Vector2.right * 0.7f, ForceMode2D.Impulse);
             rigidBody.AddForce(moveVector, ForceMode2D.Impulse);
 
             rigidBody.velocity = new Vector2(
@@ -77,6 +94,20 @@ namespace DDEngine.Minigame.ConstructionSite
                 Math.Clamp(rigidBody.velocity.y, -flyVelocityCap.y, flyVelocityCap.y));
 
             moveVector = Vector2.zero;
+
+            if (rigidBody.velocity.x >= 0.0f)
+            {
+                leftAnimationController.Disable();
+                rightAnimationController.Enable();
+
+                positionAdjuster.transform.localPosition = animationOffsetRight;
+            } else
+            {
+                leftAnimationController.Enable();
+                rightAnimationController.Disable();
+
+                positionAdjuster.transform.localPosition = animationOffsetLeft;
+            }
         }
 
         public void OnLeftPressed(InputAction.CallbackContext context)

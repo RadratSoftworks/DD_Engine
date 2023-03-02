@@ -20,17 +20,16 @@ namespace DDEngine.Gadget
         private Dictionary<char, GameObject> gameObjectByLayer;
         private ScriptBlock<GadgetOpcode> scriptBlock;
 
-        private ActionInterpreter actionInterpreter;
-
-        public GadgetInterpreter(ActionInterpreter guiActionInterpreter, GameSceneController parent, ScriptBlock<GadgetOpcode> scriptBlock, GameDialogue dialogue = null)
+        public GadgetInterpreter(GameSceneController parent, ScriptBlock<GadgetOpcode> scriptBlock, GameDialogue dialogue = null)
         {
             this.parent = parent;
             this.scriptBlock = scriptBlock;
             this.dialogue = dialogue;
 
             gameObjectByLayer = new Dictionary<char, GameObject>();
-            actionInterpreter = guiActionInterpreter;
         }
+
+        private ActionInterpreter ActionInterpreter => GameManager.Instance.CurrentActionInterpreter;
 
         private void HandleAnimation(ScriptCommand<GadgetOpcode> command)
         {
@@ -190,7 +189,7 @@ namespace DDEngine.Gadget
                 yield break;
             }
 
-            yield return actionInterpreter.Execute(command.Arguments[0] as ScriptBlock<ActionOpcode>);
+            yield return ActionInterpreter.Execute(command.Arguments[0] as ScriptBlock<ActionOpcode>);
         }
 
         private void HandlePan(ScriptCommand<GadgetOpcode> command)
@@ -280,7 +279,7 @@ namespace DDEngine.Gadget
 
             foreach (var choice in choices)
             {
-                if (!actionInterpreter.GUIConditionResult(choice.ConditionalVariables, choice.ConditionalVariableValues))
+                if (!ActionInterpreter.GUIConditionResult(choice.ConditionalVariables, choice.ConditionalVariableValues))
                 {
                     continue;
                 }
@@ -312,7 +311,7 @@ namespace DDEngine.Gadget
                 Debug.LogError("Invalid dialogue slide id " + id + " in file: " + dialogue.FileName);
             }
 
-            GameManager.Instance.ReturnGadget();
+            GameManager.Instance.ReturnGadget(false);
             GameManager.Instance.LoadDialogueSlide(dialogue, slide);
         }
 
@@ -361,7 +360,9 @@ namespace DDEngine.Gadget
                 yield return new WaitUntil(() => !GameManager.Instance.GUIBusy);
             }
 
-            if (scriptBlock.Skippable)
+            bool skippable = GameManager.Instance.Skippable;
+
+            if (skippable)
             {
                 GameManager.Instance.StartHearingConfirmation();
             }
@@ -370,7 +371,7 @@ namespace DDEngine.Gadget
 
             foreach (var command in scriptBlock.Commands)
             {
-                if (scriptBlock.Skippable)
+                if (skippable)
                 {
                     if (command.Opcode != GadgetOpcode.StartAction)
                     {
@@ -394,6 +395,11 @@ namespace DDEngine.Gadget
                                 yield return new WaitUntil(() => GameManager.Instance.LastTextFinished);
                                 GameManager.Instance.StartHearingConfirmation();
                                 yield return new WaitUntil(() => GameManager.Instance.ContinueConfirmed);
+
+                                if (skippable)
+                                {
+                                    GameManager.Instance.StartHearingConfirmation();
+                                }
                             }
                             else
                             {
@@ -401,7 +407,7 @@ namespace DDEngine.Gadget
                                 {
                                     yield return null;
 
-                                    if (scriptBlock.Skippable)
+                                    if (skippable)
                                     {
                                         if (GameManager.Instance.ContinueConfirmed)
                                         {
@@ -447,6 +453,11 @@ namespace DDEngine.Gadget
                         yield return new WaitUntil(() => GameManager.Instance.LastTextFinished);
                         GameManager.Instance.StartHearingConfirmation();
                         yield return new WaitUntil(() => GameManager.Instance.ContinueConfirmed);
+
+                        if (skippable)
+                        {
+                            GameManager.Instance.StartHearingConfirmation();
+                        }
 
                         HandleContinue(command);
                         break;

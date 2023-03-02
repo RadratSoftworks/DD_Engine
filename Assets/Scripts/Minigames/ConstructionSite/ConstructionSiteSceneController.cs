@@ -5,6 +5,15 @@ namespace DDEngine.Minigame.ConstructionSite
 {
     public class ConstructionSiteSceneController : MonoBehaviour
     {
+        private const string AmbientSoundPath = "sound/Space_set.wav";
+        private static readonly Vector2[] ArrowOrigins =
+        {
+            Vector2.right,
+            Vector2.zero,
+            Vector2.one,
+            Vector2.up
+        };
+
         [SerializeField]
         private SpriteRenderer backgroundRenderer;
 
@@ -41,6 +50,12 @@ namespace DDEngine.Minigame.ConstructionSite
         [SerializeField]
         private CompositeCollider2D cameraBounds;
 
+        [SerializeField]
+        private GUISoundController ambientSound;
+
+        [SerializeField]
+        private SpriteAnimatorController[] arrowAnimations;
+
         private void EnableViewStyleOnControlSetStatus(bool enabled)
         {
             if (enabled)
@@ -73,6 +88,13 @@ namespace DDEngine.Minigame.ConstructionSite
             winHostile.Setup(info.Win);
 
             harryController.Setup(info.FlyPosition);
+            ambientSound.Setup(AmbientSoundPath, 0);
+
+            for (int i = 0; i < info.ArrowPositions.Length; i++)
+            {
+                arrowAnimations[i].Setup(info.ArrowPositions[i], SpriteAnimatorController.SortOrderNotSet,
+                    FilePaths.ArrowAnimationsPath[i], origin: ArrowOrigins[i]);
+            }
 
             ownSet.StateChanged += EnableViewStyleOnControlSetStatus;
         }

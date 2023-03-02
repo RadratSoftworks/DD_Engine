@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace DDEngine.Minigame.ConstructionSite
 {
@@ -49,6 +50,17 @@ namespace DDEngine.Minigame.ConstructionSite
         public static ConstructionSiteMinigameInfo Parse(MinigameVariable root)
         {
             ConstructionSiteMinigameInfo minigameInfo = new ConstructionSiteMinigameInfo();
+
+            for (int i = 0; i < minigameInfo.ArrowPositions.Length; i++)
+            {
+                if (!root.TryGetValue($"arrow{i}", out Vector2 position))
+                {
+                    throw new Exception($"Can't get the position of arrow number {i}");
+                } else
+                {
+                    minigameInfo.ArrowPositions[i] = position;
+                }
+            }
 
             if (!root.TryGetValue("bg", out MinigameVariable bgVar) || !bgVar.TryGetValue("image", out minigameInfo.BackgroundImage))
             {

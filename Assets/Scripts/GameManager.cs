@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -53,10 +54,13 @@ namespace DDEngine
         private float targetFrameFactor = 3;
 
         private GameSave gameSave;
-        private bool allowSave = false;
+        private int saveLock = 0;
+        private int skipAllowance = 0;
         private bool inLoad = false;
 
         public ActionInterpreter CurrentActionInterpreter => activeGUI?.ActionInterpreter ?? defaultActionInterpreter;
+        public bool AllowSave => (saveLock <= 0);
+        public bool Skippable => (skipAllowance > 0);
 
         public bool ContinueConfirmed => confirmedController.Confirmed;
         public bool LastTextFinished => textBalloonTopController.LastTextFinished && textBalloonBottomController.LastTextFinished;
@@ -72,6 +76,7 @@ namespace DDEngine
         // When there's no more dialogue display, the dialogue state will be disabled
         public delegate void OnDialogueStateChanged(bool enable);
         public event OnDialogueStateChanged DialogueStateChanged;
+        private event System.Action ControlSetChanged;
 
         // Start is called before the first frame update
         void Start()
@@ -134,9 +139,7 @@ namespace DDEngine
         {
             SaveGame();
 
-            allowSave = false;
             persistentAudioController.StopAll();
-
             LoadControlSet(FilePaths.MainChapterGUIControlFileName);
         }
 
@@ -149,13 +152,32 @@ namespace DDEngine
             continueConfirmator.SetActive(false);
         }
 
-        private void SaveOnGadgetChange()
+        private void ConsiderGadgetLock(GadgetObjectInfo info, bool unlock)
         {
-            allowSave = activeGadget.Saveable;
-            SaveGame();
+            if (!info.Saveable)
+            {
+                if (unlock)
+                {
+                    saveLock--;
+                } else
+                {
+                    saveLock++;
+                }
+            }
+
+            if (info.Skippable)
+            {
+                if (unlock)
+                {
+                    skipAllowance--;
+                } else
+                {
+                    skipAllowance++;
+                }
+            }
         }
 
-        public void ReturnGadget()
+        public void ReturnGadget(bool saveGame = true)
         {
             if (gadgets.Count == 0)
             {
@@ -163,20 +185,27 @@ namespace DDEngine
 
                 if (activeGUI != null)
                 {
+                    if (!activeGUI.Saveable)
+                    {
+                        saveLock--;
+                    }
+
                     activeGUI.Disable();
                 }
 
                 dialogueAudioController.StopAll();
+                defaultActionInterpreter.ClearState();
                 activeGUI = null;
 
+                // NOTE: Do not save here
                 gameSave.CurrentControlSetPath = null;
-                SaveGame();
 
                 // Enable menu trigger. An actual menu widget will disable it if there is one
                 GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
                 return;
             }
 
+            ConsiderGadgetLock(activeGadget, true);
             gadgets.Pop();
 
             GameObject.Destroy(activeGadget.Object);
@@ -190,14 +219,15 @@ namespace DDEngine
 
                 if (activeGUI != null)
                 {
-                    activeGUI.EnableRecommendedTouchControl();
+                    activeGUI.EnableRecommendedControls();
                 }
 
                 DialogueStateChanged?.Invoke(false);
             }
-            else
+
+            if (saveGame)
             {
-                SaveOnGadgetChange();
+                SaveGame();
             }
         }
 
@@ -207,7 +237,13 @@ namespace DDEngine
             activeGadget.Object.SetActive(true);
 
             gadgets.Push(activeGadget);
-            SaveOnGadgetChange();
+            ConsiderGadgetLock(newActive, false);
+        
+            // If this is the first gadget in the stack
+            if (gadgets.Count == 1)
+            {
+                SaveGame();
+            }
         }
 
         private void CleanAllPendingGadgets()
@@ -219,7 +255,9 @@ namespace DDEngine
 
             while (gadgets.Count != 0)
             {
-                GameObject.Destroy(gadgets.Pop().Object);
+                var info = gadgets.Pop();
+                ConsiderGadgetLock(info, true);
+                GameObject.Destroy(info.Object);
             }
 
             HideGadgetRelatedObjects();
@@ -227,8 +265,6 @@ namespace DDEngine
 
             DialogueStateChanged?.Invoke(false);
             StopAllCoroutines();
-
-            SaveGame();
         }
 
         private void PruneCache()
@@ -254,7 +290,13 @@ namespace DDEngine
             // Deactive an activating GUI
             if (activeGUI != null)
             {
+                if (!activeGUI.Saveable)
+                {
+                    saveLock--;
+                }
+
                 activeGUI.Disable();
+                defaultActionInterpreter.ClearState();
             }
 
             dialogueAudioController.StopAll();
@@ -262,32 +304,39 @@ namespace DDEngine
             PruneCache();
 
             activeGUI = newGUI;
+            ControlSetChanged?.Invoke();
 
             // Enable menu trigger. An actual menu widget will disable it if there is one
             GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
 
             if (activeGUI != null)
             {
+                // Disable input actions, this is to prevent the new input event subscribe from being fired
+                // immediately. It looks like re-enable will clear the pending events :)
+                GameInputManager.Instance.SetGUIInputActionMapState(false);
+
                 activeGUI.Enable();
-                activeGUI.EnableRecommendedTouchControl();
+                activeGUI.EnableRecommendedControls();
 
                 DialogueStateChanged?.Invoke(false);
 
                 GameInputManager.Instance.SetGUIInputActionMapState(true);
 
-                if (activeGUI.Saveable)
+                if (!activeGUI.Saveable)
                 {
-                    gameSave.CurrentControlSetPath = activeGUI.Name;
-
-                    if (!notSave)
-                    {
-                        SaveGame();
-                    }
+                    saveLock++;
                 }
+
+                gameSave.CurrentControlSetPath = activeGUI.Name;
             }
             else
             {
                 gameSave.CurrentControlSetPath = null;
+            }
+
+            if (!notSave)
+            {
+                SaveGame();
             }
         }
 
@@ -303,7 +352,7 @@ namespace DDEngine
             }
         }
 
-        private void LoadGadgetScriptBlock(GameDialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock, int scriptId = -1, bool savable = true)
+        private void LoadGadgetScriptBlock(GameDialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock, int scriptId = -1)
         {
             GameObject containerObject = Instantiate(gameScenePrefabObject, dialogueContainer.transform, false);
             containerObject.name = name;
@@ -314,20 +363,15 @@ namespace DDEngine
             {
                 Path = parent.FileName,
                 Id = scriptId,
-                Saveable = savable,
+                Saveable = scriptBlock.Saveable,
+                Skippable = scriptBlock.Skippable,
                 Object = containerObject
             });
-
-            // Enable menu if the thing is savable
-            if (allowSave && (activeGUI == null))
-            {
-                GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
-            }
 
             GameSceneController controller = containerObject.GetComponent<GameSceneController>();
             controller.Setup(Constants.CanvasSize, gadgets.Count - 1);
 
-            GadgetInterpreter interpreter = new GadgetInterpreter(CurrentActionInterpreter, controller, scriptBlock, parent);
+            GadgetInterpreter interpreter = new GadgetInterpreter(controller, scriptBlock, parent);
             StartCoroutine(interpreter.Execute(() => {
                 // Use a dpad for dialogue navigation
                 GameInputManager.Instance.SetNavigationTouchControl(false);
@@ -366,11 +410,10 @@ namespace DDEngine
             return dialogue;
         }
 
-        public void LoadDialogueSlide(GameDialogue parent, DialogueSlide slide, bool? forceSavable = null)
+        public void LoadDialogueSlide(GameDialogue parent, DialogueSlide slide)
         {
-            // A dialogue can be saved or not depends on the Gadget script that load the location or dialogue. We can also depends on the previous slide too, no worries,
-            // as they all assign savable from the same script root.
-            LoadGadgetScriptBlock(parent, string.Format("Slide_{0}_{1}", slide.Id, parent.FileName), slide.DialogScript, slide.Id, forceSavable ?? allowSave);
+            GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
+            LoadGadgetScriptBlock(parent, string.Format("Slide_{0}_{1}", slide.Id, parent.FileName), slide.DialogScript, slide.Id);
         }
 
         public void LoadDialogue(string filename)
@@ -412,7 +455,7 @@ namespace DDEngine
                 tempDialogue.FileName = filename;
                 tempDialogue.Strings = LocalizerHelper.GetStrings(filename);
 
-                LoadGadgetScriptBlock(tempDialogue, string.Format("standaloneGadget_{0}", filename), block, savable: block.Saveable);
+                LoadGadgetScriptBlock(tempDialogue, string.Format("standaloneGadget_{0}", filename), block);
             }
         }
 
@@ -534,6 +577,11 @@ namespace DDEngine
             }
 
             iconCache.Add(name, controller);
+
+            ControlSetChanged += () =>
+            {
+                controller.Disable();
+            };
         }
 
         public void DisplayIcon(string iconName, Vector2 position)
@@ -592,7 +640,7 @@ namespace DDEngine
             gameSave.ActionValues[globalVarDictKey] = ActionInterpreter.GlobalScriptValues;
         }
 
-        private void LoadSingleGadget(string gadgetPath, int gadgetId, bool? forceSavable = null)
+        private void LoadSingleGadget(string gadgetPath, int gadgetId)
         {
             if (gadgetPath != null)
             {
@@ -607,7 +655,7 @@ namespace DDEngine
                         GameDialogue dialogue = RetrieveDialogue(gadgetPath);
                         DialogueSlide dialogueSlide = dialogue.GetDialogueSlideWithId(gadgetId);
 
-                        LoadDialogueSlide(dialogue, dialogueSlide, forceSavable);
+                        LoadDialogueSlide(dialogue, dialogueSlide);
                     }
                 }
             }
@@ -615,7 +663,6 @@ namespace DDEngine
 
         private void InitializeFromGameSave()
         {
-            allowSave = false;
             inLoad = true;
 
             // Update global action values
@@ -650,28 +697,11 @@ namespace DDEngine
                 CleanAllPendingGadgets();
             }
 
-            if (gameSave.Version <= 1)
+            if (gameSave.CurrentGadgetPath != null)
             {
                 LoadSingleGadget(gameSave.CurrentGadgetPath, gameSave.CurrentGadgetId);
-
-                // Obselete these
-                gameSave.CurrentGadgetPath = null;
-                gameSave.CurrentGadgetId = -1;
-            } else
-            {
-                if (gameSave.Gadgets != null)
-                {
-                    for (int i = gameSave.Gadgets.Length - 1; i >= 0; i--)
-                    {
-                        GadgetObjectInfo info = gameSave.Gadgets[i];
-                        LoadSingleGadget(info.Path, info.Id, info.Saveable);
-                    }
-
-                    gameSave.Gadgets = null;
-                }
             }
 
-            allowSave = true;
             inLoad = false;
 
             // After we done loading, restore the game save data to keep tracking current game progress
@@ -699,7 +729,7 @@ namespace DDEngine
 
         private void SaveGame()
         {
-            if (!allowSave || inLoad)
+            if (!AllowSave || inLoad)
             {
                 return;
             }
@@ -709,7 +739,17 @@ namespace DDEngine
             using (StreamWriter file = new StreamWriter(SavePath))
             {
                 gameSave.Version = GameSave.CurrentVersion;
-                gameSave.Gadgets = gadgets.ToArray();
+
+                if (gadgets.Count != 0)
+                {
+                    GadgetObjectInfo initiator = gadgets.Last();
+
+                    gameSave.CurrentGadgetPath = initiator.Path;
+                    gameSave.CurrentGadgetId = initiator.Id;
+                } else
+                {
+                    gameSave.CurrentGadgetPath = null;
+                }
 
                 if ((activeGUI != null) && (activeGUI.Location != null))
                 {
@@ -723,9 +763,6 @@ namespace DDEngine
                 };
 
                 serializer.Serialize(file, gameSave);
-
-                // Release the reference
-                gameSave.Gadgets = null;
             }
 
             if (!saveWasAvailable)

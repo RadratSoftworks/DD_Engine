@@ -45,6 +45,11 @@
 					"context": "Fix chapter 3 Hotel arrows location"
 				},
 				{
+					"offset": "15CF",
+					"newBytes": "00 28 00 16",
+					"context": "Fix chapter 3 dinner visited arrows rect size"
+				},
+				{
 					"offset": "16D3",
 					"newBytes": "63 6B 0A 6C",
 					"context": "Fix chapter 4 on movie set click"

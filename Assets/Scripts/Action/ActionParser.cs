@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace DDEngine.Action
@@ -52,7 +53,7 @@ namespace DDEngine.Action
                     {
                         continue;
                     }
-                    var commands = commandLine.Split(' ');
+                    var commands = Regex.Split(commandLine, @"\s{1,}"); ;
 
                     if (!stringToActionOps.ContainsKey(commands[0]))
                     {

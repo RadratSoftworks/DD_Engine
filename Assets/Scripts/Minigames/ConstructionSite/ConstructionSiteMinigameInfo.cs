@@ -16,6 +16,7 @@ namespace DDEngine.Minigame.ConstructionSite
         public ConstructionSiteHostileInfo Man = new ConstructionSiteHostileInfo();
         public ConstructionSiteHostileInfo Win = new ConstructionSiteHostileInfo();
 
+        public Vector2[] ArrowPositions = new Vector2[4];
         public Vector2 FlyPosition = Vector2.zero;
     }
 }

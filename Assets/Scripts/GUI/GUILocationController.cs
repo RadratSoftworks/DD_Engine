@@ -93,9 +93,7 @@ namespace DDEngine.GUI
             controlSet.OffsetChanged += OnControlSetOffsetChanged;
             controlSet.PanRequested += OnPanRequested;
 
-            GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
-            dialogueChangeSubscribed = true;
-
+            dialogueChangeSubscribed = false;
             controlSet.StateChanged += state =>
             {
                 if (dialogueChangeSubscribed == enabled)
@@ -160,9 +158,10 @@ namespace DDEngine.GUI
             yield break;
         }
 
-        public void Scroll(Vector2 amount, bool hasDuration = false, bool busyWhileAnimating = true, bool accountingScrollFactor = true, bool forFrameScroll = false, GUILayerController.EaseType ease = GUILayerController.EaseType.Normal, System.Func<Vector2, Vector2> readjustPanAmountCallback = null)
+        public void Scroll(Vector2 amount, bool hasDuration = false, bool busyWhileAnimating = true, bool accountingScrollFactor = true, bool forFrameScroll = false, bool allowExtraScroll = false,
+            GUILayerController.EaseType ease = GUILayerController.EaseType.Normal, System.Func<Vector2, Vector2> readjustPanAmountCallback = null)
         {
-            Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, forFrameScroll, accountingScrollFactor);
+            Vector3 targetPanAmount = panLayerController.CalculateScrollAmountForLimitedPan(amount, forFrameScroll, accountingScrollFactor, allowExtraScroll);
 
             if (readjustPanAmountCallback != null)
             {
@@ -246,7 +245,10 @@ namespace DDEngine.GUI
                 passed = (Time.time - previousDialogueDisabledTimestamp) >= activeCooldownFromCloseDialogue;
             }
 
-            ActiveConfirmed?.Invoke();
+            if (passed)
+            {
+                ActiveConfirmed?.Invoke();
+            }
         }
 
         private void OnPanRequested(Vector2 amount)

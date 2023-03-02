@@ -25,6 +25,9 @@ namespace DDEngine.Dialogue
             Dictionary<int, DialogueSlide> slides = new Dictionary<int, DialogueSlide>();
 
             var rootDialogue = rootDialogues.Item(0) as XmlElement;
+            var unsaveable = rootDialogue.GetAttribute("unsavable")?.Equals("true", StringComparison.OrdinalIgnoreCase);
+            var skippable = rootDialogue.GetAttribute("skippable")?.Equals("true", StringComparison.OrdinalIgnoreCase);
+
             int startId = -1;
 
             foreach (var dialogueSlideNode in rootDialogue.GetElementsByTagName("DialogueSlide"))
@@ -45,6 +48,8 @@ namespace DDEngine.Dialogue
                 using (MemoryStream stream = new MemoryStream(dialogueSlideScriptBytes))
                 {
                     slide.DialogScript = GadgetParser.Parse(stream);
+                    slide.DialogScript.Skippable = skippable ?? false;
+                    slide.DialogScript.Saveable = !unsaveable ?? true;
                 }
 
                 slides.Add(slide.Id, slide);

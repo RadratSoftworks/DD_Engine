@@ -32,31 +32,6 @@ namespace DDEngine.GUI
 
         private void Start()
         {
-            arrows.SetActive(false);
-
-            GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
-            dialogueChangeSubscribed = true;
-
-            controlSet.StateChanged += enabled =>
-            {
-                if (dialogueChangeSubscribed == enabled)
-                {
-                    return;
-                }
-
-                if (enabled)
-                {
-                    GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
-                }
-                else
-                {
-                    GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
-                }
-
-                dialogueChangeSubscribed = enabled;
-            };
-
-            OnDialogueStateChanged(GameManager.Instance.GadgetActive);
         }
 
         public void Setup(GUIControlSet set, Vector2 position, Vector2 size, Rect detectBounds, bool panToWhenSelected = true)
@@ -103,6 +78,28 @@ namespace DDEngine.GUI
 
                 controller.Setup(positionMove[i], 0, FilePaths.ArrowAnimationsPath[i], null, origin[i]);
             }
+
+            arrows.SetActive(false);
+            dialogueChangeSubscribed = false;
+
+            controlSet.StateChanged += enabled =>
+            {
+                if (dialogueChangeSubscribed == enabled)
+                {
+                    return;
+                }
+
+                if (enabled)
+                {
+                    GameManager.Instance.DialogueStateChanged += OnDialogueStateChanged;
+                }
+                else
+                {
+                    GameManager.Instance.DialogueStateChanged -= OnDialogueStateChanged;
+                }
+
+                dialogueChangeSubscribed = enabled;
+            };
         }
 
         private void OnTriggerEnter2D(Collider2D collision)

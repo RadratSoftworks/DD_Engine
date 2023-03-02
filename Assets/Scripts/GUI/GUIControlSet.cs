@@ -28,6 +28,7 @@ namespace DDEngine.GUI
         public string Name { get; set; }
         public bool PreferredDpad { get; set; } = false;
         public GUILocationController Location { get; set; } = null;
+        public bool HasMenuTrigger { get; set; } = true;
         public bool Saveable => saveable;
 
         public delegate void OnStateChanged(bool enabled);
@@ -104,6 +105,8 @@ namespace DDEngine.GUI
             actionInterpreter = new ActionInterpreter();
             destroyOnDisable = options.DestroyWhenDisabled;
             PreferredDpad = options.PreferredDpad;
+
+            saveable = true;
         }
 
         public IEnumerator HandleAction(string id, string actionName)
@@ -147,9 +150,10 @@ namespace DDEngine.GUI
             }
         }
 
-        public void EnableRecommendedTouchControl()
+        public void EnableRecommendedControls()
         {
             GameInputManager.Instance.SetNavigationTouchControl(!PreferredDpad);
+            GameInputManager.Instance.SetGUIMenuTriggerActionMapState(HasMenuTrigger);
         }
 
         public void RegisterPerformingBusyAnimation()

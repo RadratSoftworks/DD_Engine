@@ -41,17 +41,6 @@ namespace DDEngine.GUI
         private void Start()
         {
             DOTween.Init();
-            CheckAndSetDialogStateChangeSubscription(true);
-        }
-
-        private void OnEnable()
-        {
-            CheckAndSetDialogStateChangeSubscription(true);
-        }
-
-        private void OnDisable()
-        {
-            CheckAndSetDialogStateChangeSubscription(false);
         }
 
         private void Awake()
@@ -85,6 +74,12 @@ namespace DDEngine.GUI
             this.controlSet = controlSet;
 
             transform.localPosition = originalPosition;
+
+            dialogueStateChangeSubscribed = false;
+            controlSet.StateChanged += enabled =>
+            {
+                CheckAndSetDialogStateChangeSubscription(enabled);
+            };
         }
 
         public Vector3 CalculateActualScrollAmount(Vector2 scrollAmount, bool perFrameScroll = false)
@@ -141,7 +136,7 @@ namespace DDEngine.GUI
             Vector3 originalPositionGame = GameUtils.FromUnityCoordinates(originalPosition);
             Vector3 currentGame = GameUtils.FromUnityCoordinates(new Vector2(transform.localPosition.x, transform.localPosition.y));
             Vector3 moveGame = GameUtils.FromUnityCoordinates(limitedPanAmount * scroll / layerScrollFactor);
-            Vector3 destRounded = new((int)(currentGame.x + moveGame.x), (int)currentGame.y + moveGame.y);
+            Vector3 destRounded = new((int)(currentGame.x + moveGame.x), (int)(currentGame.y + moveGame.y));
 
             // The distance must not make the position go over the destination. All are clamped down using int conversion
             // This seems to be the math on phone, since on each frame they scrolled scroll / 100 pixels, but it must be compared and converted to int because
@@ -207,7 +202,7 @@ namespace DDEngine.GUI
                 amountRaw.y /= scroll.y / layerScrollFactor;
             }
 
-            locationController.Scroll(amountRaw, hasDuration: true, readjustPanAmountCallback: value => ReAdjustPanAmountToAccurate(value));
+            locationController.Scroll(amountRaw, hasDuration: true, allowExtraScroll: true, readjustPanAmountCallback: value => ReAdjustPanAmountToAccurate(value));
         }
 
         public void ForceScroll(Vector2 scrollAmount, float duration, EaseType ease = EaseType.Normal, bool forFrameScroll = false)
@@ -246,11 +241,13 @@ namespace DDEngine.GUI
             ScrollAnimationFinished?.Invoke(this);
         }
 
-        public Vector3 CalculateScrollAmountForLimitedPanFromPos(Vector3 basePoint, Vector2 scrollAmount, bool perFrameScroll = false, bool accountingScrollFactor = true)
+        public Vector3 CalculateScrollAmountForLimitedPanFromPos(Vector3 basePoint, Vector2 scrollAmount, bool perFrameScroll = false, bool accountingScrollFactor = true, bool allowExtraScroll = false)
         {
+            float extraScrollDeltaFin = allowExtraScroll ? extraScrollDelta : 0.0f;
+
             Vector3 destPoint = accountingScrollFactor ? CalculateDestinationScroll(basePoint, scrollAmount, perFrameScroll) : basePoint + new Vector3(scrollAmount.x, scrollAmount.y);
-            destPoint.x = Mathf.Clamp(destPoint.x, controlSet.ViewSize.x - size.x - extraScrollDelta, extraScrollDelta);
-            destPoint.y = Mathf.Clamp(destPoint.y, -extraScrollDelta, size.y - controlSet.ViewSize.y + extraScrollDelta);
+            destPoint.x = Mathf.Clamp(destPoint.x, controlSet.ViewSize.x - size.x - extraScrollDeltaFin, extraScrollDeltaFin);
+            destPoint.y = Mathf.Clamp(destPoint.y, -extraScrollDeltaFin, size.y - controlSet.ViewSize.y + extraScrollDeltaFin);
 
             Vector3 actualMoveAmount = (destPoint - basePoint) * (perFrameScroll ? GameManager.Instance.FrameScale : 1.0f);
 
@@ -275,14 +272,14 @@ namespace DDEngine.GUI
             return actualMoveAmount;
         }
 
-        public Vector3 CalculateScrollAmountForLimitedPan(Vector2 scrollAmount, bool perFrameScroll = false, bool accountingScaleFactor = true)
+        public Vector3 CalculateScrollAmountForLimitedPan(Vector2 scrollAmount, bool perFrameScroll = false, bool accountingScaleFactor = true, bool allowExtraScroll = false)
         {
-            return CalculateScrollAmountForLimitedPanFromPos(transform.localPosition, scrollAmount, perFrameScroll, accountingScaleFactor);
+            return CalculateScrollAmountForLimitedPanFromPos(transform.localPosition, scrollAmount, perFrameScroll, accountingScaleFactor, allowExtraScroll);
         }
 
-        public Vector3 CalculateScrollAmountForLimitedPanFromOrigin(Vector2 scrollAmount, bool perFrameScroll = false, bool accountingScaleFactor = true)
+        public Vector3 CalculateScrollAmountForLimitedPanFromOrigin(Vector2 scrollAmount, bool perFrameScroll = false, bool accountingScaleFactor = true, bool allowExtraScroll = false)
         {
-            return CalculateScrollAmountForLimitedPanFromPos(originalPosition, scrollAmount, perFrameScroll);
+            return CalculateScrollAmountForLimitedPanFromPos(originalPosition, scrollAmount, perFrameScroll, accountingScaleFactor, allowExtraScroll);
         }
 
         private void OnDialogueStateChanged(bool enabled)

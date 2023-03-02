@@ -46,3 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boundsObject: {fileID: 0}
   layerScrollFactor: 100
+  extraScrollDelta: 0.005
+  scroll: {x: 0, y: 0}

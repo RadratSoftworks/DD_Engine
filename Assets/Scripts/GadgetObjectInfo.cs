@@ -8,6 +8,7 @@ namespace DDEngine
         public string Path;
         public int Id;
         public bool Saveable;
+        public bool Skippable;
 
         [System.NonSerialized]
         public GameObject Object;

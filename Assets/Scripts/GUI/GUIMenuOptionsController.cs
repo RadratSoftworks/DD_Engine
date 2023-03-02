@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 namespace DDEngine.GUI
 {
@@ -9,12 +11,18 @@ namespace DDEngine.GUI
         public float scrollDuration = 0.5f;
         private int currentChildIndex = 0;
         private bool initializedCurrent = false;
+        private bool inputRegistered = false;
 
         public delegate void ButtonClicked(string id);
         public event ButtonClicked OnButtonClicked;
 
         private void RegOrUnregAction(bool reg)
         {
+            if (inputRegistered == reg)
+            {
+                return;
+            }
+
             var actionMap = GameInputManager.Instance.GUIMenuActionMap;
 
             InputAction navigateDown = actionMap.FindAction("Navigate Down");
@@ -30,8 +38,6 @@ namespace DDEngine.GUI
                 submit.performed += OnSubmit;
                 leftValue.performed += OnLeftValueTriggered;
                 rightValue.performed += OnRightValueTriggered;
-
-                GameInputManager.Instance.SetGUIMenuTriggerActionMapState(false);
             }
             else
             {
@@ -40,9 +46,9 @@ namespace DDEngine.GUI
                 submit.performed -= OnSubmit;
                 leftValue.performed -= OnLeftValueTriggered;
                 rightValue.performed -= OnRightValueTriggered;
-
-                GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
             }
+
+            inputRegistered = reg;
         }
 
         private void Start()
