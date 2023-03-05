@@ -51,7 +51,6 @@ namespace DDEngine
         private GameChoicesController dialogueChoicesController;
 
         private Stack<GadgetObjectInfo> gadgets;
-        private float targetFrameFactor = 3;
 
         private GameSave gameSave;
         private int saveLock = 0;
@@ -66,8 +65,6 @@ namespace DDEngine
         public bool LastTextFinished => textBalloonTopController.LastTextFinished && textBalloonBottomController.LastTextFinished;
         public bool GUIBusy => (activeGUI != null) && (activeGUI.Busy);
         public bool GadgetActive => (activeGadget != null);
-        public float FrameScale => targetFrameFactor;
-
         private string SavePath => Path.Join(Application.persistentDataPath, "save.json");
         private bool SaveAvailable => File.Exists(SavePath);
 
@@ -107,10 +104,7 @@ namespace DDEngine
 
             defaultActionInterpreter = new ActionInterpreter();
 
-            Application.targetFrameRate = 60;
-            QualitySettings.vSyncCount = 0;
-            targetFrameFactor = 60.0f / Constants.BaseGameFps;
-
+            QualitySettings.vSyncCount = 1;
             ResourceManager.Instance.OnResourcesReady += OnResourcesReady;
 
             // Add save exists variable to global values
@@ -631,11 +625,6 @@ namespace DDEngine
         public void StopPersistentCoroutine(IEnumerator coroutine)
         {
             StopCoroutine(coroutine);
-        }
-
-        public int GetRealFrames(int gameFrames)
-        {
-            return (int)(gameFrames * targetFrameFactor);
         }
 
         private void RestoreGameSaveTracking()

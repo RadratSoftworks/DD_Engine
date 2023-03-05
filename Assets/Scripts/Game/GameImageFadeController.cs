@@ -14,17 +14,20 @@ namespace DDEngine.Game
 
         private SpriteRenderer spriteRenderer;
 
-        private IEnumerator FadeCoroutine(float destValue, int frames)
+        private IEnumerator FadeCoroutine(float destValue, float duration)
         {
             Color currentColor = spriteRenderer.color;
-            float addition = (destValue - currentColor.a) / frames;
+            float sourceAlpha = currentColor.a;
 
-            for (int i = 0; i < frames; i++)
+            float elapsedTime = 0.0f;
+
+            while (elapsedTime < duration)
             {
-                currentColor.a += addition;
+                currentColor.a = Mathf.Lerp(sourceAlpha, destValue, elapsedTime / duration);
                 spriteRenderer.color = currentColor;
 
                 yield return null;
+                elapsedTime += Time.deltaTime;
             }
 
             currentColor.a = destValue;
@@ -36,11 +39,11 @@ namespace DDEngine.Game
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public void Fade(FadeType fadeType, int frames, int value = -1)
+        public void Fade(FadeType fadeType, float duration, int value = -1)
         {
             StopAllCoroutines();
 
-            if (frames == 0)
+            if (duration <= 0.0f)
             {
                 Color currentColorImm = spriteRenderer.color;
                 switch (fadeType)
@@ -82,7 +85,7 @@ namespace DDEngine.Game
             }
 
             spriteRenderer.color = currentColor;
-            StartCoroutine(FadeCoroutine(targetAlpha, frames));
+            StartCoroutine(FadeCoroutine(targetAlpha, duration));
         }
     }
 }

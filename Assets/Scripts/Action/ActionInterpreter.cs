@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using DDEngine.BaseScript;
+using DDEngine.Utils;
 
 namespace DDEngine.Action
 {
@@ -45,11 +46,8 @@ namespace DDEngine.Action
 
         private IEnumerator TimerCoroutine(string name, int frames, string script)
         {
-            int frameCount = GameManager.Instance.GetRealFrames(frames);
-            for (int i = 0; i < frameCount; i++)
-            {
-                yield return null;
-            }
+            float duration = GameUtils.GetDurationFromFramesInSeconds(frames);
+            yield return new WaitForSeconds(duration);
             yield return new WaitUntil(() => !GameManager.Instance.GadgetActive);
             // Remove from management
             timers.Remove(name);

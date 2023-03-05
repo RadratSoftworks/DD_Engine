@@ -15,7 +15,7 @@ namespace DDEngine
         class FrameInfo
         {
             public int SpriteIndex { get; set; }
-            public int Duration { get; set; }
+            public WaitForSeconds Duration { get; set; }
             public Vector2 Position { get; set; }
             public bool InGameCoordinates { get; set; } = true;
         };
@@ -135,9 +135,9 @@ namespace DDEngine
         {
             FrameInfo frame = new FrameInfo()
             {
-                Duration = durationInBaseGameFrames,
                 Position = position,
-                InGameCoordinates = inGameCoordinates
+                InGameCoordinates = inGameCoordinates,
+                Duration = (durationInBaseGameFrames <= 0) ? null : new WaitForSeconds(GameUtils.GetDurationFromFramesInSeconds(durationInBaseGameFrames))
             };
             if (spriteFileLookup.ContainsKey(frameImagePath))
             {
@@ -206,27 +206,12 @@ namespace DDEngine
                 transform.localPosition = basePosition + (frame.InGameCoordinates ? GameUtils.ToUnityCoordinates(frame.Position) : frame.Position);
                 currentFrame++;
 
-                if (frame.Duration <= 0)
+                if (frame.Duration != null)
+                {
+                    yield return frame.Duration;
+                } else
                 {
                     break;
-                }
-                else
-                {
-                    int durationReal = GameManager.Instance.GetRealFrames(frame.Duration);
-
-                    if (durationReal == 1)
-                    {
-                        yield return null;
-                    }
-                    else
-                    {
-                        // Not sure if that unroll above optimize anything, but well
-                        for (int i = 0; i < durationReal; i++)
-                        {
-                            yield return null;
-                        }
-
-                    }
                 }
             }
 

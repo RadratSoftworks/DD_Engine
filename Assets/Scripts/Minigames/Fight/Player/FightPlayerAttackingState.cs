@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+
+using DDEngine.Utils;
 using DDEngine.Utils.FSM;
 
 namespace DDEngine.Minigame.Fight
@@ -21,13 +23,13 @@ namespace DDEngine.Minigame.Fight
 
         private FightPlayerController stateMachine;
 
-        private int framesCountTriggerDamage = -1;
-        private int frameTriggerDamage;
-        private int frameTriggerIntent;
+        private float timeCountTriggerDamage = -1.0f;
+        private float timeTriggerDamage;
+        private float timeTriggerIntent;
 
-        private int frameTriggerJabDamage;
-        private int frameTriggerPunchDamage;
-        private int frameTriggerStrongPunchDamage;
+        private float timeTriggerJabDamage;
+        private float timeTriggerPunchDamage;
+        private float timeTriggerStrongPunchDamage;
         private bool animationDone = false;
 
         private FightSoundMakerController soundMakerController;
@@ -58,9 +60,9 @@ namespace DDEngine.Minigame.Fight
             punchDamageCount = playerInfo.Punch.HitPower;
             strongPunchDamageCount = playerInfo.StrongPunch.HitPower;
 
-            frameTriggerJabDamage = playerInfo.Jab.HitTimes;
-            frameTriggerPunchDamage = playerInfo.Punch.HitTimes;
-            frameTriggerStrongPunchDamage = playerInfo.StrongPunch.HitTimes;
+            timeTriggerJabDamage = GameUtils.GetDurationFromFramesInSeconds(playerInfo.Jab.HitTimes);
+            timeTriggerPunchDamage = GameUtils.GetDurationFromFramesInSeconds(playerInfo.Punch.HitTimes);
+            timeTriggerStrongPunchDamage = GameUtils.GetDurationFromFramesInSeconds(playerInfo.StrongPunch.HitTimes);
         }
 
         private FightDirection AttackDirection => (currentAnim == jabAnim) ? FightDirection.Right : FightDirection.Left;
@@ -72,21 +74,21 @@ namespace DDEngine.Minigame.Fight
                 case FightPunchType.Jab:
                     currentAnim = jabAnim;
                     currentDamageCount = jabDamageCount;
-                    frameTriggerDamage = frameTriggerJabDamage;
+                    timeTriggerDamage = timeTriggerJabDamage;
 
                     break;
 
                 case FightPunchType.Punch:
                     currentAnim = punchAnim;
                     currentDamageCount = punchDamageCount;
-                    frameTriggerDamage = frameTriggerPunchDamage;
+                    timeTriggerDamage = timeTriggerPunchDamage;
 
                     break;
 
                 case FightPunchType.StrongPunch:
                     currentAnim = strongPunchAnim;
                     currentDamageCount = strongPunchDamageCount;
-                    frameTriggerDamage = frameTriggerStrongPunchDamage;
+                    timeTriggerDamage = timeTriggerStrongPunchDamage;
 
                     break;
 
@@ -94,9 +96,7 @@ namespace DDEngine.Minigame.Fight
                     break;
             }
 
-            frameTriggerDamage = GameManager.Instance.GetRealFrames(frameTriggerDamage);
-            frameTriggerIntent = GameManager.Instance.GetRealFrames(stateMachine.frameTriggerIntent);
-
+            timeTriggerIntent = stateMachine.timeTriggerIntent;
             currentAnim.Enable();
         }
 
@@ -109,7 +109,7 @@ namespace DDEngine.Minigame.Fight
         {
             punchType = FightPunchType.None;
             attackResult = FightAttackResult.None;
-            framesCountTriggerDamage = 0;
+            timeCountTriggerDamage = 0.0f;
             animationDone = false;
         }
 
@@ -144,7 +144,7 @@ namespace DDEngine.Minigame.Fight
 
         public void Update()
         {
-            if (framesCountTriggerDamage < 0)
+            if (timeCountTriggerDamage < 0.0f)
             {
                 if (animationDone && (attackResult != FightAttackResult.None))
                 {
@@ -160,18 +160,18 @@ namespace DDEngine.Minigame.Fight
 
                 return;
             }
-
-            framesCountTriggerDamage++;
-
-            if (framesCountTriggerDamage == frameTriggerIntent)
+            
+            if ((timeTriggerIntent > 0.0f) && (timeCountTriggerDamage >= timeTriggerIntent))
             {
                 stateMachine.directOpponent.GiveDataFrom(stateMachine, new FightAttackIntent()
                 {
                     Direction = AttackDirection
                 });
+
+                timeTriggerIntent = -1.0f;
             }
 
-            if (framesCountTriggerDamage == frameTriggerDamage)
+            if ((timeTriggerDamage > 0.0f) && (timeCountTriggerDamage >= timeTriggerDamage))
             {
                 stateMachine.directOpponent.GiveDataFrom(stateMachine, new FightDamage()
                 {
@@ -179,7 +179,12 @@ namespace DDEngine.Minigame.Fight
                     DamagePoint = currentDamageCount
                 });
 
-                framesCountTriggerDamage = -1;
+                timeCountTriggerDamage = -1.0f;
+            }
+
+            if (timeCountTriggerDamage >= 0.0f)
+            {
+                timeCountTriggerDamage += Time.deltaTime;
             }
         }
     }

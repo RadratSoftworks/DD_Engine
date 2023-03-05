@@ -36,6 +36,11 @@ namespace DDEngine.Utils
             return path.Replace("/", "_");
         }
 
+        public static float GetDurationFromFramesInSeconds(int gameFrames)
+        {
+            return (float)gameFrames / Constants.BaseGameFps;
+        }
+
         public static bool MakeChoice(int percentageIn100ToBeTrue)
         {
             int randResult = Random.Range(0, 100);

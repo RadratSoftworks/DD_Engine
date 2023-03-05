@@ -208,12 +208,11 @@ namespace DDEngine.Gadget
                 target = GameUtils.ToUnityCoordinates(target);
 
                 int duration = int.Parse(command.Arguments[3] as string);
-                duration = GameManager.Instance.GetRealFrames(duration);
 
                 GamePanController panController = gameObj.GetComponent<GamePanController>();
                 if (panController != null)
                 {
-                    panController.Pan(target, duration);
+                    panController.Pan(target, GameUtils.GetDurationFromFramesInSeconds(duration));
                 }
             }
         }
@@ -231,13 +230,13 @@ namespace DDEngine.Gadget
             if (gameObjectByLayer.TryGetValue(layer, out GameObject gameObj))
             {
                 int frames = int.Parse(command.Arguments[1] as string);
-                frames = GameManager.Instance.GetRealFrames(frames);
 
                 GameImageFadeController fadeController = gameObj.GetComponentInChildren<GameImageFadeController>();
 
                 if (fadeController != null)
                 {
-                    fadeController.Fade(isFadeIn ? GameImageFadeController.FadeType.In : GameImageFadeController.FadeType.Out, frames);
+                    fadeController.Fade(isFadeIn ? GameImageFadeController.FadeType.In : GameImageFadeController.FadeType.Out,
+                        GameUtils.GetDurationFromFramesInSeconds(frames));
                 }
             }
         }
@@ -256,13 +255,12 @@ namespace DDEngine.Gadget
             {
                 int targetAlpha = int.Parse(command.Arguments[1] as string);
                 int frames = int.Parse(command.Arguments[2] as string);
-                frames = GameManager.Instance.GetRealFrames(frames);
 
                 GameImageFadeController fadeController = gameObj.GetComponentInChildren<GameImageFadeController>();
 
                 if (fadeController != null)
                 {
-                    fadeController.Fade(GameImageFadeController.FadeType.ToValue, frames, targetAlpha);
+                    fadeController.Fade(GameImageFadeController.FadeType.ToValue, GameUtils.GetDurationFromFramesInSeconds(frames), targetAlpha);
                 }
             }
         }
@@ -387,7 +385,6 @@ namespace DDEngine.Gadget
                     case GadgetOpcode.Pause:
                         {
                             int frameToPause = int.Parse(command.Arguments[0] as string);
-                            frameToPause = GameManager.Instance.GetRealFrames(frameToPause);
 
                             if (frameToPause < 0)
                             {
@@ -403,7 +400,10 @@ namespace DDEngine.Gadget
                             }
                             else
                             {
-                                for (int i = 0; i < frameToPause; i++)
+                                float elapsed = 0.0f;
+                                float duration = GameUtils.GetDurationFromFramesInSeconds(frameToPause);
+
+                                while (elapsed < duration)
                                 {
                                     yield return null;
 
@@ -414,6 +414,8 @@ namespace DDEngine.Gadget
                                             break;
                                         }
                                     }
+
+                                    elapsed += Time.deltaTime;
                                 }
                             }
 

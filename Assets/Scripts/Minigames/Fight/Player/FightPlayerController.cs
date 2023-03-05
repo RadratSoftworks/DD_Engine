@@ -10,7 +10,7 @@ namespace DDEngine.Minigame.Fight
         public GameObject animationPrefabObject;
         public GameObject picturePrefabObject;
         public FightOpponentController directOpponent;
-        public int frameTriggerIntent = 3;
+        public float timeTriggerIntent = 0.1f;
 
         private bool continueTriggered = false;
 

@@ -84,7 +84,7 @@ namespace DDEngine.GUI
 
         public Vector3 CalculateActualScrollAmount(Vector2 scrollAmount, bool perFrameScroll = false)
         {
-            float scaleFactorFrame = perFrameScroll ? GameManager.Instance.FrameScale : 1;
+            float scaleFactorFrame = perFrameScroll ? (1.0f / Time.deltaTime) : 1.0f;
             return new Vector3((scroll.x / layerScrollFactor / scaleFactorFrame) * scrollAmount.x, (scroll.y / layerScrollFactor / scaleFactorFrame) * scrollAmount.y, 0.0f);
         }
 
@@ -249,7 +249,7 @@ namespace DDEngine.GUI
             destPoint.x = Mathf.Clamp(destPoint.x, controlSet.ViewSize.x - size.x - extraScrollDeltaFin, extraScrollDeltaFin);
             destPoint.y = Mathf.Clamp(destPoint.y, -extraScrollDeltaFin, size.y - controlSet.ViewSize.y + extraScrollDeltaFin);
 
-            Vector3 actualMoveAmount = (destPoint - basePoint) * (perFrameScroll ? GameManager.Instance.FrameScale : 1.0f);
+            Vector3 actualMoveAmount = (destPoint - basePoint) * (perFrameScroll ? (1.0f / Time.deltaTime) : 1.0f);
 
             if (scroll.x == 0)
             {

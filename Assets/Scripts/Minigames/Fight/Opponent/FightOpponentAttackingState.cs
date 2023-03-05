@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+
+using DDEngine.Utils;
 using DDEngine.Utils.FSM;
 
 namespace DDEngine.Minigame.Fight
@@ -9,8 +11,8 @@ namespace DDEngine.Minigame.Fight
         private SpriteAnimatorController punchFxAnim;
 
         private FightOpponentController stateMachine;
-        private int punchFrame;
-        private int currentFrame;
+        private float punchTime;
+        private float currentTime;
 
         private int pendingAnimation = 0;
 
@@ -28,7 +30,7 @@ namespace DDEngine.Minigame.Fight
             punchFxAnim = MinigameConstructUtils.InstantiateAndGet(stateMachine.animationPrefabObject, stateMachine.transform,
                 opponentInfo.PunchEffectAnimPath, Vector2.zero, FightOpponentConstants.OpponentHandFxDepth, allowLoop: false);
 
-            punchFrame = GameManager.Instance.GetRealFrames(opponentInfo.PunchHitTime);
+            punchTime = GameUtils.GetDurationFromFramesInSeconds(opponentInfo.PunchHitTime);
 
             punchAnim.Done += OnAnimationDone;
             punchFxAnim.Done += OnAnimationDone;
@@ -41,7 +43,7 @@ namespace DDEngine.Minigame.Fight
 
         public void Enter()
         {
-            currentFrame = 0;
+            currentTime = 0;
             pendingAnimation = 2;
 
             stateMachine.movingHands.SetActive(false);
@@ -91,12 +93,7 @@ namespace DDEngine.Minigame.Fight
 
         public void Update()
         {
-            if (currentFrame >= 0)
-            {
-                currentFrame++;
-            }
-
-            if (currentFrame >= punchFrame)
+            if (currentTime >= punchTime)
             {
                 // Deal damage to the opponent
                 stateMachine.directOpponent.GiveDataFrom(stateMachine, new FightDamage()
@@ -105,12 +102,17 @@ namespace DDEngine.Minigame.Fight
                     Direction = FightDirection.Left
                 });
 
-                currentFrame = -1;
+                currentTime = -1.0f;
             }
 
-            if ((currentFrame < 0) && (pendingAnimation == 0))
+            if ((currentTime < 0.0f) && (pendingAnimation == 0))
             {
                 stateMachine.Transition(FighterState.TotallyUndefended);
+            }
+
+            if (currentTime >= 0.0f)
+            {
+                currentTime += Time.deltaTime;
             }
         }
     }

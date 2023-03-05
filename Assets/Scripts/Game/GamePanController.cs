@@ -13,34 +13,37 @@ namespace DDEngine.Game
             return (relativeToTransform == null) ? transform.localPosition : (relativeToTransform.localPosition + transform.localPosition);
         }
 
-        private IEnumerator PanCoroutine(Vector2 targetPosition, int frames)
+        private IEnumerator PanCoroutine(Vector2 targetPosition, float duration)
         {
             Vector3 destDelta = (new Vector3(targetPosition.x, targetPosition.y, 0) - GetStartingPosition());
+            Vector3 source = transform.localPosition;
             Vector3 destLocal = transform.localPosition + destDelta;
-            Vector3 increasePerSe = destDelta / frames;
-            increasePerSe.z = 0.0f;
 
-            for (int i = 0; i < frames; i++)
+            float timePassed = 0.0f;
+
+            while (timePassed < duration)
             {
-                transform.localPosition += increasePerSe;
+                transform.localPosition = Vector3.Lerp(source, destLocal, timePassed / duration);
+                
                 yield return null;
+                timePassed += Time.deltaTime;
             }
 
             transform.localPosition = destLocal;
             yield break;
         }
 
-        public void Pan(Vector2 targetPosition, int frames)
+        public void Pan(Vector2 targetPosition, float duration)
         {
             StopAllCoroutines();
 
-            if (frames == 0)
+            if (duration <= 0.0f)
             {
                 transform.localPosition = targetPosition;
                 return;
             }
 
-            StartCoroutine(PanCoroutine(targetPosition, frames));
+            StartCoroutine(PanCoroutine(targetPosition, duration));
         }
     }
 }

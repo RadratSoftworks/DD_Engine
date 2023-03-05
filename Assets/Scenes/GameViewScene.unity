@@ -1580,7 +1580,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MovementRange: 82
+  m_DynamicOriginRange: 100
   m_ControlPath: <Gamepad>/leftStick
+  m_Behaviour: 0
+  m_UseIsolatedInputActions: 0
+  m_PointerDownAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  m_PointerMoveAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
 --- !u!114 &639840650
 MonoBehaviour:
   m_ObjectHideFlags: 0

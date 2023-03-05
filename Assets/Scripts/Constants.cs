@@ -15,7 +15,7 @@ namespace DDEngine
         public const string OnFocusScriptEventName = "onFocus";
         public const int SoundFrequency = 11025;
         public const int SoundChannelCount = 1;
-        public const int BaseGameFps = 30;
+        public const int BaseGameFps = 31;
 
         public const string TextBalloonObjectName = "TextBalloon";
         public const string IconLayer = "Icon";
