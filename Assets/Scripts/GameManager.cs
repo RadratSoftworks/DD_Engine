@@ -209,8 +209,11 @@ namespace DDEngine
             gadgets.Pop();
 
             GameObject.Destroy(activeGadget.Object);
+            if (activeGadget.InDialogue)
+            {
+                HideGadgetRelatedObjects();
+            }
 
-            HideGadgetRelatedObjects();
             activeGadget = (gadgets.Count == 0) ? null : gadgets.Peek();
 
             if (activeGadget == null)

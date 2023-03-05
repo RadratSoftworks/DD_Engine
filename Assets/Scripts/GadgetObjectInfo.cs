@@ -12,5 +12,7 @@ namespace DDEngine
 
         [System.NonSerialized]
         public GameObject Object;
+
+        public bool InDialogue => Id >= 0;
     }
 }
