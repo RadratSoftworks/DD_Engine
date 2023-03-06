@@ -68,6 +68,10 @@ MonoBehaviour:
     m_Localized: Press the "Continue" button below to go back to the install screen.
     m_Metadata:
       m_Items: []
+  - m_Id: 3525773070077952
+    m_Localized: About
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

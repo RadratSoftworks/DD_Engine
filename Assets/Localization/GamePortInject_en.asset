@@ -10,30 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
-  m_Name: GameLauncher_en
+  m_Name: GamePortInject_en
   m_EditorClassIdentifier: 
   m_LocaleId:
     m_Code: en
-  m_SharedData: {fileID: 11400000, guid: 333ba7e8cd207a64d84ed970a8e57e0b, type: 2}
+  m_SharedData: {fileID: 11400000, guid: 7f855b10e8b55244e820b026709729ce, type: 2}
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 15862525952
-    m_Localized: 'The original copyright holder of the game and its assets is Nokia
-      Corporation.
-
-
-      EKA2L1 icon designed and drawn by dmolina007 & Frenesi.
-
-
-      Thanks
-      to these testers for testing the initial version:
-
-      - Mr.Phape16
-
-
-      (C)
-      2023- EKA2L1 Project'
+  - m_Id: 6105239552
+    m_Localized: Thanks to these testers for testing the initial version:<br>-Mr.Phape16<br>(C)
+      2023- EKA2L1 Project
     m_Metadata:
       m_Items: []
   references:

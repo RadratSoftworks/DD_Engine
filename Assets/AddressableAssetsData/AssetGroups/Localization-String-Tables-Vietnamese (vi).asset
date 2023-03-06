@@ -29,6 +29,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-vi
     - Preload
+  - m_GUID: 3cff868167bc45f41b7588d0e3926242
+    m_Address: GamePortInject_vi
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-vi
+    - Preload
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: cffac7e2df42f5c429ca3f1c252482c0, type: 2}
   m_SchemaSet:

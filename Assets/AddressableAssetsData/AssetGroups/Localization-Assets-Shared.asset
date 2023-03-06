@@ -25,6 +25,10 @@ MonoBehaviour:
     m_Address: Assets/Localization/GameLauncher Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
+  - m_GUID: 7f855b10e8b55244e820b026709729ce
+    m_Address: Assets/Localization/GamePortInject Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: cffac7e2df42f5c429ca3f1c252482c0, type: 2}
   m_SchemaSet:
