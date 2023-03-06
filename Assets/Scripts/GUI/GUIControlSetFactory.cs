@@ -374,9 +374,7 @@ namespace DDEngine.GUI
 
         private GUIControlSet LoadControlSet(Stream stream, Vector2 viewResolution, GUIControlSetInstantiateOptions options, string path = null)
         {
-            var controlDesc = new GUIControlDescriptionFile(stream);
-            controlDesc.Filename = path;
-
+            var controlDesc = new GUIControlDescriptionFile(stream, path);
             var controlSet = new GUIControlSet(container, controlDesc, viewResolution, options);
 
             if (!options.DestroyWhenDisabled)

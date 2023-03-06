@@ -14,6 +14,11 @@ namespace DDEngine.GUI.Parser
         public List<Tuple<string, string>> ValuesAndValueTextIds = new List<Tuple<string, string>>();
         public string FocusIdleAnimationPath { get; set; }
 
+        public GUIControlSettingMultiValuesOptionDescription()
+        {
+
+        }
+
         public GUIControlSettingMultiValuesOptionDescription(BinaryReader2 reader)
         {
             Internalize(reader);

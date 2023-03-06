@@ -14,12 +14,12 @@ namespace DDEngine.GUI.Parser
 
         public List<GUIControlDescription> Layers => layers;
 
-        public GUIControlLocationDescription(GUIControlDescription parent, BinaryReader2 reader)
+        public GUIControlLocationDescription(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
-            Internalize(parent, reader);
+            Internalize(parent, injectors, reader);
         }
 
-        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        private void Internalize(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
             float x = reader.ReadInt16BE();
             float y = reader.ReadInt16BE();
@@ -29,7 +29,7 @@ namespace DDEngine.GUI.Parser
             Depth = reader.ReadInt16BE();
             Name = reader.ReadWordLengthString();
 
-            layers = GUIControlListReader.InternalizeControls(this, reader);
+            layers = GUIControlListReader.InternalizeControls(this, reader, injectors);
         }
     }
 }

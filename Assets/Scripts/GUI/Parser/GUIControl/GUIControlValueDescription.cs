@@ -11,15 +11,15 @@ namespace DDEngine.GUI.Parser
 
         public List<GUIControlDescription> ControlsOnExactValueMatch => controlsOnExactValueMatch;
 
-        public GUIControlValueDescription(GUIControlDescription parent, BinaryReader2 reader)
+        public GUIControlValueDescription(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
-            Internalize(parent, reader);
+            Internalize(parent, injectors, reader);
         }
 
-        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        private void Internalize(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
             ExactValue = reader.ReadWordLengthString();
-            controlsOnExactValueMatch = GUIControlListReader.InternalizeControls(parent, reader);
+            controlsOnExactValueMatch = GUIControlListReader.InternalizeControls(parent, reader, injectors);
         }
     }
 }

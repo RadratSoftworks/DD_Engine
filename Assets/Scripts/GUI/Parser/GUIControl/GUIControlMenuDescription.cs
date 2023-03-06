@@ -18,12 +18,12 @@ namespace DDEngine.GUI.Parser
 
         public List<GUIControlDescription> MenuItemControls => menuItemControls;
 
-        public GUIControlMenuDescription(GUIControlDescription parent, BinaryReader2 reader)
+        public GUIControlMenuDescription(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
-            Internalize(parent, reader);
+            Internalize(parent, injectors, reader);
         }
 
-        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        private void Internalize(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
             float x = reader.ReadInt16BE();
             float y = reader.ReadInt16BE();
@@ -34,7 +34,12 @@ namespace DDEngine.GUI.Parser
             SideImagePath = reader.ReadWordLengthString();
             ActionHandlerFilePath = reader.ReadWordLengthString();
 
-            menuItemControls = GUIControlListReader.InternalizeControls(this, reader, new List<GUIControlID> { GUIControlID.MenuItem, GUIControlID.SettingMultiValuesOption });
+            menuItemControls = GUIControlListReader.InternalizeControls(this, reader, injectors, new List<GUIControlID> { GUIControlID.MenuItem, GUIControlID.SettingMultiValuesOption });
+
+            foreach (var injector in injectors)
+            {
+                injector.CallInjectorFunction(GUIControlID.Menu, this);
+            }
         }
     }
 }

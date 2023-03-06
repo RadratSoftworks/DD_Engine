@@ -16,6 +16,10 @@ namespace DDEngine.GUI.Parser
             Internalize(parent, reader);
         }
 
+        public GUIControlMenuItemDescription()
+        {
+        }
+
         private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
         {
             int x = reader.ReadInt16BE();

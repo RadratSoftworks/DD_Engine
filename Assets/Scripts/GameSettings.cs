@@ -13,6 +13,7 @@ namespace DDEngine
         private const string TextSpeedKey = "TextSpeed";
         private const string GameStartLocationKey = "GameStartLocation";
         private const string GameCompletedKey = "GameCompleted";
+        private const string FpsKey = "Fps";
         private const string GameCompletedCompatKey = "completed_game";
         private const string VibraKey = "vibra";
         private const int defaultCachedChangeDelta = 10;
@@ -186,9 +187,28 @@ namespace DDEngine
             }
         }
 
+        private static int GetDefaultFpsValue()
+        {
+#if UNITY_ANDROID
+            return 60;
+#else
+            return 0;
+#endif
+        }
+
         public static void RestoreSettings()
         {
             AudioListener.volume = PlayerPrefs.GetFloat(GameVolumeKey, 1.0f);
+            int fpsValue = PlayerPrefs.GetInt(FpsKey, GetDefaultFpsValue());
+
+            if (fpsValue <= 0)
+            {
+                QualitySettings.vSyncCount = 1;
+            } else
+            {
+                Application.targetFrameRate = fpsValue;
+                QualitySettings.vSyncCount = 0;
+            }
         }
 
         public static void Reset()
@@ -217,6 +237,24 @@ namespace DDEngine
         {
             switch (key)
             {
+                case "fps":
+                    {
+                        if (QualitySettings.vSyncCount >= 1)
+                        {
+                            return "0";
+                        }
+                        else
+                        {
+                            if (Application.targetFrameRate >= 60)
+                            {
+                                return "60";
+                            } else
+                            {
+                                return "30";
+                            }
+                        }
+                    }
+
                 case "audio":
                     {
                         int val = Mathf.Clamp((int)(AudioListener.volume * 10), 0, 10);
@@ -267,6 +305,34 @@ namespace DDEngine
         {
             switch (key)
             {
+                case "fps":
+                    {
+                        int setValue = 30;
+                        if (value == "0")
+                        {
+                            QualitySettings.vSyncCount = 1;
+                            Application.targetFrameRate = -1;
+
+                            setValue = 0;
+                        } else
+                        {
+                            QualitySettings.vSyncCount = 0;
+
+                            if (value == "30")
+                            {
+                                Application.targetFrameRate = 30;
+                            } else
+                            {
+                                Application.targetFrameRate = 60;
+                            }
+
+                            setValue = Application.targetFrameRate;
+                        }
+
+                        PlayerPrefs.SetInt(FpsKey, setValue);
+                        break;
+                    }
+
                 case "audio":
                     {
                         if (value == "off")

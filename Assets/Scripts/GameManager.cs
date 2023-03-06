@@ -16,6 +16,7 @@ using DDEngine.Gadget;
 using DDEngine.Game;
 using DDEngine.Minigame;
 using DDEngine.GUI;
+using DDEngine.GUI.Injection;
 using DDEngine.Utils;
 
 namespace DDEngine
@@ -101,10 +102,9 @@ namespace DDEngine
             dialogueChoicesController.Setup(Constants.CanvasSize);
 
             dialogueChoicesController.ChoiceConfirmed += OnChoiceConfirmed;
-
             defaultActionInterpreter = new ActionInterpreter();
 
-            QualitySettings.vSyncCount = 1;
+            InjectorRegister.Run();
             ResourceManager.Instance.OnResourcesReady += OnResourcesReady;
 
             // Add save exists variable to global values

@@ -9,7 +9,7 @@ namespace DDEngine.GUI
 {
     public class GUIControlListReader
     {
-        public static List<GUIControlDescription> InternalizeControls(GUIControlDescription parent, BinaryReader2 reader, List<GUIControlID> acceptableID = null)
+        public static List<GUIControlDescription> InternalizeControls(GUIControlDescription parent, BinaryReader2 reader, List<Injection.Injector> injectors, List<GUIControlID> acceptableID = null)
         {
             List<GUIControlDescription> controls = new List<GUIControlDescription>();
 
@@ -40,15 +40,15 @@ namespace DDEngine.GUI
                 switch (controlID)
                 {
                     case GUIControlID.Condition:
-                        controls.Add(new GUIControlConditionalDescription(parent, reader));
+                        controls.Add(new GUIControlConditionalDescription(parent, injectors, reader));
                         break;
 
                     case GUIControlID.Value:
-                        controls.Add(new GUIControlValueDescription(parent, reader));
+                        controls.Add(new GUIControlValueDescription(parent, injectors, reader));
                         break;
 
                     case GUIControlID.Menu:
-                        controls.Add(new GUIControlMenuDescription(parent, reader));
+                        controls.Add(new GUIControlMenuDescription(parent, injectors, reader));
                         break;
 
                     case GUIControlID.MenuItem:
@@ -76,11 +76,11 @@ namespace DDEngine.GUI
                         break;
 
                     case GUIControlID.Layer:
-                        controls.Add(new GUIControlLayerDescription(parent, reader));
+                        controls.Add(new GUIControlLayerDescription(parent, injectors, reader));
                         break;
 
                     case GUIControlID.Location:
-                        controls.Add(new GUIControlLocationDescription(parent, reader));
+                        controls.Add(new GUIControlLocationDescription(parent, injectors, reader));
                         break;
 
                     case GUIControlID.Active:

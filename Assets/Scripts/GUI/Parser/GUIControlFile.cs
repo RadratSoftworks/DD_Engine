@@ -24,8 +24,9 @@ namespace DDEngine.GUI
             }
         }
 
-        public GUIControlDescriptionFile(Stream baseStream)
+        public GUIControlDescriptionFile(Stream baseStream, string fileName)
         {
+            Filename = fileName;
             Internalize(baseStream);
         }
 
@@ -47,7 +48,9 @@ namespace DDEngine.GUI
                 fileStream.Seek(13, SeekOrigin.Begin);
                 Saveable = (fileStream.ReadByte() != 0);
 
-                controlSetRoot = new GUIControlSetDescription(null, fileBinaryReader);
+                List<Injection.Injector> injectors = Injection.Injector.GetInjectorsFor(Filename);
+
+                controlSetRoot = new GUIControlSetDescription(null, injectors, fileBinaryReader);
                 GUIDescriptionDepthNormalizer.Normalize(controlSetRoot);
             }
         }

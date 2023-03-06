@@ -15,12 +15,12 @@ namespace DDEngine.GUI.Parser
 
         public List<GUIControlDescription> Controls => controls;
 
-        public GUIControlLayerDescription(GUIControlDescription parent, BinaryReader2 reader)
+        public GUIControlLayerDescription(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
-            Internalize(parent, reader);
+            Internalize(parent, injectors, reader);
         }
 
-        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        private void Internalize(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
             float x = reader.ReadInt16BE();
             float y = reader.ReadInt16BE();
@@ -39,7 +39,12 @@ namespace DDEngine.GUI.Parser
             Scroll = new Vector2(scrollX, scrollY);
             DefinesPan = (reader.ReadByte() == 1);
 
-            controls = GUIControlListReader.InternalizeControls(this, reader);
+            controls = GUIControlListReader.InternalizeControls(this, reader, injectors);
+
+            foreach (var injector in injectors)
+            {
+                injector.CallInjectorFunction(GUIControlID.Layer, this);
+            }
         }
     }
 }

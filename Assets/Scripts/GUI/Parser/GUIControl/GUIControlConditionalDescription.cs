@@ -13,19 +13,19 @@ namespace DDEngine.GUI.Parser
         public String ConditionValueVariable => conditionValueVariable;
         public List<Tuple<string, List<GUIControlDescription>>> ControlShowOnCases => controlOnCases;
 
-        public GUIControlConditionalDescription(GUIControlDescription parent, BinaryReader2 reader)
+        public GUIControlConditionalDescription(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
-            Internalize(parent, reader);
+            Internalize(parent, injectors, reader);
         }
 
-        private void Internalize(GUIControlDescription parent, BinaryReader2 reader)
+        private void Internalize(GUIControlDescription parent, List<Injection.Injector> injectors, BinaryReader2 reader)
         {
             conditionValueVariable = reader.ReadWordLengthString();
             Depth = int.MaxValue;
 
             unk0 = (reader.ReadByte() != 0);
 
-            List<GUIControlDescription> condValuesWithCases = GUIControlListReader.InternalizeControls(parent, reader);
+            List<GUIControlDescription> condValuesWithCases = GUIControlListReader.InternalizeControls(parent, reader, injectors);
 
             foreach (GUIControlDescription control in condValuesWithCases)
             {
