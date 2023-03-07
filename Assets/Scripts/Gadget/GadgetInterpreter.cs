@@ -51,21 +51,20 @@ namespace DDEngine.Gadget
                     if (existingController != null)
                     {
                         existingController.SetSortOrderUnity(parent.GetSortingOrder(layer));
-                        existingController.Restart(position);
                     }
-
+                    existingObject.transform.localPosition = GameUtils.ToUnityCoordinates(position);
                     return;
                 }
             }
 
             GameObject animObject = GameObject.Instantiate(GameManager.Instance.gameAnimationPrefabObject, parent.gameObject.transform, false);
             animObject.name = animFileName;
-            animObject.transform.localPosition = Vector2.zero;
+            animObject.transform.localPosition = GameUtils.ToUnityCoordinates(position);
 
             SpriteAnimatorController controller = animObject.GetComponentInChildren<SpriteAnimatorController>();
             if (controller != null)
             {
-                controller.Setup(position, parent.GetSortingOrder(layer), animFileName, isSortOrderUnity: true);
+                controller.Setup(Vector2.zero, parent.GetSortingOrder(layer), animFileName, isSortOrderUnity: true);
             }
 
             if (existingObject)
