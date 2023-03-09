@@ -9,6 +9,9 @@
         public static readonly string IntroLocalizedResourceFileName = "startup_loc-{0}.opes";
         public static readonly string ProtectedLocalizationResourceFileName = "protected_loc-{0}.opes";
 
+        public static readonly string GeneralDemoResourceFilename = "demo_general.bytes";
+        public static readonly string LocalizationDemoResourceFilename = "demo_loc-{0}.bytes";
+
         // Animations
         public static readonly string MenuLensFlareAnimaionFilename = "animations/Menu_lensflare.anim";
         public static readonly string[] ArrowAnimationsPath =

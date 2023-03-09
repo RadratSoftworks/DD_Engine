@@ -13,19 +13,19 @@ namespace DDEngine
         private static readonly int ResourceInfoBinarySize = 112;
 
         private String filename;
-        private ProtectedFilePatcher filePatcher;
+        private FileSystem fileSystem;
         private Dictionary<string, ResourceInfo> resourcesList;
 
         public Dictionary<string, ResourceInfo> Resources => resourcesList;
 
-        public ResourceFile(ProtectedFilePatcher filePatcher, string filename)
+        public ResourceFile(FileSystem fileSystem, string filename)
         {
             this.filename = filename;
-            this.filePatcher = filePatcher;
+            this.fileSystem = fileSystem;
 
             resourcesList = new Dictionary<string, ResourceInfo>(StringComparer.OrdinalIgnoreCase);
 
-            using (var fileStream = filePatcher.OpenFile(filename))
+            using (var fileStream = fileSystem.OpenFile(filename))
             {
                 using (var fileBinaryReader = new BinaryReader2(fileStream))
                 {
@@ -81,7 +81,7 @@ namespace DDEngine
 
         public byte[] ReadResourceData(ResourceInfo info)
         {
-            using (var fileStream = filePatcher.OpenFile(filename))
+            using (var fileStream = fileSystem.OpenFile(filename))
             {
                 using (var fileBinaryReader = new BinaryReader2(fileStream))
                 {

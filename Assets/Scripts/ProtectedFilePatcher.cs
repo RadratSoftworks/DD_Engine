@@ -10,8 +10,9 @@ using Newtonsoft.Json;
 
 namespace DDEngine
 {
-    public class ProtectedFilePatcher
+    public class ProtectedFilePatcher : FileSystem
     {
+        private string GameDataPath => Application.persistentDataPath;
         private List<ProtectedFilePatches> filePatches = new List<ProtectedFilePatches>();
 
         private class ProtectedFilePatchesList
@@ -38,10 +39,17 @@ namespace DDEngine
             filePatches = filePatchesClass.files;
         }
 
+        private string GetFilePathFull(string pathRel)
+        {
+            return System.IO.Path.Join(GameDataPath, pathRel);
+        }
+
         public Stream OpenFile(string path)
         {
+            path = GetFilePathFull(path);
+
             // This is fine I think. Not too many resource pack file to be using Dictionary
-            var filenameOnly = Path.GetFileName(path);
+            var filenameOnly = System.IO.Path.GetFileName(path);
             var filePatch = filePatches.Find(file => file.FileName.Equals(filenameOnly, StringComparison.OrdinalIgnoreCase));
             if (filePatch == null)
             {
@@ -81,6 +89,11 @@ namespace DDEngine
                     return new MemoryStream(rawBytes);
                 }
             }
+        }
+
+        public bool Exists(string path)
+        {
+            return File.Exists(GetFilePathFull(path));
         }
     }
 }

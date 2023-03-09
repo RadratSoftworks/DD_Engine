@@ -9,35 +9,40 @@ using TMPro;
 
 namespace DDEngine
 {
-    public class ResourceManager : MonoBehaviour
+    public abstract class ResourceManager : MonoBehaviour
     {
-        public string GameDataPath => Application.persistentDataPath;
-
-        private ResourceFile generalResources;
-        private ResourceFile localizationResources;
-        private ResourceFile introResources;
-        private ResourceFile introLocalizationResources;
-        private ResourceFile protectedGeneralResources;
-        private ResourceFile protectedLocalizationResources;
-        private ProtectedFilePatcher filePatcher;
+        public static ResourceManager Instance;
 
         private List<GameLanguage> supportedGameLanguages = new List<GameLanguage>();
 
         public delegate void ResourcesReady();
         public event ResourcesReady OnResourcesReady;
 
-        public ResourceFile GeneralResources => generalResources;
-        public ResourceFile LocalizationResources => localizationResources;
-        public ResourceFile IntroResources => introResources;
-        public ResourceFile ProtectedGeneralResources => protectedGeneralResources;
-        public ResourceFile ProtectedLocalizationResources => protectedLocalizationResources;
+        [SerializeField]
+        protected TMP_FontAsset EnglishFontAsset;
 
-        public static ResourceManager Instance;
+        [SerializeField]
+        protected TMP_FontAsset SimplifiedChineseFontAsset;
 
-        public TMP_FontAsset EnglishFontAsset;
-        public TMP_FontAsset SimplifiedChineseFontAsset;
+        public abstract ResourceFile GeneralResources { get; }
+        public abstract ResourceFile LocalizationResources { get; }
+        public abstract ResourceFile ProtectedGeneralResources { get; }
+        public abstract ResourceFile ProtectedLocalizationResources { get; }
 
-        private void QueryAllSupportedLocalizationPack()
+        public abstract ResourceFile PickBestResourcePackForFile(string filepath);
+        public abstract void UpdateLanguagePack();
+
+        protected void FireResourceReady()
+        {
+            OnResourcesReady?.Invoke();
+        }
+
+        protected static string GetLanguageCodeForLocalization()
+        {
+            return Constants.GameLanguageToResourceLanguageCodeDict[GameSettings.GameLanguage];
+        }
+
+        protected void QueryAllSupportedLocalizationPack(string baseLocalizationPathFormat, string protectedBaseLocalizationPathFormat = null)
         {
             foreach (GameLanguage language in Enum.GetValues(typeof(GameLanguage)))
             {
@@ -46,9 +51,9 @@ namespace DDEngine
                     continue;
                 }
                 string langCode = Constants.GameLanguageToResourceLanguageCodeDict[language];
-                if (File.Exists(Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, langCode))))
+                if (File.Exists(string.Format(baseLocalizationPathFormat, langCode)))
                 {
-                    if (File.Exists(Path.Join(GameDataPath, string.Format(FilePaths.ProtectedLocalizationResourceFileName, langCode))))
+                    if ((protectedBaseLocalizationPathFormat == null) || ((protectedBaseLocalizationPathFormat != null) && File.Exists(string.Format(baseLocalizationPathFormat, langCode))))
                     {
                         supportedGameLanguages.Add(language);
                     }
@@ -59,45 +64,6 @@ namespace DDEngine
             {
                 GameSettings.GameLanguage = GameLanguage.English;
             }
-        }
-
-        private string GetLanguageCodeForLocalization()
-        {
-            return Constants.GameLanguageToResourceLanguageCodeDict[GameSettings.GameLanguage];
-        }
-
-        public ResourceFile PickBestResourcePackForFile(string filepath)
-        {
-            bool langFile = (Path.GetExtension(filepath) == ".lang");
-
-            // DRM-protected, so in another file
-            if (filepath.StartsWith("chapters/chapter2"))
-            {
-                if (langFile)
-                {
-                    return protectedLocalizationResources;
-                }
-
-                return ProtectedGeneralResources;
-            }
-
-            if (filepath.StartsWith("intro", StringComparison.OrdinalIgnoreCase) ||
-                filepath.Contains("game_intro", StringComparison.OrdinalIgnoreCase))
-            {
-                if (langFile)
-                {
-                    return introLocalizationResources;
-                }
-
-                return introResources;
-            }
-
-            if (langFile)
-            {
-                return localizationResources;
-            }
-
-            return generalResources;
         }
 
         private TMP_FontAsset GetFontAssetForLanguage(GameLanguage language)
@@ -111,6 +77,7 @@ namespace DDEngine
                     return EnglishFontAsset;
             }
         }
+
         public TMP_FontAsset GetFontAssetForStagingLanguageText()
         {
             return GetFontAssetForLanguage((GameSettings.StagingGameLanguage == GameLanguage.Undefined) ?
@@ -122,41 +89,9 @@ namespace DDEngine
             return GetFontAssetForLanguage(GameSettings.GameLanguage);
         }
 
-        public void UpdateLanguagePack()
-        {
-            localizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, GetLanguageCodeForLocalization())));
-            protectedLocalizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.ProtectedLocalizationResourceFileName, GetLanguageCodeForLocalization())));
-        }
-
-        private IEnumerator LoadDataCoroutine()
-        {
-            generalResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.GeneralResourceFileName));
-            yield return null;
-            introResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.IntroResourceFileName));
-            yield return null;
-            introLocalizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.IntroLocalizedResourceFileName, GetLanguageCodeForLocalization())));
-            yield return null;
-            protectedGeneralResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, FilePaths.ProtectedGeneralResourceFileName));
-            yield return null;
-            localizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.LocalizationResourceFileName, GetLanguageCodeForLocalization())));
-            yield return null;
-            protectedLocalizationResources = new ResourceFile(filePatcher, Path.Join(GameDataPath, string.Format(FilePaths.ProtectedLocalizationResourceFileName, GetLanguageCodeForLocalization())));
-            yield return null;
-            OnResourcesReady();
-            yield break;
-        }
-
         private void Awake()
         {
             Instance = this;
-        }
-
-        void Start()
-        {
-            filePatcher = new ProtectedFilePatcher();
-
-            QueryAllSupportedLocalizationPack();
-            StartCoroutine(LoadDataCoroutine());
         }
     }
 }
