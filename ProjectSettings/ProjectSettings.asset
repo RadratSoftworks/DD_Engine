@@ -674,16 +674,20 @@ PlayerSettings:
   webGLTemplate: APPLICATION:Default
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
-  webGLCompressionFormat: 0
+  webGLCompressionFormat: 1
   webGLWasmArithmeticExceptions: 0
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
-  webGLDecompressionFallback: 0
+  webGLDecompressionFallback: 1
   webGLPowerPreference: 2
   scriptingDefineSymbols:
     Android: UNITASK_DOTWEEN_SUPPORT
     Standalone: UNITASK_DOTWEEN_SUPPORT
-  additionalCompilerArguments: {}
+    WebGL: UNITASK_DOTWEEN_SUPPORT;DD1_DEMO_BUILD
+  additionalCompilerArguments:
+    WebGL:
+    - 
+    - 
   platformArchitecture: {}
   scriptingBackend:
     Android: 1
