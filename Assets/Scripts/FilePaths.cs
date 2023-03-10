@@ -9,24 +9,25 @@
         public static readonly string IntroLocalizedResourceFileName = "startup_loc-{0}.opes";
         public static readonly string ProtectedLocalizationResourceFileName = "protected_loc-{0}.opes";
 
-        public static readonly string GeneralDemoResourceFilename = "demo_general.bytes";
-        public static readonly string LocalizationDemoResourceFilename = "demo_loc-{0}.bytes";
+        public static readonly string GeneralDemoResourceFilename = "demo_general";
+        public static readonly string LocalizationDemoResourceFilename = "demo_loc-{0}";
 
         // Animations
         public static readonly string MenuLensFlareAnimaionFilename = "animations/Menu_lensflare.anim";
         public static readonly string[] ArrowAnimationsPath =
         {
-        "animations/arrow0.anim",
-        "animations/arrow1.anim",
-        "animations/arrow2.anim",
-        "animations/arrow3.anim"
-    };
+            "animations/arrow0.anim",
+            "animations/arrow1.anim",
+            "animations/arrow2.anim",
+            "animations/arrow3.anim"
+        };
 
         // GUI
         //public static readonly string MainChapterGUIControlFileName = "ch2/locations/Corridor.fwd";
         public static readonly string MainChapterGUIControlFileName = "chapters/main.fwd";
         public static readonly string IntroMenuGadgetScript = "intro/splash.gdg";
         public static readonly string IntroGameGadgetScript = "intro/splashStartGame.gdg";
+        public static readonly string DemoDialoguePath = "demo/dialogues/intro.dia";
 
         // Sound
         public static readonly string MenuOptionClickSFXFileName = "sound/menu_click_bullet";

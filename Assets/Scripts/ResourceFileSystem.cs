@@ -12,7 +12,7 @@ namespace DDEngine
 
         private string GetFullResourcePath(string path)
         {
-            return Path.Join("Resources/", path);
+            return Path.Join("Demo/", path);
         }
 
         public bool Exists(string path)

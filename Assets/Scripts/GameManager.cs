@@ -19,6 +19,10 @@ using DDEngine.GUI;
 using DDEngine.GUI.Injection;
 using DDEngine.Utils;
 
+#if DD1_DEMO_BUILD
+using UnityEngine.SceneManagement;
+#endif
+
 namespace DDEngine
 {
     public class GameManager : MonoBehaviour
@@ -119,6 +123,11 @@ namespace DDEngine
             SetupMenuTrigger();
         }
 
+        private void OnDestroy()
+        {
+            ActionInterpreter.ClearState();
+        }
+
         private void SetupMenuTrigger()
         {
             // Hook with menu trigger
@@ -188,7 +197,6 @@ namespace DDEngine
                 }
 
                 dialogueAudioController.StopAll();
-                defaultActionInterpreter.ClearState();
                 activeGUI = null;
 
                 // NOTE: Do not save here
@@ -293,7 +301,6 @@ namespace DDEngine
                 }
 
                 activeGUI.Disable();
-                defaultActionInterpreter.ClearState();
             }
 
             dialogueAudioController.StopAll();
@@ -339,6 +346,9 @@ namespace DDEngine
 
         public void OnResourcesReady()
         {
+#if DD1_DEMO_BUILD
+            LoadDialogue(FilePaths.DemoDialoguePath);
+#else
             if ((GameSettings.StartLocation == GameStartLocation.Menu) || !SaveAvailable)
             {
                 LoadGadget(FilePaths.IntroMenuGadgetScript);
@@ -347,6 +357,7 @@ namespace DDEngine
             {
                 LoadGadget(FilePaths.IntroGameGadgetScript);
             }
+#endif
         }
 
         private void LoadGadgetScriptBlock(GameDialogue parent, string name, ScriptBlock<GadgetOpcode> scriptBlock, int scriptId = -1)
@@ -458,6 +469,14 @@ namespace DDEngine
 
         public void LoadControlSet(string filename)
         {
+#if DD1_DEMO_BUILD
+            // Load to another screen
+            if (!filename.StartsWith("demo"))
+            {
+                SceneManager.LoadScene(Scenes.PlaySceneIndex);
+                return;
+            }
+#endif
             GUIControlSet set = GUIControlSetFactory.Instance.LoadControlSet(filename, Constants.CanvasSize, new GUIControlSetInstantiateOptions());
             if (set != null)
             {

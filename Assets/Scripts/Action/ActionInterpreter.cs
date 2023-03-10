@@ -21,12 +21,12 @@ namespace DDEngine.Action
         };
 
         private static Dictionary<string, string> globalScriptValues = new Dictionary<string, string>();
+        private static Dictionary<string, TimerInfo> timers = new Dictionary<string, TimerInfo>();
 
         public delegate void OnVariableChanged(List<string> nameChanged);
         public event OnVariableChanged VariableChanged;
 
         private List<string> variableChangedReportList = new List<string>();
-        private Dictionary<string, TimerInfo> timers = new Dictionary<string, TimerInfo>();
 
         public static Dictionary<string, string> GlobalScriptValues => globalScriptValues;
 
@@ -34,7 +34,7 @@ namespace DDEngine.Action
         {
         }
 
-        public void ClearState()
+        public static void ClearState()
         {
             foreach (var pendingTimer in timers)
             {
@@ -42,6 +42,7 @@ namespace DDEngine.Action
             }
 
             timers.Clear();
+            globalScriptValues.Clear();
         }
 
         private IEnumerator TimerCoroutine(string name, int frames, string script)

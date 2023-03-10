@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DDEngine.Utils;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace DDEngine
@@ -13,6 +14,9 @@ namespace DDEngine
 
         [SerializeField]
         private GameObject menuTriggerButton;
+
+        [SerializeField]
+        private GameObject mainScreenControlContainer;
 
         public static GameInputManager Instance;
         private PlayerInput playerInput;
@@ -47,6 +51,11 @@ namespace DDEngine
             playerInput = GetComponent<PlayerInput>();
 
             InitializeActionMapFromActionSet(playerInput.actions);
+
+            if (!PlatformUtils.IsMobile())
+            {
+                mainScreenControlContainer.SetActive(false);
+            }
         }
 
         private void InitializeActionMapFromActionSet(InputActionAsset assets)

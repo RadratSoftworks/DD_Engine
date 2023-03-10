@@ -61,6 +61,9 @@ namespace DDEngine
         {
             get
             {
+#if DD1_DEMO_BUILD
+                return GetDefaultSystemLanguage();
+#else
                 if (cachedLanguage != GameLanguage.Undefined)
                 {
                     return cachedLanguage;
@@ -74,6 +77,7 @@ namespace DDEngine
                 }
 
                 return cachedLanguage;
+#endif
             }
             set
             {
@@ -189,7 +193,7 @@ namespace DDEngine
 
         private static int GetDefaultFpsValue()
         {
-#if UNITY_ANDROID
+#if UNITY_ANDROID || UNITY_WEBGL
             return 60;
 #else
             return 0;
@@ -199,7 +203,12 @@ namespace DDEngine
         public static void RestoreSettings()
         {
             AudioListener.volume = PlayerPrefs.GetFloat(GameVolumeKey, 1.0f);
+
+#if DD1_DEMO_BUILD
+            int fpsValue = GetDefaultFpsValue();
+#else
             int fpsValue = PlayerPrefs.GetInt(FpsKey, GetDefaultFpsValue());
+#endif
 
             if (fpsValue <= 0)
             {

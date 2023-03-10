@@ -155,7 +155,7 @@ RectTransform:
   - {fileID: 2041106762}
   - {fileID: 237956621}
   m_Father: {fileID: 2090321056}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -703,7 +703,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2090321056}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -1269,6 +1269,7 @@ MonoBehaviour:
   dpadControl: {fileID: 1919129659}
   joystickControl: {fileID: 179318375}
   menuTriggerButton: {fileID: 715639232}
+  mainScreenControlContainer: {fileID: 18623148}
 --- !u!1 &464522999
 GameObject:
   m_ObjectHideFlags: 0
@@ -1638,7 +1639,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &715639233
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1646,13 +1647,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 715639232}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2041106762}
-  m_RootOrder: 2
+  m_Father: {fileID: 2090321056}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -2802,7 +2803,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 4
-  m_AspectRatio: 3.1
+  m_AspectRatio: 3.061285
 --- !u!1 &1702944691
 GameObject:
   m_ObjectHideFlags: 0
@@ -3367,11 +3368,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1883098880}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7f40f69150cf114c8208fd35cea7413, type: 3}
+  m_Script: {fileID: 11500000, guid: 7ebd90b910e66084fab419d51f763e19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   EnglishFontAsset: {fileID: 11400000, guid: bde68bbb4549b484197703a36709abf8, type: 2}
   SimplifiedChineseFontAsset: {fileID: 11400000, guid: 0bc6b8132f81ab24594a2bf202f73a90, type: 2}
+  TraditionalChineseFontAsset: {fileID: 11400000, guid: 132d0e3a18595464cbc3c577d1771032, type: 2}
 --- !u!1 &1916137331
 GameObject:
   m_ObjectHideFlags: 0
@@ -3608,7 +3610,6 @@ RectTransform:
   m_Children:
   - {fileID: 179318376}
   - {fileID: 1919129660}
-  - {fileID: 715639233}
   m_Father: {fileID: 18623149}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3710,6 +3711,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1690025775}
+  - {fileID: 715639233}
   - {fileID: 18623149}
   - {fileID: 315295292}
   m_Father: {fileID: 0}

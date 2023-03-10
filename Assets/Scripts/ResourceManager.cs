@@ -24,6 +24,9 @@ namespace DDEngine
         [SerializeField]
         protected TMP_FontAsset SimplifiedChineseFontAsset;
 
+        [SerializeField]
+        protected TMP_FontAsset TraditionalChineseFontAsset;
+
         public abstract ResourceFile GeneralResources { get; }
         public abstract ResourceFile LocalizationResources { get; }
         public abstract ResourceFile ProtectedGeneralResources { get; }
@@ -72,6 +75,9 @@ namespace DDEngine
             {
                 case GameLanguage.SimplifiedChinese:
                     return SimplifiedChineseFontAsset;
+
+                case GameLanguage.TraditionalChinese:
+                    return TraditionalChineseFontAsset;
 
                 default:
                     return EnglishFontAsset;

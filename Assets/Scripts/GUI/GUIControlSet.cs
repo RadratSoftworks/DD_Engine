@@ -122,7 +122,6 @@ namespace DDEngine.GUI
         public void Disable()
         {
             StateChanged?.Invoke(false);
-            actionInterpreter.ClearState();
 
             if (destroyOnDisable)
             {
