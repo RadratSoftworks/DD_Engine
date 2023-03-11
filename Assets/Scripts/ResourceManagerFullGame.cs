@@ -17,7 +17,6 @@ namespace DDEngine
         private ResourceFile introLocalizationResources;
         private ResourceFile protectedGeneralResources;
         private ResourceFile protectedLocalizationResources;
-        private FileSystem fileSystem;
 
         public override ResourceFile GeneralResources => generalResources;
         public override ResourceFile LocalizationResources => localizationResources;
@@ -82,10 +81,13 @@ namespace DDEngine
             yield break;
         }
 
+        public ResourceManagerFullGame()
+            : base(() => new ProtectedFilePatcher())
+        {
+        }
+
         void Start()
         {
-            fileSystem = new ProtectedFilePatcher();
-
             QueryAllSupportedLocalizationPack(FilePaths.LocalizationResourceFileName, FilePaths.ProtectedLocalizationResourceFileName);
             StartCoroutine(LoadDataCoroutine());
         }

@@ -8,12 +8,16 @@ namespace DDEngine
     {
         private ResourceFile generalResources;
         private ResourceFile localizationResources;
-        private FileSystem fileSystem;
 
         public override ResourceFile GeneralResources => generalResources;
         public override ResourceFile LocalizationResources => localizationResources;
         public override ResourceFile ProtectedGeneralResources => generalResources;
         public override ResourceFile ProtectedLocalizationResources => localizationResources;
+
+        public ResourceManagerDemo()
+            : base(() => new ResourceFileSystem())
+        {
+        }
 
         public override ResourceFile PickBestResourcePackForFile(string filepath)
         {
@@ -38,8 +42,6 @@ namespace DDEngine
 
         void Start()
         {
-            fileSystem = new ResourceFileSystem();
-
             QueryAllSupportedLocalizationPack(FilePaths.LocalizationDemoResourceFilename, null);
             StartCoroutine(LoadDataCoroutine());
         }

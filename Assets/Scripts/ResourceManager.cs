@@ -27,6 +27,9 @@ namespace DDEngine
         [SerializeField]
         protected TMP_FontAsset TraditionalChineseFontAsset;
 
+        protected FileSystem fileSystem;
+        private Func<FileSystem> fileSystemCreator;
+
         public abstract ResourceFile GeneralResources { get; }
         public abstract ResourceFile LocalizationResources { get; }
         public abstract ResourceFile ProtectedGeneralResources { get; }
@@ -54,9 +57,9 @@ namespace DDEngine
                     continue;
                 }
                 string langCode = Constants.GameLanguageToResourceLanguageCodeDict[language];
-                if (File.Exists(string.Format(baseLocalizationPathFormat, langCode)))
+                if (fileSystem.Exists(string.Format(baseLocalizationPathFormat, langCode)))
                 {
-                    if ((protectedBaseLocalizationPathFormat == null) || ((protectedBaseLocalizationPathFormat != null) && File.Exists(string.Format(baseLocalizationPathFormat, langCode))))
+                    if ((protectedBaseLocalizationPathFormat == null) || ((protectedBaseLocalizationPathFormat != null) && fileSystem.Exists(string.Format(baseLocalizationPathFormat, langCode))))
                     {
                         supportedGameLanguages.Add(language);
                     }
@@ -95,8 +98,14 @@ namespace DDEngine
             return GetFontAssetForLanguage(GameSettings.GameLanguage);
         }
 
+        protected ResourceManager(Func<FileSystem> fileSystemCreator)
+        {
+            this.fileSystemCreator = fileSystemCreator;
+        }
+
         private void Awake()
         {
+            this.fileSystem = fileSystemCreator();
             Instance = this;
         }
     }
