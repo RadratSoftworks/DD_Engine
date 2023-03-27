@@ -95,6 +95,10 @@ namespace DDEngine.GUI
                         controls.Add(new GUIControlBackgroundLabelDescription(parent, reader));
                         break;
 
+                    case GUIControlID.ScrollingText:
+                        controls.Add(new GUIControlScrollingTextDescription(parent, reader));
+                        break;
+
                     default:
                         throw new InvalidOperationException("Unknown control ID " + (int)controlID + " to internalize! Stream position: " + reader.BaseStream.Position);
                 }

@@ -11,6 +11,7 @@ namespace DDEngine.Installer
         public const int ErrorCodeInstallFailed = -2;
         public const int ErrorCodeCorrupted = -3;
         public const int ErrorCodeDataTooLarge = -4;
+        public const int ErorCodeNotDirkDagger = -5;
 
         private const string InstalledMarkTextFileName = "installed.txt";
 

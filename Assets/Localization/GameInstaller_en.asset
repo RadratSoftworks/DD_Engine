@@ -72,6 +72,10 @@ MonoBehaviour:
     m_Localized: About
     m_Metadata:
       m_Items: []
+  - m_Id: 11115883194126336
+    m_Localized: 'Error: The file you are trying to install is not Dirk Dagger!'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

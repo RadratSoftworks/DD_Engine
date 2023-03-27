@@ -76,6 +76,11 @@ MonoBehaviour:
     m_Localized: "V\u1EC1 tr\xF2 ch\u01A1i n\xE0y"
     m_Metadata:
       m_Items: []
+  - m_Id: 11115883194126336
+    m_Localized: "L\u1ED7i: T\u1EC7p b\u1EA1n \u0111ang c\xE0i kh\xF4ng ph\u1EA3i
+      l\xE0 Dirk Dagger!"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -5,6 +5,7 @@ using UnityEngine;
 
 using DDEngine.BaseScript;
 using DDEngine.Utils;
+using Cysharp.Threading.Tasks;
 
 namespace DDEngine.Action
 {
@@ -56,7 +57,7 @@ namespace DDEngine.Action
             yield break;
         }
 
-        public IEnumerator Execute(ScriptBlock<ActionOpcode> block)
+        public IEnumerator Execute(ScriptBlock<ActionOpcode> block) => UniTask.ToCoroutine(async () =>
         {
             foreach (var command in block.Commands)
             {
@@ -70,10 +71,10 @@ namespace DDEngine.Action
                         // Wait for the current GUI to done any of the stuffs it wants to do
                         if (GameManager.Instance.GUIBusy)
                         {
-                            yield return new WaitUntil(() => !GameManager.Instance.GUIBusy);
+                            await UniTask.WaitUntil(() => !GameManager.Instance.GUIBusy);
                         }
 
-                        RunLoadLocation(command);
+                        await RunLoadLocation(command);
                         break;
 
                     case ActionOpcode.SetLocationOffset:
@@ -154,16 +155,14 @@ namespace DDEngine.Action
             // coroutine may be canceled
             VariableChanged?.Invoke(variableChangedReportList);
             variableChangedReportList.Clear();
-
-            yield break;
-        }
+        });
 
         private void RunReturn(ScriptCommand<ActionOpcode> command)
         {
             GameManager.Instance.ReturnGadget();
         }
 
-        private void RunLoadLocation(ScriptCommand<ActionOpcode> command)
+        private IEnumerator RunLoadLocation(ScriptCommand<ActionOpcode> command) => UniTask.ToCoroutine(async () =>
         {
             if (command.Arguments.Count == 0)
             {
@@ -171,8 +170,8 @@ namespace DDEngine.Action
                 return;
             }
 
-            GameManager.Instance.LoadControlSet(command.Arguments[0] as string);
-        }
+            await GameManager.Instance.LoadControlSet(command.Arguments[0] as string);
+        });
 
         private void RunLoadMiniGame(ScriptCommand<ActionOpcode> command)
         {

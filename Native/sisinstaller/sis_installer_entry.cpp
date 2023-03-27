@@ -31,10 +31,12 @@ extern "C" {
         DD_GAME_DATA_CANT_OPEN_INSTALL_FILE = -1,
         DD_GAME_DATA_FAILED_TO_INSTALL = -2,
         DD_GAME_DATA_CORRUPTED = -3,
-        DD_GAME_DATA_TOO_LARGE = -4
+        DD_GAME_DATA_TOO_LARGE = -4,
+        DD_GAME_DATA_NOT_DIRK_DAGGER_FILE = -5
     };
 
     static constexpr std::uint32_t SIS_UID1 = 0x10201A7A;
+    static constexpr std::uint32_t DIRK_DAGGER_UID = 0x2000AFC3;
 
     DDENGINE_EXPORT int install_dd_game_data(const char *path, const char *dest_path) {
         sis_parser parser(path);
@@ -58,6 +60,10 @@ extern "C" {
         }
         catch (...) {
             return DD_GAME_DATA_CORRUPTED;
+        }
+
+        if (content.controller.info.uid.uid != DIRK_DAGGER_UID) {
+            return DD_GAME_DATA_NOT_DIRK_DAGGER_FILE;
         }
 
         ro_std_file_stream data_ref_stream(path, true);

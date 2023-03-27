@@ -52,6 +52,9 @@ namespace DDEngine.GUI
         private GameObject guiBackgroundLabelPrefabObject;
 
         [SerializeField]
+        private GameObject guiScrollingTextPrefabObject;
+
+        [SerializeField]
         public GameObject container;
 
         private void Start()
@@ -288,6 +291,19 @@ namespace DDEngine.GUI
                 controller.Setup(pictureSprite, description.TopPosition, description.Scroll, description.AbsoluteDepth);
             }
         }
+        private void LoadGuiScrollingText(GUIControlSet ownSet, GameObject parent, GUIControlScrollingTextDescription description)
+        {
+            GameObject anotherInstance = Instantiate(guiScrollingTextPrefabObject, parent.transform, false);
+            anotherInstance.name = GameUtils.ToUnityName(description.Text);
+
+            GUIScrollingTextController controller = anotherInstance.GetComponent<GUIScrollingTextController>();
+
+            if (controller != null)
+            {
+                controller.Setup(ownSet, description);
+            }
+        }
+
 
         private void LoadGuiLabel(GUIControlSet ownSet, GameObject parent, GUIControlLabelDescription description)
         {
@@ -354,6 +370,10 @@ namespace DDEngine.GUI
                 else if (description is GUIControlBackgroundLabelDescription)
                 {
                     LoadGuiBgLabel(ownSet, parent, description as GUIControlBackgroundLabelDescription);
+                }
+                else if (description is GUIControlScrollingTextDescription)
+                {
+                    LoadGuiScrollingText(ownSet, parent, description as GUIControlScrollingTextDescription);
                 }
                 else
                 {

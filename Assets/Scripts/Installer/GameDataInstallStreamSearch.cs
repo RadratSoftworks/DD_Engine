@@ -29,7 +29,19 @@ namespace DDEngine.Installer
                 }
             };
 
-            await binData.RunAsync();
+            try
+            {
+                await binData.RunAsync();
+            }
+            catch (Exception ex)
+            {
+                if (stream != null)
+                {
+                    stream.Dispose();
+                    throw ex;
+                }
+            }
+
             if (stream != null)
             {
                 var returnResult = new Tuple<string, UInt64>(filePath, (UInt64)stream.Length);

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using DDEngine.Utils.FSM;
+using Cysharp.Threading.Tasks;
+using DDEngine.Utils;
 
 namespace DDEngine.Minigame.Fight
 {
@@ -27,13 +29,16 @@ namespace DDEngine.Minigame.Fight
 
         public void ReceiveData(IStateMachine sender, object data)
         {
-            if (!(data is FightEndIntent))
+            UniTask.Action(async () =>
             {
-                return;
-            }
+                if (!(data is FightEndIntent))
+                {
+                    return;
+                }
 
-            GameManager.Instance.SetCurrentGUI(null);
-            GameManager.Instance.LoadGadget(scriptToRun);
+                await GameManager.Instance.SetCurrentGUI(null);
+                GameManager.Instance.LoadGadget(scriptToRun);
+            })();
         }
 
         public void Update()

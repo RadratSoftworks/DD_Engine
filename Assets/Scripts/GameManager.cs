@@ -18,6 +18,8 @@ using DDEngine.Minigame;
 using DDEngine.GUI;
 using DDEngine.GUI.Injection;
 using DDEngine.Utils;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 #if DD1_DEMO_BUILD
 using UnityEngine.SceneManagement;
@@ -134,16 +136,16 @@ namespace DDEngine
             InputAction action = GameInputManager.Instance.MenuTriggerAtionMap.FindAction("Menu Triggered");
             if (action != null)
             {
-                action.performed += OnMenuTriggered;
+                action.performed += UnitaskHelper.Action<InputAction.CallbackContext>(OnMenuTriggered);
             }
         }
 
-        private void OnMenuTriggered(InputAction.CallbackContext context)
+        private async UniTaskVoid OnMenuTriggered(InputAction.CallbackContext context)
         {
             SaveGame();
 
             persistentAudioController.StopAll();
-            LoadControlSet(FilePaths.MainChapterGUIControlFileName);
+            await LoadControlSet(FilePaths.MainChapterGUIControlFileName);
         }
 
         private void HideGadgetRelatedObjects()
@@ -285,7 +287,7 @@ namespace DDEngine
             GameGC.TryUnloadUnusedAssets();
         }
 
-        public void SetCurrentGUI(GUIControlSet newGUI, bool notSave = false)
+        public async UniTask SetCurrentGUI(GUIControlSet newGUI, bool notSave = false)
         {
             if (activeGUI == newGUI)
             {
@@ -310,22 +312,11 @@ namespace DDEngine
             activeGUI = newGUI;
             ControlSetChanged?.Invoke();
 
-            // Enable menu trigger. An actual menu widget will disable it if there is one
+            // Enable menu trigger in this by the way :). An actual menu widget will disable it if there is one
             GameInputManager.Instance.SetGUIMenuTriggerActionMapState(true);
 
             if (activeGUI != null)
             {
-                // Disable input actions, this is to prevent the new input event subscribe from being fired
-                // immediately. It looks like re-enable will clear the pending events :)
-                GameInputManager.Instance.SetGUIInputActionMapState(false);
-
-                activeGUI.Enable();
-                activeGUI.EnableRecommendedControls();
-
-                DialogueStateChanged?.Invoke(false);
-
-                GameInputManager.Instance.SetGUIInputActionMapState(true);
-
                 if (!activeGUI.Saveable)
                 {
                     saveLock++;
@@ -341,6 +332,21 @@ namespace DDEngine
             if (!notSave)
             {
                 SaveGame();
+            }
+
+            if (activeGUI != null)
+            {
+                // Disable input actions, this is to prevent the new input event subscribe from being fired
+                // immediately. It looks like re-enable will clear the pending events :)
+                GameInputManager.Instance.SetGUIInputActionMapState(false);
+
+                activeGUI.Enable();
+                activeGUI.EnableRecommendedControls();
+
+                DialogueStateChanged?.Invoke(false);
+                await UniTask.Yield();
+
+                GameInputManager.Instance.SetGUIInputActionMapState(true);
             }
         }
 
@@ -467,7 +473,7 @@ namespace DDEngine
             }
         }
 
-        public void LoadControlSet(string filename)
+        public async UniTask LoadControlSet(string filename)
         {
 #if DD1_DEMO_BUILD
             // Load to another screen
@@ -480,11 +486,11 @@ namespace DDEngine
             GUIControlSet set = GUIControlSetFactory.Instance.LoadControlSet(filename, Constants.CanvasSize, new GUIControlSetInstantiateOptions());
             if (set != null)
             {
-                SetCurrentGUI(set);
+                await SetCurrentGUI(set);
             }
         }
 
-        public void LoadMinigame(string filename)
+        public async void LoadMinigame(string filename)
         {
             ResourceFile resourcesToLoadFrom = ResourceManager.Instance.GeneralResources;
             if (!resourcesToLoadFrom.Exists(filename))
@@ -498,7 +504,7 @@ namespace DDEngine
                 GUIControlSet set = MinigameLoader.Load(dataStream, filename, Constants.CanvasSize);
                 if (set != null)
                 {
-                    SetCurrentGUI(set, true);
+                    await SetCurrentGUI(set, true);
                 }
 
                 // Save when we entered a minigame
@@ -672,7 +678,7 @@ namespace DDEngine
             }
         }
 
-        private void InitializeFromGameSave()
+        private async void InitializeFromGameSave()
         {
             inLoad = true;
 
@@ -693,7 +699,7 @@ namespace DDEngine
                 }
                 else
                 {
-                    LoadControlSet(gameSave.CurrentControlSetPath);
+                    await LoadControlSet(gameSave.CurrentControlSetPath);
 
                     if ((activeGUI != null) && (activeGUI.Location != null))
                     {
@@ -704,7 +710,7 @@ namespace DDEngine
             else
             {
                 // Still clear active control set anyway
-                SetCurrentGUI(null);
+                await SetCurrentGUI(null);
                 CleanAllPendingGadgets();
             }
 

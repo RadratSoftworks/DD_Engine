@@ -73,11 +73,11 @@ namespace DDEngine.Minigame.ConstructionSite
                     harryController.Kill();
                 }
 
-                deathAnimation.Done += controller =>
+                deathAnimation.Done += UnitaskHelper.Action<SpriteAnimatorController>(async controller =>
                 {
-                    GameManager.Instance.SetCurrentGUI(null);
+                    await GameManager.Instance.SetCurrentGUI(null);
                     GameManager.Instance.LoadGadget(deathScriptPath);
-                };
+                });
 
                 deathAnimation.Enable();
             }

@@ -10,6 +10,7 @@
         Menu = 10,
         MenuItem = 11,
         SettingMultiValuesOption = 13,
+        ScrollingText = 15,
         Location = 30,
         Layer = 31,
         Active = 40,

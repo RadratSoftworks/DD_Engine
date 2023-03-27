@@ -62,6 +62,10 @@ namespace DDEngine.Installer.States
                     entryText = "ErrorInstallFailed";
                     break;
 
+                case GameDataInstaller.ErorCodeNotDirkDagger:
+                    entryText = "ErrorInstallNotDirkDaggerFile";
+                    break;
+
                 default:
                     throw new System.Exception("Unknown install error code!");
             }

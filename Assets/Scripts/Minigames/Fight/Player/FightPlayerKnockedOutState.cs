@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using DDEngine.Utils.FSM;
+using Cysharp.Threading.Tasks;
 
 namespace DDEngine.Minigame.Fight
 {
@@ -32,8 +33,11 @@ namespace DDEngine.Minigame.Fight
                 return;
             }
 
-            GameManager.Instance.SetCurrentGUI(null);
-            GameManager.Instance.LoadGadget(runScript);
+            UniTask.Action(async () =>
+            {
+                await GameManager.Instance.SetCurrentGUI(null);
+                GameManager.Instance.LoadGadget(runScript);
+            })();
         }
 
         public void Update()
