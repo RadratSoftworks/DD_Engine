@@ -110,11 +110,11 @@ namespace DDEngine.Action
                         break;
 
                     case ActionOpcode.LoadMiniGame:
-                        RunLoadMiniGame(command);
+                        await RunLoadMiniGame(command);
                         break;
 
                     case ActionOpcode.ResumeSave:
-                        RunResumeSave(command);
+                        await RunResumeSave(command);
                         break;
 
                     case ActionOpcode.SwitchNgi:
@@ -173,7 +173,7 @@ namespace DDEngine.Action
             await GameManager.Instance.LoadControlSet(command.Arguments[0] as string);
         });
 
-        private void RunLoadMiniGame(ScriptCommand<ActionOpcode> command)
+        private async UniTask RunLoadMiniGame(ScriptCommand<ActionOpcode> command)
         {
             if (command.Arguments.Count == 0)
             {
@@ -181,7 +181,7 @@ namespace DDEngine.Action
                 return;
             }
 
-            GameManager.Instance.LoadMinigame(command.Arguments[0] as string);
+            await GameManager.Instance.LoadMinigame(command.Arguments[0] as string);
         }
 
         private void RunSetLocationOffset(ScriptCommand<ActionOpcode> command)
@@ -212,9 +212,9 @@ namespace DDEngine.Action
             GameManager.Instance.PanControlSet(amount);
         }
 
-        private void RunResumeSave(ScriptCommand<ActionOpcode> command)
+        private async UniTask RunResumeSave(ScriptCommand<ActionOpcode> command)
         {
-            GameManager.Instance.LoadGame();
+            await GameManager.Instance.LoadGame();
         }
 
         private void RunSwitchNgi(ScriptCommand<ActionOpcode> command)

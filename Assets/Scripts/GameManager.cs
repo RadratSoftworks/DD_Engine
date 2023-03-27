@@ -490,7 +490,7 @@ namespace DDEngine
             }
         }
 
-        public async void LoadMinigame(string filename)
+        public async UniTask LoadMinigame(string filename)
         {
             ResourceFile resourcesToLoadFrom = ResourceManager.Instance.GeneralResources;
             if (!resourcesToLoadFrom.Exists(filename))
@@ -678,7 +678,7 @@ namespace DDEngine
             }
         }
 
-        private async void InitializeFromGameSave()
+        private async UniTask InitializeFromGameSave()
         {
             inLoad = true;
 
@@ -695,7 +695,7 @@ namespace DDEngine
             {
                 if (Path.GetExtension(gameSave.CurrentControlSetPath).Equals(FilePaths.MinigameFileExtension, StringComparison.OrdinalIgnoreCase))
                 {
-                    LoadMinigame(gameSave.CurrentControlSetPath);
+                    await LoadMinigame(gameSave.CurrentControlSetPath);
                 }
                 else
                 {
@@ -725,7 +725,7 @@ namespace DDEngine
             RestoreGameSaveTracking();
         }
 
-        public void LoadGame()
+        public async UniTask LoadGame()
         {
             using (StreamReader file = File.OpenText(SavePath))
             {
@@ -740,7 +740,7 @@ namespace DDEngine
 
             if (gameSave != null)
             {
-                InitializeFromGameSave();
+                await InitializeFromGameSave();
             }
         }
 
