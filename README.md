@@ -25,6 +25,10 @@ On PC, use Arrow keys for navigation, and use Enter key for performing Action/in
 
 ![Mobile Dirk Dagger](https://user-images.githubusercontent.com/79155874/228012238-6edc6c06-4db2-4d71-b9b7-dcd74036a7bc.jpg)
 
+## Gratitude
+
+Thanks Mr.Phape16 for helping me testing some initial versions of the game!
+
 ## License
 
 Copyright 2023- Trong Thu Do. Licensed under the Apache License, Version 2.0.
