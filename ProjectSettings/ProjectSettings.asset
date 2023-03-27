@@ -134,7 +134,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.7.1
+  bundleVersion: 1.8.0
   preloadedAssets:
   - {fileID: 11400000, guid: 1860c93559e2fc34180b6699d9d801d3, type: 2}
   metroInputSource: 0
