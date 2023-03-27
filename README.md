@@ -2,6 +2,8 @@
 
 DDEngine is a small engine developed in Unity, used to run Dirk Dagger series's games.
 
+This engine and the port release is a part of the 5th [EKA2L1](https://github.com/eka2l1/eka2l1) anniversary.
+
 ## Feature
 
 - Able to work with OPES resource files, extracted from the original .n-gage package
@@ -12,9 +14,16 @@ DDEngine is a small engine developed in Unity, used to run Dirk Dagger series's 
 
 Some part of the code in this repository is currently configured to run the first game in the series: Dirk Dagger and the Fallen Idol.
 
+## Controls
+
+On PC, use Arrow keys for navigation, and use Enter key for performing Action/interacting with the map.
+
 ## Screenshots
 
-![image](https://user-images.githubusercontent.com/79155874/227994614-dd1769b7-cde1-4c87-bbfb-104562442159.png)
+![PC Dirk Dagger](https://user-images.githubusercontent.com/79155874/227994614-dd1769b7-cde1-4c87-bbfb-104562442159.png)
+
+
+![Mobile Dirk Dagger](https://user-images.githubusercontent.com/79155874/228012238-6edc6c06-4db2-4d71-b9b7-dcd74036a7bc.jpg)
 
 ## License
 
