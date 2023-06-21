@@ -1,6 +1,7 @@
 ﻿using Cysharp.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.IO;
+using UnityEngine;
 
 namespace DDEngine.Installer
 {
@@ -25,6 +26,55 @@ namespace DDEngine.Installer
 
         public static async UniTask<int> Install(string path, string destPath)
         {
+#if FULL_GAME_IN_RESOURCES
+            string[] copyResources = new string[]
+            {
+                "opes_general",
+                "opes_loc-cn",
+                "opes_loc-de",
+                "opes_loc-en",
+                "opes_loc-es",
+                "opes_loc-fr",
+                "opes_loc-it",
+                "opes_loc-tw",
+                "protected_general",
+                "protected_loc-cn",
+                "protected_loc-de",
+                "protected_loc-en",
+                "protected_loc-es",
+                "protected_loc-fr",
+                "protected_loc-it",
+                "protected_loc-tw",
+                "startup_general",
+                "startup_loc-cn",
+                "startup_loc-de",
+                "startup_loc-en",
+                "startup_loc-es",
+                "startup_loc-fr",
+                "startup_loc-it",
+                "startup_loc-tw"
+            };
+
+            foreach (string filename in copyResources)
+            {
+                TextAsset result = Resources.Load<TextAsset>("Full/" + filename);
+                if (result == null)
+                {
+                    continue;
+                }
+
+                byte[] dataBuffer = result.bytes;
+                await File.WriteAllBytesAsync(Path.Join(destPath, filename + ".opes"), dataBuffer);
+            }
+
+            // Add a simple text file marking installation
+            using (StreamWriter simpleTextFile = File.CreateText(Path.Join(destPath, InstalledMarkTextFileName)))
+            {
+                simpleTextFile.Write("Installed");
+            }
+
+            return GameDataInstaller.ErrorCodeNone;
+#else
             using (FileStream stream = new FileStream(path, FileMode.Open))
             {
                 var extractedFilePathAndSize = await GameDataInstallStreamSearch.GetToFile(stream, destPath);
@@ -39,6 +89,7 @@ namespace DDEngine.Installer
                 File.Delete(extractedFilePathAndSize.Item1);
                 return errCode;
             }
+#endif
         }
     }
 }

@@ -46,7 +46,7 @@ namespace DDEngine.Installer
         }
         protected override InstallSceneState GetInitialState()
         {
-            return InstallSceneState.WaitForInstallPick;
+            return InstallSceneState.Installing;
     }
     }
 }

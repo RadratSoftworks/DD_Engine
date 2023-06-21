@@ -18,6 +18,10 @@ namespace DDEngine.Installer.States
         public void Enter()
         {
             stateMachine.installingButton.SetActive(true);
+
+#if FULL_GAME_IN_RESOURCES
+            ReceiveData(null, null);
+#endif
         }
 
         public void Leave()
@@ -27,17 +31,27 @@ namespace DDEngine.Installer.States
 
         public void ReceiveData(IStateMachine sender, object data)
         {
+#if !FULL_GAME_IN_RESOURCES
             if (data is NGageInstallPathIntent)
             {
+#endif
                 string storagePath = Application.persistentDataPath;
 
+#if !FULL_GAME_IN_RESOURCES
                 _ = Task.Run(async () =>
+#else
+                UniTask.Action(async () =>
+#endif
                 {
+#if FULL_GAME_IN_RESOURCES
+                    int errorCode = await GameDataInstaller.Install(null, storagePath);
+#else
                     int errorCode = await GameDataInstaller.Install((data as NGageInstallPathIntent).Path, storagePath);
-                    await UniTask.SwitchToMainThread();
+#endif
 
                     stateMachine.Transition(InstallSceneState.Done, errorCode);
                 })
+#if !FULL_GAME_IN_RESOURCES
                     .ContinueWith(async (task) =>
                     {
                         await UniTask.SwitchToMainThread();
@@ -48,7 +62,12 @@ namespace DDEngine.Installer.States
                         }
                     })
                     .ConfigureAwait(false);
+#else
+                ();
+#endif
+#if !FULL_GAME_IN_RESOURCES
             }
+#endif
         }
 
         public void Update()

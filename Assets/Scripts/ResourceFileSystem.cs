@@ -8,11 +8,11 @@ namespace DDEngine
 {
     public class ResourceFileSystem : FileSystem
     {
-        private Dictionary<string, byte[]> assetDatas = new(StringComparer.OrdinalIgnoreCase);
+        protected Dictionary<string, byte[]> assetDatas = new(StringComparer.OrdinalIgnoreCase);
 
-        private string GetFullResourcePath(string path)
+        protected string GetFullResourcePath(string path)
         {
-            return Path.Join("Demo/", path);
+            return Path.Join("Full/", path);
         }
 
         public bool Exists(string path)
@@ -20,7 +20,7 @@ namespace DDEngine
             return (Resources.Load<TextAsset>(GetFullResourcePath(path)) != null);
         }
 
-        public Stream OpenFile(string path)
+        public virtual Stream OpenFile(string path)
         {
             if (assetDatas.TryGetValue(path, out byte[] assetData))
             {

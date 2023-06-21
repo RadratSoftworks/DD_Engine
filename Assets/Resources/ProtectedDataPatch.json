@@ -2,7 +2,7 @@
 	"files":
 	[
 		{
-			"name": "protected_general.opes.ngdat",
+			"name": "protected_general.opes",
 			"patch": [
 				{
 					"offset": "1D6",

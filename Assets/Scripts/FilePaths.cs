@@ -4,7 +4,7 @@
     {
         public static readonly string GeneralResourceFileName = "opes_general.opes";
         public static readonly string IntroResourceFileName = "startup_general.opes";
-        public static readonly string ProtectedGeneralResourceFileName = "protected_general.opes.ngdat";
+        public static readonly string ProtectedGeneralResourceFileName = "protected_general.opes";
         public static readonly string LocalizationResourceFileName = "opes_loc-{0}.opes";
         public static readonly string IntroLocalizedResourceFileName = "startup_loc-{0}.opes";
         public static readonly string ProtectedLocalizationResourceFileName = "protected_loc-{0}.opes";
